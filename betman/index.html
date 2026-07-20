@@ -30,26 +30,23 @@
         preload ()
         {
             this.load.image('bg', 'assets/background.bmp');
-	this.load.image('button', 'assets/button1.bmp');
+	        this.load.image('button', 'assets/button1.bmp');
         }
 
         create ()
         {
-            this.add.image(0,0, 'bg');
+            this.add.image(1200,540, 'bg');
 
-	this.add.image(0,0,'button');
+	        this.add.image(300,100,'button');
 
             input = this.input;
-            keyboard = this.input.keyboard;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
-
-            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE));
         }
         update(){
             if(scene == 1){
-
-	}
+	
+        	}
             //scene 2: next
             if(scene == 2){
                 this.scene.start('scene2');
@@ -85,6 +82,8 @@
     function endScene1(){
         bg.destroy();
         bg = null;
+        button.destroy();
+        button = null;
 
         scene = 2;
     }
