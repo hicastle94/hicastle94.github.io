@@ -25,7 +25,8 @@
     var scene = 1;
 
     //scene 1: main menu
-
+    var bg;
+    var button;
     //scene 2: 
 
     class Scene1 extends Phaser.Scene{
@@ -35,8 +36,8 @@
         }
         preload ()
         {
-            this.load.image('bg', 'assets/background.bmp');
-	        this.load.image('button', 'assets/button1.bmp');
+            bg = this.load.image('bg', 'assets/background.bmp');
+	        button = this.load.image('button', 'assets/button1.bmp');
         }
 
         create ()
