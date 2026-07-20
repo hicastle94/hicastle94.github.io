@@ -43,7 +43,8 @@
         {
             this.add.image(540,960, 'bg');
 	        const sprite = this.add.sprite(540,1600,'button')
-            sprite.setInteractive.on('pointerdown',endScene1);
+            sprite.setInteractive();
+            sprite.on('pointerdown',endScene1);
 
             input = this.input;
             mouse = this.input.Mouse;
@@ -112,7 +113,7 @@
         {
             this.add.image(540, 1200, 'bg');
             instructionBG=this.add.rectangle(0,0,800,40,0xc8c8c8).setOrigin(0,0);
-            instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한|MÃ‰qgy', align:'center', fixedWidth:800 });
+            instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
             
             input = this.input;
             keyboard = this.input.keyboard;
