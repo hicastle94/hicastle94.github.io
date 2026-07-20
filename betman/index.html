@@ -38,13 +38,12 @@
         create ()
         {
             this.add.image(540,1200, 'bg');
-	        const sprite = this.add.sprite(300,100,'button').setInteractive;
+	        const sprite = this.add.sprite(800,1200,'button').setInteractive;
 
             sprite.on('pointerdown', function(pointer){
                 endScene1();
             })
         
-
             input = this.input;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
