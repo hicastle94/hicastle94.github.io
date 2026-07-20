@@ -30,11 +30,14 @@
         preload ()
         {
             this.load.image('bg', 'assets/background.bmp');
+	this.load.image('button', 'assets/button1.bmp');
         }
 
         create ()
         {
             this.add.image(2440, 1080, 'bg');
+
+	this.add.image(600,200,'button');
 
             input = this.input;
             keyboard = this.input.keyboard;
