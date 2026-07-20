@@ -19,6 +19,7 @@
         point:0,
         earn:0,
         mental:100,
+        state:0, //
         friends:3});
     function GenerateVictims(){
 
@@ -29,8 +30,10 @@
 
     var mySite = {
         money:10000000,
-
+        popular:0
     };
+
+    var nowState; //0
 
     //input
     var p1key =[];
@@ -149,6 +152,8 @@
     dialog.push();
     function ProcDialog(){
 
+
+
     }
 
     var thinking[];
@@ -165,19 +170,25 @@
     thinking.push({text:"빌린돈으로 따서 갚으면 되지 않을까?", mental:30});
     thinking.push({text:"쟤는 따는데 나는 꼴았네..", mental:90});
     thinking.push({text:"쟤는 돈 버는데 나는 못버네..", mental:90});
+    thinking.push({text:"꽁머니라도..", mental:90});
     
     thinking.push({text:"첫충전을 해볼까?", mental:90});
     thinking.push({text:"친구를 꼬시면 포인트를 준다고?", mental:90});
+    thinking.push({text:"친구를 초대하면 포인트를 준다고?", mental:90});
+    thinking.push({text:"매일 충전하면 더 이득인가?", mental:90});
 
     thinking.push({text:"슬슬 돈으로 바꿔야겠는데", mental:90});
     thinking.push({text:"오늘 대박! 환전하자", mental:90});
 
     thinking.push({text:"아직도 손해를 못메꿨네", mental:90});
     thinking.push({text:"한판만 더 따면 흑자다", mental:90});
+    thinking.push({text:"이건 정배지", mental:90});
+    thinking.push({text:"이건 역배지", mental:90});
 
     //#### 기획 ####
     // 종목 단일(거북이)? 다양화?
-    // 
+    // 아트는 어떤 풍으로?
+    //
 
 
 
