@@ -37,8 +37,8 @@
 
         create ()
         {
-            this.add.image(540,1200, 'bg');
-	        const sprite = this.add.sprite(540,1200,'button').setInteractive;
+            this.add.image(540,1000, 'bg');
+	        const sprite = this.add.sprite(540,1600,'button').setInteractive;
 
             sprite.on('pointerdown', function(pointer){
                 endScene1();
@@ -107,72 +107,10 @@
         }
         create ()
         {
-            this.add.image(400, 300, 'bg');
+            this.add.image(540, 1200, 'bg');
             instructionBG=this.add.rectangle(0,0,800,40,0xc8c8c8).setOrigin(0,0);
             instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한|MÃ‰qgy', align:'center', fixedWidth:800 });
-            var statFont = {fontSize: '12px', color: '#000'};
-            for(let i = 0 ; i < 4 ; i++){
-                p1char[i].image = this.add.image(15, 40+i*135,p1char[i].name).setScale(3).setOrigin(0,0);
-                p2char[i].image = this.add.image(800-15-90, 40+i*135,p2char[i].name).setScale(3).setOrigin(0,0);
-
-                p1char[i].image.setData("ID",i);
-                p2char[i].image.setData("ID",i+4);
-                p1char[i].image.setInteractive().on('pointerup',clickPort);
-                p2char[i].image.setInteractive().on('pointerup',clickPort);
-
-                p1char[i].specialbutton = this.add.image(65, 40+i*135,'special').setOrigin(0,0);
-                p2char[i].specialbutton = this.add.image(800-65-90, 40+i*135,'special').setOrigin(0,0);
-                p1char[i].specialbutton.setData("ID",i);
-                p2char[i].specialbutton.setData("ID",i+4);
-                p1char[i].specialbutton.setInteractive().on('pointerup',clickSpecial);
-                p2char[i].specialbutton.setInteractive().on('pointerup',clickSpecial);
-                p1char[i].specialbutton.setVisible(false);
-                p2char[i].specialbutton.setVisible(false);
-
-                p1char[i].hpbar = this.add.rectangle(15,140+i*135,90*(p1char[i].nowhp/p1char[i].maxhp),10,0xff0000).setOrigin(0,0);
-                p1char[i].hptext = this.add.text(15,140+i*135,p1char[i].nowhp+'/'+p1char[i].maxhp,statFont);
-                p1char[i].energybar = this.add.rectangle(15,150+i*135,90*(p1char[i].nowenergy/p1char[i].maxenergy),10,0x0000ff).setOrigin(0,0)
-                p1char[i].energytext = this.add.text(15,150+i*135,p1char[i].nowenergy+'/'+p1char[i].maxenergy,statFont);
-
-                p1char[i].imgGroup = this.add.group([p1char[i].image, p1char[i].hpbar, p1char[i].hptext, p1char[i].energybar, p1char[i].energytext, p1char[i].specialbutton]);
-
-                p2char[i].hpbar = this.add.rectangle(800-15-90,140+i*135,90*(p2char[i].nowhp/p2char[i].maxhp),10,0xff0000).setOrigin(0,0);
-                p2char[i].hptext = this.add.text(800-15-90,140+i*135,p2char[i].nowhp+'/'+p2char[i].maxhp,statFont);
-                p2char[i].energybar = this.add.rectangle(800-15-90,150+i*135,90*(p2char[i].nowenergy/p2char[i].maxenergy),10,0x0000ff).setOrigin(0,0)
-                p2char[i].energytext = this.add.text(800-15-90,150+i*135,p2char[i].nowenergy+'/'+p2char[i].maxenergy,statFont);
-
-                p2char[i].imgGroup = this.add.group([p2char[i].image, p2char[i].hpbar, p2char[i].hptext, p2char[i].energybar, p2char[i].energytext, p2char[i].specialbutton]);
-            }
             
-            skillIndicator1 = this.add.group({key: 'skillpoint',repeat: 4,setXY: { x: 15, y: 580, stepX: 26 }});
-            skillIndicator2 = this.add.group({key: 'skillpoint',repeat: 4,setXY: { x: 785, y: 580, stepX: -26 }});
-            refreshSkillIndicator();
-
-            
-            sc2specialTurnIndicator = this.add.group({key:'default_port', repeat:7,setXY:{x:400, y:350, stepY:30},setScale:{x:1.5,y:1.5},visible:false});
-            sc2turnIndicator = this.add.group({key:'default_port',repeat:7,setXY:{x:400, y:350, stepY:30},setScale:{x:1.5,y:1.5}});
-            refreshTurnIndicator();
-
-            var moveFont = {fontSize: '18px', color: '#000'};
-            sc2movebuttton.push(this.add.group());
-            sc2movebuttton.push(this.add.group());
-            sc2movebuttton.push(this.add.group());
-            sc2movebuttton[0].add(this.add.rectangle(0,0,90,60,0x444444));
-            sc2movebuttton[0].add(this.add.text(0,0,'공격',moveFont));
-            sc2movebuttton[1].add(this.add.rectangle(0,0,90,60,0x444444));
-            sc2movebuttton[1].add(this.add.text(0,0,'스킬',moveFont));
-            sc2movebuttton[2].add(this.add.rectangle(0,0,90,60,0x444444));
-            sc2movebuttton[2].add(this.add.text(0,0,'필살기',moveFont));
-            for(let i = 0 ; i < 3 ; i++){
-                sc2movebuttton[i].setVisible(false);
-                sc2movebuttton[i].getChildren()[0].setInteractive().on('pointerup',clickMove);
-                sc2movebuttton[i].getChildren()[0].setData("ID",i);
-            }
-
-            sc2target = this.add.image(0,0,'maintarget');
-            sc2target.setVisible(false);
-            sc2subtarget = this.add.group({key:'subtarget', repeat:6,visible:false});
-
             input = this.input;
             keyboard = this.input.keyboard;
             mouse = this.input.Mouse;
@@ -217,7 +155,7 @@
     var config = {
         type: Phaser.AUTO,
         width: 1080,
-        height: 2400,
+        height: 2000,
         physics: {
             default: 'arcade'
         },
