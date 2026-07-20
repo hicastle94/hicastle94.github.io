@@ -108,12 +108,12 @@
         }
         preload ()
         {
-            this.load.image('bg', 'assets/background2.bmp');
+            this.load.image('bg2', 'assets/background2.bmp');
         }
         create ()
         {
-            this.add.image(540, 960, 'bg');
-            instructionBG=this.add.rectangle(0,0,800,40,0xc8c8c8).setOrigin(0,0);
+            this.add.image(540, 960, 'bg2');
+            instructionBG=this.add.rectangle(0,640,1080,1920,0xc8c8c8).setOrigin(0,0);
             instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
             
             input = this.input;
