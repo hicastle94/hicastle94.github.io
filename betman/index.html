@@ -41,7 +41,7 @@
 
         create ()
         {
-            this.add.image(540,960, 'bg');
+            this.add.image(540,900, 'bg');
 	        const sprite = this.add.sprite(540,1600,'button')
             sprite.setInteractive.on('pointerdown',endScene1);
 
@@ -126,40 +126,12 @@
 
         }
     }
-
-    var turnOrder = [0,1,2,3,4,5,6,7];
-    var specialOrder = [];
-    var thisturn;
-    var isSpecialTurn = 0;
-    function slotToObject(slot){
-        if(slot < 4) return p1char[slot];
-        if(slot >= 4) return p2char[slot-4];
-    }
-
-
-    function clickPort(){
-        setTarget(this.getData("ID"));
-        refreshTargetIndicator();
-    }
-    function clickSpecial(){
-        if(isSpecialAvailable(this.getData("ID"))) queueSpecial(this.getData("ID"));
-    }
-    function clickMove(){
-        if(moveselect == this.getData("ID")){
-             if(moveselect == 0) attack(thisturn);
-            else if(moveselect == 1) sattack(thisturn);
-            else if(moveselect == 2) special(thisturn);
-        }
-        else{
-            setSelectMove(this.getData("ID"));
-        }
-    }
     
 
     var config = {
         type: Phaser.AUTO,
         width: 1080,
-        height: 1920,
+        height: 1800,
         physics: {
             default: 'arcade'
         },
