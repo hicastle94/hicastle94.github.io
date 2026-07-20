@@ -88,10 +88,10 @@
 
     //for scene 1
     function endScene1(){
-        // bg.destroy();
-        // bg = null;
-        // button.destroy();
-        // button = null;
+        bg.destroy();
+        bg = null;
+        button.destroy();
+        button = null;
 
         scene = 2;
     }
@@ -112,7 +112,7 @@
         }
         create ()
         {
-            this.add.image(540, 1200, 'bg');
+            this.add.image(540, 960, 'bg');
             instructionBG=this.add.rectangle(0,0,800,40,0xc8c8c8).setOrigin(0,0);
             instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
             
