@@ -38,12 +38,9 @@
         create ()
         {
             this.add.image(540,1000, 'bg');
-	        const sprite = this.add.sprite(540,1600,'button').setInteractive;
+	        const sprite = this.add.sprite(540,1600,'button')
+            sprite.setInteractive.on('pointerdown',endScene1);
 
-            sprite.on('pointerdown', function(pointer){
-                endScene1();
-            })
-        
             input = this.input;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
@@ -95,6 +92,8 @@
 
     //for scene 2
     var time = 0;
+    var instruction;
+    var instructionBG;
 
     class Scene2 extends Phaser.Scene{
         constructor()
