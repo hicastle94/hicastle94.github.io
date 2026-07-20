@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+
+    <script>
+    //game data
+    var characterList = [];
+    characterList.push(
+        {name:'김두한',
+        port:'assets/김두한.bmp',
+        hp:115,
+        spd:97,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:15}]},
+        satk:{aim:'friend', target:'all', move:[{target:'both', buff:{turn:2, condition:'hit', adddamage:-4}}],desc:'2턴동안 모든 아군이 받는 피해가 4 감소합니다'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', buff:{turn:3, condition:'damage', setdamage:4}}],cost:100,desc:'3턴동안 지정된 상대가 가하는 데미지를 4로 협상합니다.'},
+        desc:'협상의 달인입니다.'});
+    characterList.push(
+        {name:'김무옥',
+        port:'assets/김무옥.bmp',
+        hp:105,
+        spd:95,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'enemy', target:'splash', move:[{target:'both', attack:15}],desc:'수류탄을 던져 대상과 주변에 15 피해를 입힙니다.'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', attack:20}],cost:80,desc:'적 전체에 20 피해를 입힙니다.'},
+        desc:'수류탄을 던지는 사람입니다.'});
+    characterList.push(   
+        {name:'상하이조',
+        port:'assets/상하이조.bmp',
+        hp:96,
+        spd:104,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:17}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', attack:30}],desc:'권총 손잡이로 때려 30 피해를 입힙니다.'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', attack:60}],cost:125,desc:'권총을 발사해 60 피해를 입힙니다.'},
+        desc:'총잡이입니다.'});
+    characterList.push(   
+        {name:'시라소니',
+        port:'assets/시라소니.bmp',
+        hp:115,
+        spd:105,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:18}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', attack:26, wait:-2000}],desc:'강하게 때려 26의 피해와 20의 행동지연을 줍니다.'},
+        special:{aim:'self', target:'single', move:[{target:'main', loopsound:'황성옛터'},{target:'main', buff:{condition:'death', stoploop:'황성옛터'}}],cost:100,desc:'노래를 부릅니다. 죽어야 멈춥니다.'}, //진짜로 음악만 틈. 심리적 탱킹이니 감안하여 밸런싱
+        desc:'싸움을 잘하는 사람입니다.'});
+    characterList.push(   
+        {name:'박용직',
+        port:'assets/박용직.bmp',
+        hp:85,
+        spd:97,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:18}]},
+        satk:{aim:'self', target:'single', move:[{target:'main', buff:{count:2, condition:'hit', setdamage:0}}],desc:'자신이 받는 피해를 2회 회피합니다.'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', modspeed:0.85,buff:{condition:'selecttarget', fixtarget:'박용직'}}],cost:100,desc:'상대를 똥싼자로 지목합니다. 영구적으로 도발 및 속도0.85배'},
+        desc:'잘 죽는 사람입니다'});
+    characterList.push(   
+        {name:'김좌진',
+        port:'assets/김좌진.bmp',
+        hp:110,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:20}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', energy:20}],desc:'아군 1명의 에너지를 20 충전시킵니다.'},
+        special:{aim:'deadfriend', target:'single', move:[{target:'main', forcespecial:true}],cost:120,desc:'쓰러진 아군의 필살기를 발동시킵니다.'},
+        desc:'싸울 의지를 불어넣는 사람입니다.'});
+
+    characterList.push(   
+        {name:'이승만',
+        port:'assets/이승만.bmp',
+        hp:100,
+        spd:115,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'any', target:'all', move:[{target:'sub', wait:-5000}],desc:'선택된 한 명을 제외한 모두의 행동을 50 감소시킵니다.'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', setwait:0}],cost:100,desc:'어림도 없다 암! 적 전체 행동력 0이 됩니다.'},
+        desc:'행동을 늦추는 사람입니다.'});
+    characterList.push(   
+        {name:'염동진',
+        port:'assets/염동진.bmp',
+        hp:95,
+        spd:120,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'enemy', target:'splash', move:[{target:'both', attack:15}],desc:'지뢰 공격으로 타겟과 주변에 15 데미지를 입힙니다.'},
+        special:{aim:'self', target:'single', move:[{target:'main', modspeed:1.4}],cost:100,desc:'영구적으로 속도가 1.4배가 됩니다. 중첩가능'},
+        desc:'빠른 속도로 적들을 유린합니다.'}); //패시브 맞을때마다 빨라짐?
+    characterList.push(   
+        {name:'미군',
+        port:'assets/미군.bmp',
+        hp:110,
+        spd:99,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:18}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', attack:25, addwait:-2000}],desc:'영문을 모르게 때려 25의 피해와 20의 행동지연을 줍니다.'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', buff:{turn:2, condition:'hit', moddamage:2.0}}],cost:100,desc:"it's double, 받는 데미지가, 2턴"},
+        desc:'미군입니다.'});
+    characterList.push(   
+        {name:'워태커소령',
+        port:'assets/워태커소령.bmp',
+        hp:110,
+        spd:96,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:16}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', attack:30}],desc:'단일 적에 30 피해를 입힙니다.'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', attack:40}],cost:80,desc:'단일 적에 40 피해를 입힙니다.'},
+        desc:'컨셉을 못잡아서 대충 때웠습니다'});
+    characterList.push(   
+        {name:'이정재',
+        port:'assets/이정재.bmp',
+        hp:110,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:18}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', heal:20}],desc:'아군 1명에게 해장국을 먹여 체력을 20 회복시킵니다.'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', energy:-1000, buff:{turn:5, condition:'selectmove', banskill:true}}],cost:100,desc:'적 1명의 에너지를 0으로 하고 5턴간 스킬을 사용 불능으로 합니다.'},
+        desc:'해장국을 먹는 형사양반입니다.'});
+    characterList.push(   
+        {name:'조병옥',
+        port:'assets/조병옥.bmp',
+        hp:110,
+        spd:90,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:15}]},
+        satk:{aim:'enemy', target:'all', move:[{target:'both', attack:15}],desc:'적 전체에 15 피해를 줍니다.'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', attack:25}],cost:100,desc:'적 전체에 25 피해를 줍니다.'},
+        desc:'빵 빵 터트리는 사람입니다.'});
+
+    characterList.push(   
+        {name:'심영',
+        port:'assets/심영.bmp',
+        hp:100,
+        spd:140,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', giveturn:true, buff:{turn:1, condition:'damage', moddamage:1.2}}],desc:'아군 1명에게 데미지 1.2배 버프를 걸고 턴을 줍니다.'},
+        special:{aim:'self', target:'single', move:[{target:'main', buff:{condition:'death', transform:0}}],cost:100,desc:'발동 후 죽으면 고자로 변신하여 타겟이 됩니다.'},
+        desc:'전위대를 부르고 도망을 가는 사람입니다.'});
+    characterList.push(   
+        {name:'정진영',
+        port:'assets/정진영.bmp',
+        hp:105,
+        spd:102,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:15}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', attack:18, buff:{turn:1, condition:'selectmove', banskill:true}}],desc:'단일 적에게 18피해를 주고 1턴간 스킬을 사용하지 못하게 합니다.'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', addskillpoint:-1}],cost:90,desc:'상대 인원수만큼 스킬포인트를 감소시킵니다.'},
+        desc:'총을 못쏘게 하는 사람입니다.'});
+    characterList.push(   
+        {name:'이석재',
+        port:'assets/이석재.bmp',
+        hp:110,
+        spd:99,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:15}]},
+        satk:{aim:'enemy', target:'splash', move:[{target:'main', attack:22}, {target:'sub', attack:10}],desc:'지정된 적에게 22, 양 옆의 적에게 10 피해를 입힙니다.'},
+        special:{aim:'enemy', target:'splash', move:[{target:'main', attack:42}, {target:'sub', attack:20}],cost:95,desc:'지정된 적에게 42, 양 옆의 적에게 20 피해를 입힙니다.'},
+        desc:'몽둥이로 때리는 사람입니다.'});
+    characterList.push(   
+        {name:'심영어머니',
+        port:'assets/심영어머니.bmp',
+        hp:90,
+        spd:95,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'enemy', target:'all', move:[{target:'both', wait:-3500}],desc:'적 전체의 행동력을 35 감소시킵니다.'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', energy:-40}],cost:100,desc:'적 전체의 에너지를 40 감소시킵니다.'},
+        desc:'애원하는 사람입니다.'});
+    characterList.push(   
+        {name:'의사양반',
+        port:'assets/의사양반.bmp',
+        hp:100,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', buff:{count:1, condition:'hit', setdamage:0}}],desc:'지정된 아군이 받는 피해를 1회 무효화시킵니다.'},
+        special:{aim:'friend', target:'all', move:[{target:'both', heal:29}],cost:100,desc:'아군 전체의 체력을 29 회복합니다.'},
+        desc:'환자들을 지켜주는 사람입니다.'});
+    characterList.push(   
+        {name:'간호사',
+        port:'assets/간호사.bmp',
+        hp:90,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:12}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', heal:18}],desc:'아군 1명의 체력을 18 회복합니다.'},
+        special:{aim:'friend', target:'single', move:[{target:'main', heal:65}],cost:120,desc:'아군 1명의 체력을 60 회복합니다.'},
+        desc:'아군을 회복시키는 사람입니다.'});
+
+    characterList.push(   
+        {name:'나레이터',
+        port:'assets/나레이터.bmp',
+        hp:5,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:10}]},
+        satk:{aim:'enemy', target:'single', move:[{target:'main', wait:-4000}],desc:'적 한명의 행동을 40 감소시킵니다'},
+        special:{aim:'enemy', target:'single', move:[{target:'main', death:true}],cost:120,desc:'적 1명을 즉사시킵니다.'},
+        desc:'누군가를 즉사시킬 수 있습니다. 뒤에 숨어서 타겟이 되지 않습니다.'}); //최종1인 패시브?
+    characterList.push(   
+        {name:'학생',
+        port:'assets/학생A.bmp',
+        hp:95,
+        spd:91,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:15}]},
+        satk:{aim:'friend', target:'single', move:[{target:'main', buff:{turn:2, condition:'damage', moddamage:1.5}}],desc:'2턴간 아군 1명이 가하는 피해를 50% 상승시킵니다.'},
+        special:{aim:'friend', target:'all', move:[{target:'both', buff:{turn:2, condition:'damage', adddamage:10}}],cost:100,desc:'2턴간 아군 전체의 피해를 10 상승시킵니다.'},
+        desc:'아군을 응원하여 강하게 만듭니다.'});
+
+    var specialCharacterList=[];
+    specialCharacterList.push(   
+        {name:'고자',
+        port:'assets/고자.bmp',
+        hp:120,
+        spd:40,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:0}]},
+        satk:{aim:'enemy', target:'all', move:[{target:'both', buff:{condition:'selecttarget', fixtarget:'고자'}}],desc:'적의 타겟이 됩니다.'},
+        special:{aim:'self', target:'all', move:[{target:'main', death:true},{target:'sub', damage:15}],cost:100,desc:'폭발하여 모두에게 15 피해를 입힙니다.'},
+        desc:'변신 후 캐릭입니다. 선택하라고 만든거 아님'});
+    specialCharacterList.push(   
+        {name:'궁예',
+        port:'assets/궁예.bmp',
+        hp:110,
+        spd:100,
+        atk:{aim:'enemy', target:'single', move:[{target:'main', attack:20}]},
+        satk:{aim:'enemy', target:'all', move:[{target:'both', attack:10}],desc:'스킬입니다'},
+        special:{aim:'enemy', target:'all', move:[{target:'both', attack:10}],cost:100,desc:'필살기입니다'},
+        desc:'미구현'});
+
+
+//aim:enemy
+//aim:friend
+//aim:any
+//aim:self
+//aim:deadfriend
+
+//target:single
+//target:splash
+//target:all
+//target:random
+
+//move
+//target:main
+//target:sub
+//target:both
+
+//buff
+//duration:{turn:2}
+//duration:{count:1}
+//condition:attack
+//condition:hit
+//condition:friendhit
+//fixattack:4
+//setdamage:0
+    //moddamage:0.9
+    //{turn:2 condition:anyattack effect:{}}
+    //{turn:2 condition:hit effect:{}}
+    //{count:1 condition:death effect:{transform:'고자'}}
+    //{condition:alive effect:{music:'밴드반주하라'}}
+    //{turn:2 condition:destruction effect:{atk:-20}} //발동시 스탯 상승시킨 뒤, 소멸될 때 공격력을 감소시키는 꼼수? 중간에는 신경쓸 필요가 없지 않을까?
+    //{turn:2 condition:creation effect:{atk:+20}}
+    //{condition:selecttarget, fixtarget:}
+
+
+    var instruction;
+    var instructionBG;
+    var turnOwner;
+    
+    //input
+    var p1key =[];
+    var p2key =[];
+    var input;
+    var keyboard;
+    var mouse;
+    var touch;
+    var scene = 1;
+
+
+    //scene 1: pick character
+    var selectCursor;
+    var selectXY = [0,0];
+    var lastCursor = [[0,0],[5,0]];
+    var objCursor;
+
+    var sc1Picked1p = [];
+    var sc1Picked2p = [];
+    var pickCount= [0,0];
+    var sc1List = [];
+    var sc1Info;
+    var sc1InfoBG;
+    var sc1InfoText = [];
+    var idle = 0;
+    var idledown = 0;
+
+    //scene 2: battle
+    var p1char = [];
+    var p2char = [];
+
+    class Scene1 extends Phaser.Scene{
+        constructor()
+        {
+            super({ key: 'scene1' });
+        }
+        preload ()
+        {
+            this.load.image('bg', 'assets/background.jpg');
+            this.load.image('default_port','assets/portBlank.png');
+            for(let i = 0; i < characterList.length; i++){
+                this.load.image(characterList[i].name,characterList[i].port);
+            }
+            this.load.image('cursor','assets/select.png');
+        }
+
+        create ()
+        {
+            this.add.image(400, 300, 'bg');
+
+            input = this.input;
+            keyboard = this.input.keyboard;
+            mouse = this.input.Mouse;
+            touch = this.input.Touch;
+
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE));
+
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N));
+
+            //scene 1: pick character
+            for(let i = 0 ; i < 4 ; i++){
+                sc1Picked1p.push(this.add.image(10+i*95,40,'default_port').setScale(3).setOrigin(0,0));
+                sc1Picked2p.push(this.add.image(700-i*95,40,'default_port').setScale(3).setOrigin(0,0));
+            }
+
+            instructionBG=this.add.rectangle(0,200,800,40,0xc8c8c8).setOrigin(0,0);
+            instruction=this.add.text(50, 200, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한|MÃ‰qgy', align:'center', fixedWidth:800 });
+
+            for(let i = 0; i < characterList.length; i++){
+                var x = 30 + i*40;
+                var y = 300;
+                while(x > 250){
+                    x -= 240;
+                    y += 60;
+                }
+                sc1List.push(this.add.image(x, y,characterList[i].name));
+                sc1List[i].setData('ID',i);
+                sc1List[i].setInteractive();
+                sc1List[i].on('pointerover',Scene1CursorMouseover);
+                sc1List[i].on('pointerup',Scene1CursorMouseup);
+            }
+            objCursor = this.add.image(30,300,'cursor');
+            selectCursor = 0;
+
+            sc1InfoBG = this.add.rectangle(270,280,500,260,0xc8c8c8).setOrigin(0,0);
+            sc1Info = this.add.image(275,285,'default_port').setScale(4).setOrigin(0,0);
+            var InfoFont = {fontSize: '18px', color: '#000', testString:'두한|MÃ‰qgy'};
+            sc1InfoText.push(this.add.text(400,295,'이름',InfoFont));
+            sc1InfoText.push(this.add.text(400,325,'컨셉',InfoFont));
+            sc1InfoText.push(this.add.text(400,355,'체력',InfoFont));
+            sc1InfoText.push(this.add.text(400,385,'공격',InfoFont));
+            sc1InfoText.push(this.add.text(400,415,'속도',InfoFont));
+            sc1InfoText.push(this.add.text(275,450,'스킬',InfoFont));
+            sc1InfoText.push(this.add.text(275,490,'필살기',InfoFont));
+            
+            pickStart();
+        }
+        update(){
+        //scene 1: pick character 
+            if(scene == 1){
+                if(turnOwner == 1){
+                    if(Phaser.Input.Keyboard.JustDown(p1key[0])){
+                        moveScene1Cursor('up');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p1key[1])){
+                        moveScene1Cursor('left');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p1key[2])){
+                        moveScene1Cursor('down');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p1key[3])){
+                        moveScene1Cursor('right');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p1key[10])){
+                        pick(1,selectCursor);
+                    }
+                }
+                else if(turnOwner == 2){
+                    if(Phaser.Input.Keyboard.JustDown(p2key[0])){
+                        moveScene1Cursor('up');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p2key[1])){
+                        moveScene1Cursor('left');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p2key[2])){
+                        moveScene1Cursor('down');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p2key[3])){
+                        moveScene1Cursor('right');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(p2key[10])){
+                        pick(2,selectCursor);
+                    }
+                }
+            }
+
+            if(scene == 1){
+                if(idle == 10) idledown = 1;
+                else if(idle == 5) idledown = 0;
+
+                if(idledown) idle -= 1;
+                else idle += 1;
+
+                objCursor.setAlpha(idle / 10);
+            }
+
+            //scene 2: battle
+            if(scene == 2){
+                this.scene.start('scene2');
+            }
+        }
+    }
+    
+
+    function valueRotate(min,max,add,now){
+        if(now + add < min) return max;
+        if(now + add > max) return min;
+        return now + add;
+    }
+    function valueInRange(min,max,add,now){
+        if(now + add > max) return max;
+        if(now + add < min) return min;
+        return now + add;
+    }
+    function isInRange(min,max,now){
+        if(now >= min && now <= max) return true;
+        return false;
+    }
+    function max(a,b){
+        if(a>= b) return a;
+        else return b;
+    }
+    function min(a,b){
+        if(a>= b) return b;
+        else return a;
+    }
+
+    //for scene 1
+    var pickOrder = [1,2,2,1,1,2,2,1];
+    function pickStart(){
+        pickReady(1);
+    }
+    function pickReady(player){
+        instruction.setText('player'+player+', 캐릭터를 선택하세요');
+        turnOwner = player;
+        selectXY = lastCursor[player-1];
+        selectCursor = XYtoID(selectXY);
+        while(isDisabled(selectCursor)) selectCursor = valueRotate(0, sc1List.length-1, 1, selectCursor);
+        selectXY = IDtoXY(selectCursor);
+        refreshCursor();
+        sc1refresh();
+    }
+    function pick(player,character){
+        loadCharacter(player,pickCount[player-1],character);
+        if(player == 1){
+            sc1List[selectCursor].setTint(0xff0000);
+        }
+        else if(player == 2){
+            sc1List[selectCursor].setTint(0x0000ff);
+        }
+        sc1List[selectCursor].setData('picked',1);
+        pickCount[player-1]++;
+        lastCursor[player-1] = selectXY;
+
+        var pickSum = pickCount[0] + pickCount[1];
+        if(pickSum == 8) endScene1();
+        else pickReady(pickOrder[pickSum]);
+    }
+    function moveScene1Cursor(direction){
+        if(direction == 'up'){
+            selectXY[1] = valueRotate(0, Math.floor(sc1List.length/6),-1,selectXY[1]);
+            while(isDisabled(XYtoID(selectXY))) selectXY[1] = valueRotate(0, Math.floor(sc1List.length/6),-1,selectXY[1]);
+        }
+        if(direction == 'down'){
+            selectXY[1] = valueRotate(0, Math.floor(sc1List.length/6),+1,selectXY[1]);
+            while(isDisabled(XYtoID(selectXY))) selectXY[1] = valueRotate(0, Math.floor(sc1List.length/6),+1,selectXY[1]);
+        }
+        if(direction == 'left'){
+            selectXY[0] = valueRotate(0, 5, -1, selectXY[0]);
+            while(isDisabled(XYtoID(selectXY))) selectXY[0] = valueRotate(0, 5, -1, selectXY[0]);
+        }
+        if(direction == 'right'){
+            selectXY[0] = valueRotate(0, 5, +1, selectXY[0]);
+            while(isDisabled(XYtoID(selectXY))) selectXY[0] = valueRotate(0, 5, +1, selectXY[0]);
+        }
+        if(XYtoID(selectXY) >= sc1List.length) selectXY = IDtoXY(sc1List.length-1);
+        selectCursor = XYtoID(selectXY);
+        refreshCursor();
+        sc1refresh();
+    }
+    function Scene1CursorMouseover(){
+        // selectCursor = this.getData('ID');
+        // selectXY = IDtoXY(selectCursor);
+        // refreshCursor();
+        // sc1refresh();
+    }
+    function Scene1CursorMouseup(){
+        if(selectCursor == this.getData('ID')){
+            refreshCursor();
+            sc1refresh();
+            pick(turnOwner,selectCursor);
+        }
+        else{
+            if(isDisabled(this.getData('ID')) == false) selectCursor = this.getData('ID');
+            selectXY = IDtoXY(selectCursor);
+            refreshCursor();
+            sc1refresh();
+        }
+    }
+    function refreshCursor(){
+        objCursor.x = 30 + selectXY[0]*40;
+        objCursor.y = 300 + selectXY[1]*60;
+
+        if(turnOwner == 1) objCursor.setTint(0xff0000);
+        if(turnOwner == 2) objCursor.setTint(0x0000ff);
+    }
+    function XYtoID(XY){
+        return XY[0] + XY[1]*6;
+    }
+    function IDtoXY(ID){
+        return [ID%6,Math.floor(ID/6)];
+    }
+    function isDisabled(ID){
+        if(ID >= sc1List.length){
+            return 1;
+        }
+        if(sc1List[ID].getData('picked')){
+            return 1;
+        }
+        return 0;
+    }
+    function sc1refresh(){
+        pickPreview(selectCursor);
+        showCharacterInfo(selectCursor);
+    }
+    function pickPreview(characterID){
+        if(turnOwner == 1){
+            sc1Picked1p[pickCount[turnOwner-1]].setTexture(characterList[characterID].name);
+        }
+        else if(turnOwner == 2){
+            sc1Picked2p[pickCount[turnOwner-1]].setTexture(characterList[characterID].name);
+        }
+    }
+    function showCharacterInfo(characterID){
+        sc1Info.setTexture(characterList[characterID].name);
+        sc1InfoText[0].setText(characterList[selectCursor].name);
+        sc1InfoText[1].setText(characterList[selectCursor].desc);
+        sc1InfoText[2].setText('체력: '+characterList[selectCursor].hp);
+        sc1InfoText[3].setText('공격: '+characterList[selectCursor].atk.move[0].attack);
+        sc1InfoText[4].setText('속도: '+characterList[selectCursor].spd);
+        sc1InfoText[5].setText(characterList[selectCursor].satk.desc);
+        sc1InfoText[6].setText(characterList[selectCursor].special.desc);
+    }
+
+    function endScene1(){
+        for(let i = 0; i < sc1List.length;i++){
+            sc1List[i].destroy();
+        }
+        sc1List = [];
+
+        objCursor.destroy();
+        objCursor=null;
+
+
+        for(let i = 0 ; i < 4 ; i++){
+            sc1Picked1p[i].destroy();
+            sc1Picked2p[i].destroy();
+        }
+        sc1Picked1p = [];
+        sc1Picked2p = [];
+
+
+        for(let i = 0; i < sc1InfoText.length;i++){
+            sc1InfoText[i].destroy();
+        }
+        sc1InfoText = [];
+        sc1Info.destroy();
+        sc1Info = null;
+        sc1InfoBG.destroy();
+        sc1InfoBG = null;
+
+        instruction.destroy();
+        instruction = null;
+        instructionBG.destroy();
+        instructionBG = null;
+
+        scene = 2;
+    }
+
+    //for scene 2
+    var time = 0;
+    var giveturnflag = 0;
+    var skill = [3,3];
+    var moveselect;
+    var targetselect = 0;
+    var subtarget = [];
+    var skillIndicator1;
+    var skillIndicator2;
+    var sc2turnIndicator = [];
+    var sc2specialTurnIndicator = [];
+    var sc2target;
+    var sc2subtarget;
+    var sc2movebuttton = [];
+    var aggrosong;
+    var endsong;
+    function loadCharacter(player,slot,characterID){
+        if(player == 1){
+            p1char[slot] = Object.assign({},characterList[characterID]);
+            p1char[slot].maxhp = p1char[slot].hp;
+            p1char[slot].nowhp = p1char[slot].hp;
+            p1char[slot].baseatk = p1char[slot].atk;
+            p1char[slot].nowatk = p1char[slot].atk;
+            p1char[slot].basespd = p1char[slot].spd;
+            p1char[slot].nowspd = p1char[slot].spd;
+            p1char[slot].maxenergy = p1char[slot].special.cost;
+            p1char[slot].nowenergy = 10;
+            p1char[slot].wait = 0;
+            p1char[slot].alive = 1;
+            p1char[slot].specialReserved = 0;
+            p1char[slot].turn = false;
+            p1char[slot].turncount = 0;
+            p1char[slot].buff = [];
+        }
+        if(player == 2){
+            p2char[slot] = Object.assign({},characterList[characterID]);
+            p2char[slot].maxhp = p2char[slot].hp;
+            p2char[slot].nowhp = p2char[slot].hp;
+            p2char[slot].baseatk = p2char[slot].atk;
+            p2char[slot].nowatk = p2char[slot].atk;
+            p2char[slot].basespd = p2char[slot].spd;
+            p2char[slot].nowspd = p2char[slot].spd;
+            p2char[slot].maxenergy = p2char[slot].special.cost;
+            p2char[slot].nowenergy = 10;
+            p2char[slot].wait = 0;
+            p2char[slot].alive = 1;
+            p2char[slot].specialReserved = 0;
+            p2char[slot].turn = false;
+            p2char[slot].turncount = 0;
+            p2char[slot].buff = [];
+        }
+    }
+    function loadSpecialCharacter(player,slot,characterID){
+        if(player == 1){
+            // p1char[slot].name = specialCharacterList[characterID].name;
+            // p1char[slot].port = specialCharacterList[characterID].port;
+            // p1char[slot].hp = specialCharacterList[characterID].hp;
+            // p1char[slot].spd = specialCharacterList[characterID].spd;
+            // p1char[slot].atk = specialCharacterList[characterID].atk;
+            // p1char[slot].satk = specialCharacterList[characterID].satk;
+            // p1char[slot].special = specialCharacterList[characterID].special;
+            // p1char[slot].desc = specialCharacterList[characterID].desc;
+            // p1char[slot].image.setTexture(p1char[slot].name);
+            p1char[slot] = Object.assign(p1char[slot],specialCharacterList[characterID]);
+            p1char[slot].image.setTexture(p1char[slot].name);
+
+            p1char[slot].maxhp = p1char[slot].hp;
+            p1char[slot].nowhp = p1char[slot].hp;
+            p1char[slot].baseatk = p1char[slot].atk;
+            p1char[slot].nowatk = p1char[slot].atk;
+            p1char[slot].basespd = p1char[slot].spd;
+            p1char[slot].nowspd = p1char[slot].spd;
+            p1char[slot].maxenergy = p1char[slot].special.cost;
+            p1char[slot].nowenergy = 10;
+            p1char[slot].wait = 0;
+            p1char[slot].alive = 1;
+            p1char[slot].specialReserved = 0;
+            p1char[slot].turn = false;
+            p1char[slot].turncount = 0;
+            p1char[slot].buff = [];
+        }
+        if(player == 2){
+            // p2char[slot].name = specialCharacterList[characterID].name;
+            // p2char[slot].port = specialCharacterList[characterID].port;
+            // p2char[slot].hp = specialCharacterList[characterID].hp;
+            // p2char[slot].spd = specialCharacterList[characterID].spd;
+            // p2char[slot].atk = specialCharacterList[characterID].atk;
+            // p2char[slot].satk = specialCharacterList[characterID].satk;
+            // p2char[slot].special = specialCharacterList[characterID].special;
+            // p2char[slot].desc = specialCharacterList[characterID].desc;
+            // p2char[slot].image.setTexture(p2char[slot].name);
+            p2char[slot] = Object.assign(p2char[slot],specialCharacterList[characterID]);
+            p2char[slot].image.setTexture(p2char[slot].name);
+
+            p2char[slot].maxhp = p2char[slot].hp;
+            p2char[slot].nowhp = p2char[slot].hp;
+            p2char[slot].baseatk = p2char[slot].atk;
+            p2char[slot].nowatk = p2char[slot].atk;
+            p2char[slot].basespd = p2char[slot].spd;
+            p2char[slot].nowspd = p2char[slot].spd;
+            p2char[slot].maxenergy = p2char[slot].special.cost;
+            p2char[slot].nowenergy = 10;
+            p2char[slot].wait = 0;
+            p2char[slot].alive = 1;
+            p2char[slot].specialReserved = 0;
+            p2char[slot].turn = false;
+            p2char[slot].turncount = 0;
+            p2char[slot].buff = [];
+        }
+    }
+
+    class Scene2 extends Phaser.Scene{
+        constructor()
+        {
+            super({ key: 'scene2' });
+        }
+        preload ()
+        {
+            this.load.image('bg', 'assets/background.jpg');
+            this.load.image('default_port','assets/portBlank.png');
+            for(let i = 0; i < 4; i++){
+                this.load.image(p1char[i].name,p1char[i].port);
+                this.load.image(p2char[i].name,p2char[i].port);
+            }
+            for(let i = 0; i < specialCharacterList.length; i++){
+                this.load.image(specialCharacterList[i].name,specialCharacterList[i].port);
+            }
+            this.load.image('cursor','assets/select.png');
+            this.load.image('skillpoint','assets/skillpoint.png');
+            this.load.image('maintarget','assets/maintarget.png');
+            this.load.image('subtarget','assets/subtarget.png');
+            this.load.image('special','assets/special.png');
+
+            this.load.audio('황성옛터','assets/황성옛터.mp3');
+            this.load.audio('ending','assets/ending.mp3');
+        }
+        create ()
+        {
+            this.add.image(400, 300, 'bg');
+            instructionBG=this.add.rectangle(0,0,800,40,0xc8c8c8).setOrigin(0,0);
+            instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한|MÃ‰qgy', align:'center', fixedWidth:800 });
+            var statFont = {fontSize: '12px', color: '#000'};
+            for(let i = 0 ; i < 4 ; i++){
+                p1char[i].image = this.add.image(15, 40+i*135,p1char[i].name).setScale(3).setOrigin(0,0);
+                p2char[i].image = this.add.image(800-15-90, 40+i*135,p2char[i].name).setScale(3).setOrigin(0,0);
+
+                p1char[i].image.setData("ID",i);
+                p2char[i].image.setData("ID",i+4);
+                p1char[i].image.setInteractive().on('pointerup',clickPort);
+                p2char[i].image.setInteractive().on('pointerup',clickPort);
+
+                p1char[i].specialbutton = this.add.image(65, 40+i*135,'special').setOrigin(0,0);
+                p2char[i].specialbutton = this.add.image(800-65-90, 40+i*135,'special').setOrigin(0,0);
+                p1char[i].specialbutton.setData("ID",i);
+                p2char[i].specialbutton.setData("ID",i+4);
+                p1char[i].specialbutton.setInteractive().on('pointerup',clickSpecial);
+                p2char[i].specialbutton.setInteractive().on('pointerup',clickSpecial);
+                p1char[i].specialbutton.setVisible(false);
+                p2char[i].specialbutton.setVisible(false);
+
+                p1char[i].hpbar = this.add.rectangle(15,140+i*135,90*(p1char[i].nowhp/p1char[i].maxhp),10,0xff0000).setOrigin(0,0);
+                p1char[i].hptext = this.add.text(15,140+i*135,p1char[i].nowhp+'/'+p1char[i].maxhp,statFont);
+                p1char[i].energybar = this.add.rectangle(15,150+i*135,90*(p1char[i].nowenergy/p1char[i].maxenergy),10,0x0000ff).setOrigin(0,0)
+                p1char[i].energytext = this.add.text(15,150+i*135,p1char[i].nowenergy+'/'+p1char[i].maxenergy,statFont);
+
+                p1char[i].imgGroup = this.add.group([p1char[i].image, p1char[i].hpbar, p1char[i].hptext, p1char[i].energybar, p1char[i].energytext, p1char[i].specialbutton]);
+
+                p2char[i].hpbar = this.add.rectangle(800-15-90,140+i*135,90*(p2char[i].nowhp/p2char[i].maxhp),10,0xff0000).setOrigin(0,0);
+                p2char[i].hptext = this.add.text(800-15-90,140+i*135,p2char[i].nowhp+'/'+p2char[i].maxhp,statFont);
+                p2char[i].energybar = this.add.rectangle(800-15-90,150+i*135,90*(p2char[i].nowenergy/p2char[i].maxenergy),10,0x0000ff).setOrigin(0,0)
+                p2char[i].energytext = this.add.text(800-15-90,150+i*135,p2char[i].nowenergy+'/'+p2char[i].maxenergy,statFont);
+
+                p2char[i].imgGroup = this.add.group([p2char[i].image, p2char[i].hpbar, p2char[i].hptext, p2char[i].energybar, p2char[i].energytext, p2char[i].specialbutton]);
+            }
+            
+            skillIndicator1 = this.add.group({key: 'skillpoint',repeat: 4,setXY: { x: 15, y: 580, stepX: 26 }});
+            skillIndicator2 = this.add.group({key: 'skillpoint',repeat: 4,setXY: { x: 785, y: 580, stepX: -26 }});
+            refreshSkillIndicator();
+
+            
+            sc2specialTurnIndicator = this.add.group({key:'default_port', repeat:7,setXY:{x:400, y:350, stepY:30},setScale:{x:1.5,y:1.5},visible:false});
+            sc2turnIndicator = this.add.group({key:'default_port',repeat:7,setXY:{x:400, y:350, stepY:30},setScale:{x:1.5,y:1.5}});
+            refreshTurnIndicator();
+
+            var moveFont = {fontSize: '18px', color: '#000'};
+            sc2movebuttton.push(this.add.group());
+            sc2movebuttton.push(this.add.group());
+            sc2movebuttton.push(this.add.group());
+            sc2movebuttton[0].add(this.add.rectangle(0,0,90,60,0x444444));
+            sc2movebuttton[0].add(this.add.text(0,0,'공격',moveFont));
+            sc2movebuttton[1].add(this.add.rectangle(0,0,90,60,0x444444));
+            sc2movebuttton[1].add(this.add.text(0,0,'스킬',moveFont));
+            sc2movebuttton[2].add(this.add.rectangle(0,0,90,60,0x444444));
+            sc2movebuttton[2].add(this.add.text(0,0,'필살기',moveFont));
+            for(let i = 0 ; i < 3 ; i++){
+                sc2movebuttton[i].setVisible(false);
+                sc2movebuttton[i].getChildren()[0].setInteractive().on('pointerup',clickMove);
+                sc2movebuttton[i].getChildren()[0].setData("ID",i);
+            }
+
+            sc2target = this.add.image(0,0,'maintarget');
+            sc2target.setVisible(false);
+            sc2subtarget = this.add.group({key:'subtarget', repeat:6,visible:false});
+
+            aggrosong= this.sound.add('황성옛터',{loop:true});
+            //aggrosong.on('stop',listener);
+            endsong= this.sound.add('ending',{loop:false});
+
+            input = this.input;
+            keyboard = this.input.keyboard;
+            mouse = this.input.Mouse;
+
+
+            p1key=[];
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V));
+            p1key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE));
+            p2key=[];
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B));
+            p2key.push(keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N));
+
+            nextTurn();
+        }
+        update ()
+        {
+            if(Phaser.Input.Keyboard.JustDown(p1key[6])){
+                if(isSpecialAvailable(0)) queueSpecial(0);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p1key[7])){
+                if(isSpecialAvailable(1)) queueSpecial(1);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p1key[8])){
+                if(isSpecialAvailable(2)) queueSpecial(2);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p1key[9])){
+                if(isSpecialAvailable(3)) queueSpecial(3);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p2key[6])){
+                if(isSpecialAvailable(4)) queueSpecial(4);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p2key[7])){
+                if(isSpecialAvailable(5)) queueSpecial(5);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p2key[8])){
+                if(isSpecialAvailable(6)) queueSpecial(6);
+            }
+            if(Phaser.Input.Keyboard.JustDown(p2key[9])){
+                if(isSpecialAvailable(7)) queueSpecial(7);
+            }
+
+
+            if(turnOwner == 1){
+                if(Phaser.Input.Keyboard.JustDown(p1key[0])){//up
+                    moveTarget('up');
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[1])){//left
+                    moveTarget('left');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[2])){
+                    moveTarget('down');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[3])){
+                    moveTarget('right');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[4])){
+                    setSelectMove(0);
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[5])){
+                    setSelectMove(1);
+                }
+                if(Phaser.Input.Keyboard.JustDown(p1key[10])){
+                    if(moveselect == 0) attack(thisturn);
+                    else if(moveselect == 1) sattack(thisturn);
+                    else if(moveselect == 2) special(thisturn);
+                }
+            }
+            if(turnOwner == 2){
+                if(Phaser.Input.Keyboard.JustDown(p2key[0])){//up
+                    moveTarget('up');
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[1])){//left
+                    moveTarget('left');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[2])){
+                    moveTarget('down');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[3])){
+                    moveTarget('right');   
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[4])){
+                    setSelectMove(0);
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[5])){
+                    setSelectMove(1);
+                }
+                if(Phaser.Input.Keyboard.JustDown(p2key[10])){
+                    if(moveselect == 0) attack(thisturn);
+                    else if(moveselect == 1) sattack(thisturn);
+                    else if(moveselect == 2) special(thisturn);
+                }   
+            }
+            
+
+        }
+    }
+
+    var turnOrder = [0,1,2,3,4,5,6,7];
+    var specialOrder = [];
+    var thisturn;
+    var isSpecialTurn = 0;
+    function slotToObject(slot){
+        if(slot < 4) return p1char[slot];
+        if(slot >= 4) return p2char[slot-4];
+    }
+
+
+    function clickPort(){
+        setTarget(this.getData("ID"));
+        refreshTargetIndicator();
+    }
+    function clickSpecial(){
+        if(isSpecialAvailable(this.getData("ID"))) queueSpecial(this.getData("ID"));
+    }
+    function clickMove(){
+        if(moveselect == this.getData("ID")){
+             if(moveselect == 0) attack(thisturn);
+            else if(moveselect == 1) sattack(thisturn);
+            else if(moveselect == 2) special(thisturn);
+        }
+        else{
+            setSelectMove(this.getData("ID"));
+        }
+    }
+
+
+    function calculateTurnOrder(){
+        var arr = [];
+        for(let i = 0; i < 4 ; i++){
+            if(p1char[i].alive)
+                arr.push( {slot:i ,left:(10000 - p1char[i].wait)/p1char[i].nowspd, wait:p1char[i].wait} );
+            if(p2char[i].alive)
+                arr.push( {slot:i+4 ,left:(10000 - p2char[i].wait)/p2char[i].nowspd, wait:p2char[i].wait} );
+        }
+        arr.sort(function(a,b){
+            if( a.wait >= 10000 && b.wait >= 10000){
+                if(a.wait > b.wait) return -1;
+                if(a.wait == b.wait) return 0;
+                if(a.wait < b.wait) return 1;
+            }
+            if( a.wait >= 10000 && b.wait < 10000) return -1;
+            if( a.wait < 10000 && b.wait >= 10000) return 1;
+            else{
+                if( a.left < b. left ) return -1;
+                if( a.left == b. left ) return 0;
+                if( a.left > b. left ) return 1;
+            }
+        });
+
+        turnOrder = [];
+        for(let i = 0; i < arr.length ; i++){
+            turnOrder.push(arr[i].slot);
+        }
+    }
+    function refreshTurnIndicator(){
+        sc2turnIndicator.setX(400);
+        sc2turnIndicator.setVisible(false);
+        for(let i = 0 ; i < min(turnOrder.length, 8) ; i++){
+            sc2turnIndicator.getChildren()[i].setTexture(slotToObject(turnOrder[i]).name);
+            sc2turnIndicator.getChildren()[i].setCrop(0,10,30,20);
+            sc2turnIndicator.getChildren()[i].setVisible(true);
+            sc2turnIndicator.getChildren()[i].x += ( (turnOrder[i]<4)? -10:10);
+        }
+        sc2specialTurnIndicator.setX(400);
+        sc2specialTurnIndicator.setY(350,30);
+        sc2specialTurnIndicator.setVisible(false);
+        for(let i = 0 ; i < specialOrder.length ; i++){
+            sc2specialTurnIndicator.getChildren()[i].setTexture(slotToObject(specialOrder[i]).name);
+            sc2specialTurnIndicator.getChildren()[i].setCrop(0,10,30,20);
+            sc2specialTurnIndicator.getChildren()[i].setVisible(true);
+            sc2specialTurnIndicator.incY(-30);
+            sc2specialTurnIndicator.getChildren()[i].x += ( (specialOrder[i]<4)? -10:10);
+        }
+    }
+
+    function nextTurn(){
+        if(specialOrder.length > 0){
+            calculateTurnOrder();
+            refreshTurnIndicator();
+            isSpecialTurn = 1;
+            startTurn(specialOrder[0]);
+        }
+        if(specialOrder.length == 0){
+            // if(giveturnflag == 1){
+            //     giveturnflag = 0;
+            //     refreshTurnIndicator();
+            //     isSpecialTurn = 0;
+            //     startTurn(turnOrder[0]);
+            //     return;
+            // }
+
+            while(1){
+                var br = 0;
+                for(let i = 0; i < 4 ; i++){
+                    if(p1char[i].alive==1 && p1char[i].wait >= 10000) br=1;
+                    if(p2char[i].alive==1 && p2char[i].wait >= 10000) br=1;
+                }
+                if(br) break;
+                for(let i = 0; i < 4 ; i++){
+                    p1char[i].wait += p1char[i].nowspd;
+                    p2char[i].wait += p2char[i].nowspd;
+                }
+            }
+            calculateTurnOrder();
+            refreshTurnIndicator();
+            isSpecialTurn = 0;
+            startTurn(turnOrder[0]);
+        }
+        
+    }
+    function startTurn(slot){
+        thisturn = slot;
+        turnOwner = (slot<4)?1:2;
+        slotToObject(slot).imgGroup.incX((slot<4)?40:-40);
+        setSelectMove(0);
+        drawMoveButton(slot);
+        autoTarget();
+        moveTarget('none');
+        refreshTargetIndicator();
+    }
+    function drawMoveButton(slot){
+        var portXY;
+        if(slot < 4){
+            portXY = slotToObject(slot).image.getTopRight();
+            sc2movebuttton.forEach(function(value){
+                value.setXY(portXY.x + 40, portXY.y).setOrigin(0,0);
+            });
+        }
+        else{
+            portXY = slotToObject(slot).image.getTopLeft();  
+            sc2movebuttton.forEach(function(value){
+                value.setXY(portXY.x - 40, portXY.y).setOrigin(1,0);
+            });
+        }
+        
+        sc2movebuttton.forEach(function(value){
+            value.setVisible(false);
+        });
+        if(isSpecialTurn){
+            sc2movebuttton[2].setVisible(true);
+        }
+        else{
+            sc2movebuttton[0].setVisible(true);
+            if(isSkillAvailable(turnOwner,1)){
+                sc2movebuttton[1].setVisible(true);
+                sc2movebuttton[1].incY(60); 
+            }       
+        }
+    }
+    function setSelectMove(move){
+        if(isSpecialTurn){
+            moveselect = 2;
+        } 
+        else if(move == 0) moveselect = 0;
+        else if(move == 1){
+            if(isSkillAvailable(turnOwner,1)) moveselect = 1;
+        }
+
+        for(let i = 0 ; i < sc2movebuttton.length ; i++){
+            sc2movebuttton[i].getChildren()[0].setStrokeStyle((i == moveselect)?4:0,0);
+        }
+        moveTarget('none');
+
+        if(moveselect == 0)setInstruction('평타공격력 : ' + slotToObject(thisturn).atk.move[0].attack);
+        else if(moveselect == 1)setInstruction(slotToObject(thisturn).satk.desc);
+        else if(moveselect == 2)setInstruction(slotToObject(thisturn).special.desc);
+    }
+
+
+
+    function refreshTargetIndicator(){
+        var target = slotToObject(targetselect).image.getCenter();
+        sc2target.setPosition(target.x, target.y);
+        sc2target.setVisible(true);
+
+        sc2subtarget.setVisible(false);
+        for(let i = 0; i < subtarget.length; i++){
+            var subXY = slotToObject(subtarget[i]).image.getCenter();
+            sc2subtarget.getChildren()[i].setPosition(subXY.x,subXY.y);
+            sc2subtarget.getChildren()[i].setVisible(true);
+        }
+    }
+    function autoTarget(){
+        if(turnOwner == 1) targetselect = 4+lowestHP(p2char);
+        if(turnOwner == 2) targetselect = lowestHP(p1char);
+    }
+    function lowestHP(charArr){
+        var ret = 0;
+        var lowest = 9999;
+        for(let i = 0; i < 4; i++){
+            if(charArr[i].alive == 1 && charArr[i].nowhp < lowest){
+                lowest = charArr[i].nowhp;
+                ret = i;
+            }
+        }
+        return ret;
+    }
+    function moveTarget(direction){
+        if(direction == 'up'){
+            do{
+                targetselect = valueRotate(0,7,-1,targetselect);
+            }while(setTarget(targetselect) == false);
+        }
+        if(direction == 'down'){
+            do{
+                targetselect = valueRotate(0,7,+1,targetselect);
+            }while(setTarget(targetselect) == false);
+        }
+
+        if(direction == 'left'){
+            if(targetselect >= 4) setTarget(targetselect-4);
+        } 
+        if(direction == 'right'){
+            if(targetselect < 4) setTarget(targetselect+4);  
+        }
+
+        if(direction == 'none'){
+            while(setTarget(targetselect) == false){
+                targetselect = valueRotate(0,7,+1,targetselect);
+            }   
+        }
+
+        triggerBuff(thisturn,'selecttarget');
+        refreshTargetIndicator();
+    }
+    function setTarget(slot,moveID = moveselect){
+        
+        var ch = slotToObject(thisturn);
+        var move = {};
+        
+        if(moveID == 0) move = ch.atk;
+        // {
+        //     if(slotToObject(slot).alive == 0) return false;
+        //     if(slotToObject(slot).name == '나레이터'){
+        //         if(countAlive( (getTeamFromSlot(thisturn)==1)?2:1 ) > 1) return false;
+        //     }
+
+        //     if(getTeamFromSlot(thisturn) == 1) return isInRange(4,7,slot);
+        //     if(getTeamFromSlot(thisturn) == 2) return isInRange(0,3,slot);
+        // }
+        else if(moveID == 1) move = ch.satk;
+        else if(moveID == 2) move = ch.special;
+
+        var isValidTarget = false;
+        if(move.aim == 'enemy'){
+            if(getTeamFromSlot(thisturn) == 1) isValidTarget = isInRange(4,7,slot);
+            if(getTeamFromSlot(thisturn) == 2) isValidTarget = isInRange(0,3,slot);
+            if(slotToObject(slot).alive == 0) isValidTarget = false;
+        }
+        else if(move.aim == 'friend'){
+            if(getTeamFromSlot(thisturn) == 1) isValidTarget = isInRange(0,3,slot);
+            if(getTeamFromSlot(thisturn) == 2) isValidTarget = isInRange(4,7,slot);
+            if(slotToObject(slot).alive == 0) isValidTarget = false;
+        }
+        else if(move.aim == 'any'){
+            isValidTarget = isInRange(0,7,slot);;
+            if(slotToObject(slot).alive == 0) isValidTarget = false;
+        }
+        else if(move.aim == 'self'){
+            isValidTarget = (slot == thisturn);
+            // if(slotToObject(slot).alive == 0) isValidTarget = false;
+        }
+        else if(move.aim == 'deadfriend'){
+            if(slotToObject(slot).alive == 1) isValidTarget = false;
+            else{
+                if(getTeamFromSlot(thisturn) == 1) isValidTarget = isInRange(0,3,slot);
+                if(getTeamFromSlot(thisturn) == 2) isValidTarget = isInRange(4,7,slot);
+            }
+        }
+
+        if(slotToObject(slot).name == '나레이터'){
+            if(countAlive( (getTeamFromSlot(thisturn)==1)?2:1 ) > 1) isValidTarget = false;
+            if(move.aim == 'friend' || move.aim == 'self') isValidTarget = true;
+        }
+
+        if(isValidTarget == true){
+            targetselect = slot;
+            subtarget = [];
+        }
+
+        if(isValidTarget == true){
+            if(move.target == 'single'){
+                subtarget = [];
+            }
+            if(move.target == 'all'){
+                if(move.aim == 'enemy'){
+                    for(let i = 0 ; i < 8 ; i++){
+                        if(getTeamFromSlot(thisturn) == 1){
+                            if(isInRange(0,3,i) == true) continue;
+                        }
+                        else if(getTeamFromSlot(thisturn) == 2){
+                            if(isInRange(4,7,i) == true) continue;
+                        }
+                        if( i == slot ) continue;
+                        if(slotToObject(i).alive == 0) continue;
+                        addSubtarget(i);
+                    }
+                }
+                else if(move.aim == 'friend'){
+                    for(let i = 0 ; i < 8 ; i++){
+                        if(getTeamFromSlot(thisturn) == 1){
+                            if(isInRange(4,7,i) == true) continue;
+                        }
+                        else if(getTeamFromSlot(thisturn) == 2){
+                            if(isInRange(0,3,i) == true) continue;
+                        }
+                        if( i == slot ) continue;
+                        if(slotToObject(i).alive == 0) continue;
+                        addSubtarget(i);
+                    }
+                }
+                else if(move.aim == 'any'){
+                    for(let i = 0 ; i < 8 ; i++){
+                        if( i == slot ) continue;
+                        if(slotToObject(i).alive == 0) continue;
+                        addSubtarget(i);
+                    }
+                }
+                else if(move.aim == 'self'){
+                    for(let i = 0 ; i < 8 ; i++){
+                        if( i == slot ) continue;
+                        if(slotToObject(i).alive == 0) continue;
+                        addSubtarget(i);
+                    }
+                }
+                else if(move.aim == 'deadfriend'){
+                    for(let i = 0 ; i < 8 ; i++){
+                        if(getTeamFromSlot(thisturn) == 1){
+                            if(isInRange(4,7,i) == true) continue;
+                        }
+                        else if(getTeamFromSlot(thisturn) == 2){
+                            if(isInRange(0,3,i) == true) continue;
+                        }
+                        if( i == slot ) continue;
+                        if(slotToObject(i).alive == 1) continue;
+                        addSubtarget(i);
+                    }
+                }
+            }
+            if(move.target == 'splash'){
+                if(move.aim == 'enemy'){
+                    var min = (getTeamFromSlot(thisturn) == 1)? 4:0;
+                    var max = (getTeamFromSlot(thisturn) == 1)? 7:3;
+
+                    var j = valueInRange(min,max,+1,slot);
+                    if(slotToObject(j).alive == 1 && j != slot) addSubtarget(j);
+                    else{
+                        j = valueInRange(min,max,+2,slot);
+                        if(slotToObject(j).alive == 1 && j != slot) addSubtarget(j);
+                    } 
+
+                    j = valueInRange(min,max,-1,slot);
+                    if(slotToObject(j).alive == 1 && j != slot) addSubtarget(j);
+                    else{
+                        j = valueInRange(min,max,-2,slot);
+                        if(slotToObject(j).alive == 1 && j != slot) addSubtarget(j);
+                    } 
+                }
+                else if(move.aim == 'friend'){
+                }
+                else if(move.aim == 'any'){
+                }
+                else if(move.aim == 'self'){
+                }
+                else if(move.aim == 'deadfriend'){
+                }
+            }
+        }
+        return isValidTarget;
+    }
+    function addSubtarget(slot){
+
+        if(slotToObject(slot).name == '나레이터'){
+            //if(move.aim == 'friend' || move.aim == 'self') 1;
+            if(countAlive( (getTeamFromSlot(thisturn)==1)?2:1 ) > 1) return;
+        }
+
+        subtarget.push(slot);
+    }
+
+    function endTurn(){
+
+        if(!isSpecialTurn){
+            buffTurn(thisturn);
+        }
+
+        refreshCharacterStatus();
+        if(checkWin()){
+            endsong.play();
+            return;   
+        }
+        slotToObject(thisturn).imgGroup.incX((thisturn<4)?-40:40);
+        nextTurn();
+    }
+    
+
+    function dealDamage(targetSlot,damage){
+        var def_ch = slotToObject(targetSlot);
+        var finaldamage = triggerBuff(targetSlot,'hit',damage);
+        def_ch.nowhp = valueInRange(0,def_ch.maxhp,-finaldamage,def_ch.nowhp);
+        def_ch.nowhp = Math.trunc(def_ch.nowhp);
+        if(def_ch.nowhp == 0) dead(targetSlot);
+        def_ch.nowenergy = valueInRange(0,def_ch.maxenergy,+10,def_ch.nowenergy);
+    }
+    function heal(targetSlot,amount){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.nowhp = valueInRange(0,def_ch.maxhp, amount, def_ch.nowhp);
+    }
+    function addEnergy(targetSlot,amount){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.nowenergy = valueInRange(0,def_ch.maxenergy, amount, def_ch.nowenergy);   
+    }
+    function addWait(targetSlot,amount){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.wait += amount;
+        if(def_ch.wait < 0) def_ch.wait = 0;
+    }
+    function setWait(targetSlot,amount){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.wait = amount;
+        if(def_ch.wait < 0) def_ch.wait = 0;
+    }
+    function modSpeed(targetSlot,amount){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.nowspd *= amount;
+    }
+    function kill(targetSlot){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.nowhp = 0;
+        dead(targetSlot);
+    }
+    function giveTurn(targetSlot){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.wait = max(10000,slotToObject(turnOrder[1]).wait + 1);
+        if(targetSlot == thisturn) def_ch.wait += 10000;
+        // turnOrder.forEach(function(value, index){
+        //     if(value == targetSlot) turnOrder.splice(index,1);
+        // })
+        // turnOrder.unshift(targetSlot);
+        // giveturnflag = 1;
+    }
+    function forceSpecial(targetSlot){
+        queueSpecial(targetSlot);
+    }
+    function transform(targetSlot, newchar){
+        loadSpecialCharacter(getTeamFromSlot(targetSlot), targetSlot + 4 - getTeamFromSlot(targetSlot)*4, newchar);
+    }
+    function fixtarget(){
+
+    }
+
+
+    function addBuff(targetSlot,buff){
+        var def_ch = slotToObject(targetSlot);
+        def_ch.buff.push(Object.assign({},buff));
+    }
+    function buffCount(buff){
+        if(buff.hasOwnProperty('count')){
+            buff.count--;
+        }
+    }
+    function buffTurn(slot){
+        slotToObject(slot).buff.forEach(function(value,index){
+            if(value.hasOwnProperty('turn')){
+                value.turn--;
+            } 
+        });
+        slotToObject(slot).buff.forEach(function(value,index){
+            if(value.hasOwnProperty('turn')){
+                if(value.turn <= 0) slotToObject(slot).buff.splice(index,1);
+            } 
+        });
+    }
+    function triggerBuff(slot,condition,param){
+        var ret;
+        ret=param;
+        if(condition == 'hit'){
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'hit'){
+                    if(value.hasOwnProperty('adddamage')){
+                        ret += value.adddamage;
+                    }
+                    if(value.hasOwnProperty('moddamage')){
+                        ret *= value.moddamage;
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'hit'){
+                    if(value.hasOwnProperty('setdamage')){
+                        ret = value.setdamage;
+                    }
+                }
+            });
+
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'hit'){
+                    if(value.hasOwnProperty('count')){  
+                        value.count--;
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'hit'){
+                    if(value.hasOwnProperty('count')){  
+                        if(value.count <= 0) slotToObject(slot).buff.splice(index,1);
+                    }
+                }
+            });
+        }
+//attack sattack special
+        if(condition == 'damage'){
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'damage'){
+                    if(value.hasOwnProperty('adddamage')){
+                        ret += value.adddamage;
+                    }
+                    if(value.hasOwnProperty('moddamage')){
+                        ret *= value.moddamage;
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'damage'){
+                    if(value.hasOwnProperty('setdamage')){
+                        ret = value.setdamage;
+                    }
+                }
+            });
+            
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'damage'){
+                    if(value.hasOwnProperty('count')){  
+                        value.count--;
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'damage'){
+                    if(value.hasOwnProperty('count')){  
+                        if(value.count <= 0) slotToObject(slot).buff.splice(index,1);
+                    }
+                }
+            });
+        }
+
+        if(condition == 'death'){
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'death'){
+                    if(value.hasOwnProperty('transform')){
+                        transform(slot, value.transform);
+                    }
+                    if(value.hasOwnProperty('stoploop')){
+                        aggrosong.stop();
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'death'){
+                    if(value.hasOwnProperty('count')){  
+                        value.count--;
+                    }
+                }
+            });
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'death'){
+                    if(value.hasOwnProperty('count')){  
+                        if(value.count <= 0) slotToObject(slot).buff.splice(index,1);
+                    }
+                }
+            });
+        }
+
+        if(condition == 'selecttarget'){
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'selecttarget'){
+                    if(value.hasOwnProperty('fixtarget')){
+                        if(getSlotFromName(value.fixtarget) != -1){
+                            setTarget(getSlotFromName(value.fixtarget));
+                        }
+                    }
+                }
+            });
+        }
+
+        if(condition == 'selectmove'){
+            slotToObject(slot).buff.forEach(function(value,index){
+                if(value.condition == 'selectmove'){
+                    if(value.hasOwnProperty('banskill')){
+                        ret = 0;
+                    }
+                }
+            });
+        }
+
+        return ret;
+    }
+
+    function dead(slot){
+        var ch = slotToObject(slot);
+        ch.alive = 0;
+        triggerBuff(slot,'death');
+    }
+    function countAlive(team){
+        var p1survivor = 0, p2survivor = 0;
+        for(let i = 0 ; i < 4 ; i++){
+            p1survivor += p1char[i].alive;
+            p2survivor += p2char[i].alive;
+        }
+        if(team == 1) return p1survivor;
+        if(team == 2) return p2survivor;
+        return -1;
+    }
+    function checkWin(){
+        var p1survivor = 0, p2survivor = 0;
+        for(let i = 0 ; i < 4 ; i++){
+            p1survivor += p1char[i].alive;
+            p2survivor += p2char[i].alive;
+        }
+        if(p1survivor == 0 && p2survivor == 0) setInstruction('무승부입니다');
+        else if(p1survivor == 0) setInstruction('2p의 승리입니다');
+        else if(p2survivor == 0) setInstruction('1p의 승리입니다');
+        else return 0;
+        return 1;
+    }
+
+    function setInstruction(str){
+        instruction.setText(str);
+    }
+
+    function attack(slot){
+        var ch = slotToObject(thisturn);
+        
+        var thisattack = ch.atk;
+        doMoveset(ch.atk.move);
+        // thisattack = triggerBuff(thisturn,'damage',thisattack);
+        // dealDamage(targetselect, thisattack);
+
+        addSkillpoint(getTeamFromSlot(thisturn),+1);
+        ch.nowenergy = valueInRange(0,ch.maxenergy,20,ch.nowenergy);
+        ch.wait -= 10000;
+        if(ch.wait < 0 ) ch.wait =0;
+        endTurn();
+    }
+    function doMoveset(moveset){
+        moveset.forEach(function(value){
+            if(value.target == 'main' || value.target == 'both'){
+                if(value.hasOwnProperty('attack')){
+                    var thisattack = value.attack;
+                    thisattack = triggerBuff(thisturn,'damage',thisattack);
+                    dealDamage(targetselect, thisattack);
+                }
+                if(value.hasOwnProperty('heal')) heal(targetselect, value.heal);
+                if(value.hasOwnProperty('energy')) addEnergy(targetselect, value.energy);
+                if(value.hasOwnProperty('wait')) addWait(targetselect, value.wait);
+                if(value.hasOwnProperty('setwait')) setWait(targetselect, value.setwait);
+                if(value.hasOwnProperty('addskillpoint')) addSkillpoint(getTeamFromSlot(targetselect), value.addskillpoint);
+                if(value.hasOwnProperty('buff')) addBuff(targetselect, value.buff);
+
+                if(value.hasOwnProperty('death')) kill(targetselect);
+                if(value.hasOwnProperty('giveturn')) giveTurn(targetselect);
+
+                if(value.hasOwnProperty('forcespecial')) forceSpecial(targetselect);
+                if(value.hasOwnProperty('transform')) transform(targetselect,value.transform);
+                if(value.hasOwnProperty('modspeed')) modSpeed(targetselect,value.modspeed);
+                if(value.hasOwnProperty('loopsound')) aggrosong.play();
+            }
+            if(value.target == 'sub' || value.target == 'both'){
+                for(let i = 0; i < subtarget.length ; i++){
+                     if(value.hasOwnProperty('attack')){
+                        var thisattack = value.attack;
+                        thisattack = triggerBuff(thisturn,'damage',thisattack);
+                        dealDamage(subtarget[i], thisattack);
+                    }
+                    if(value.hasOwnProperty('heal')) heal(subtarget[i], value.heal);
+                    if(value.hasOwnProperty('energy')) addEnergy(subtarget[i], value.energy);
+                    if(value.hasOwnProperty('wait')) addWait(subtarget[i], value.wait);
+                    if(value.hasOwnProperty('setwait')) setWait(subtarget[i], value.setwait);
+                    if(value.hasOwnProperty('addskillpoint')) addSkillpoint(getTeamFromSlot(subtarget[i]), value.addskillpoint);
+                    if(value.hasOwnProperty('buff')) addBuff(subtarget[i], value.buff);
+
+                    if(value.hasOwnProperty('death')) kill(subtarget[i]);
+                    if(value.hasOwnProperty('giveturn')) giveTurn(subtarget[i]);
+                }
+            }
+        })
+    }
+    function sattack(slot){
+        var ch = slotToObject(thisturn);
+        
+        doMoveset(ch.satk.move);
+
+        addSkillpoint(getTeamFromSlot(thisturn),-1);
+        ch.nowenergy = valueInRange(0,ch.maxenergy,30,ch.nowenergy);
+        ch.wait -= 10000;
+        if(ch.wait < 0 ) ch.wait =0;
+        endTurn();
+    }
+    function special(slot){
+        var ch = slotToObject(thisturn);
+        
+        doMoveset(ch.special.move);
+
+        ch.nowenergy = 0;
+        ch.specialReserved = false;
+        specialOrder.shift();
+        endTurn();
+    }
+    function queueSpecial(slot){
+        specialOrder.push(slot);
+        slotToObject(slot).specialReserved = true;
+        refreshTurnIndicator();
+        if(isSpecialTurn == 0){
+            endTurn();
+        }
+    }
+
+    function refreshCharacterStatus(){
+        for(let i = 0 ; i < 8 ; i++){
+            var char = slotToObject(i);
+            char.hpbar.setSize(90*(char.nowhp/char.maxhp),10);
+            char.hptext.setText(char.nowhp+'/'+char.maxhp);
+            char.energybar.setSize(90*(char.nowenergy/char.maxenergy),10);
+            char.energytext.setText(char.nowenergy+'/'+char.maxenergy);
+            if(char.alive == 0) char.image.setTint(0x400000);
+
+            if(char.nowenergy >= char.maxenergy)    char.specialbutton.setVisible(true);
+            else                                    char.specialbutton.setVisible(false);
+        }
+    }
+
+    function isTargetExist(charSlot,move){
+        var savetarget = targetselect;
+        var savethisturn = thisturn;
+        var targetexist = 0;
+        thisturn = charSlot;
+        for(let i = 0 ; i < 8 ; i++){
+            if(setTarget(i,move) == true) targetexist++;
+        }
+        targetselect = savetarget;
+        thisturn = savethisturn;
+        return (targetexist > 0);
+    }
+    function isSpecialAvailable(slot){
+        return (slotToObject(slot).alive == 1 && slotToObject(slot).nowenergy >=slotToObject(slot).maxenergy && slotToObject(slot).specialReserved == 0 && isTargetExist(slot,2) == 1);
+    }
+    function isSkillAvailable(player,cost){
+        if(isTargetExist(thisturn, 1) == 0) return 0;
+        if(triggerBuff(thisturn,'selectmove',1) == 0) return 0;
+
+        if(skill[player-1] >= cost) return 1;
+        return 0;
+    }
+    function addSkillpoint(player,add){
+        skill[player-1] = valueInRange(0,5,add,skill[player-1]);
+        refreshSkillIndicator();
+    }
+    function refreshSkillIndicator(){
+        for(let i = 0; i < 5; i++){
+            skillIndicator1.getChildren()[i].setVisible( (i < skill[0]) );
+            skillIndicator2.getChildren()[i].setVisible( (i < skill[1]) );
+        }
+    }
+
+    function countAlive(team){
+        var p1survivor = 0, p2survivor = 0;
+        for(let i = 0 ; i < 4 ; i++){
+            p1survivor += p1char[i].alive;
+            p2survivor += p2char[i].alive;
+        }
+        if(team == 1) return p1survivor;
+        if(team == 2) return p2survivor;
+        return -1;
+    }
+    function getTeamFromSlot(slot){
+        if(slot < 4) return 1;
+        else return 2;
+    }
+    function getSlotFromName(name){
+        for(let i = 0 ; i < 8 ; i++){
+            if(slotToObject(i).name == name) return i;
+        }
+        return -1;
+    }
+
+    
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+            default: 'arcade'
+        },
+        scene: [Scene1,Scene2],
+        parent : "gamewindow"
+    };
+
+    var game = new Phaser.Game(config);
+
+
+    </script>
+    <div id="gamewindow"></div>
+    <p>조작법</p>
+    <p>1p</p>
+    <p>이동 : wasd</p>
+    <p>선택 : space</p>
+    <p>공격선택 : q, e</p>
+    <p>필살기 : 4,r,f,v</p>
+    <p>2p</p>
+    <p>이동 : uhjk</p>
+    <p>선택 : c</p>
+    <p>공격선택 : y, i</p>
+    <p>필살기 : 5,t,g,b</p>
+
+</body>
+</html>
