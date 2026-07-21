@@ -189,7 +189,7 @@
                 turtleOnLane[i].bet = 0;
                 turtleOnLane[i].rank = 0;
 
-                ui_multiplier[i] = this.add.text(300, 1060 + 100*i, { fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
+                ui_multiplier[i] = this.add.text(300, 1060 + 100*i, { fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:400 });
             }
             
             gamblePhase = 0; //TEST
@@ -216,6 +216,9 @@
                         turtleOnLane[i].bet = 1;
                         turtleOnLane[i].multiplier = 1.0;
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
+
+                        turtleOnLane[i].multiplier = totalBet * 0.9 / turtleOnLane[i].bet;
+                        ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     goalTurtles = 0;
                     
