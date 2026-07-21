@@ -19,7 +19,7 @@
         point:0,
         earn:0,
         mental:100,
-        state:0, //
+        state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
     function GenerateVictims(){
 
@@ -120,6 +120,8 @@
     var instruction;
     var instructionBG;
 
+    var turtles=[];
+
     class Scene2 extends Phaser.Scene{
         constructor()
         {
@@ -143,6 +145,7 @@
         update ()
         {
             
+        
 
 
         }
