@@ -21,6 +21,16 @@
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
+    victimList.push({
+        name:"강민수",
+        money:30000,
+        income:5000,
+        loan:0,
+        point:0,
+        earn:0,
+        mental:100,
+        state:0, //0중립 1도박 2도박성공 3도박실패
+        friends:3});
     function GenerateVictims(){
 
         victimList.push({
@@ -118,8 +128,6 @@
     //for scene 2
     var time = 0;
     var waitTime = 0;
-    var instruction;
-    var instructionBG;
 
     var season = 0;
     var turtles=[];
@@ -134,6 +142,7 @@
     var goalTurtles = 0;
 
     var ui_mymoney;
+    var ui_victim = [];
 
     class Scene2 extends Phaser.Scene{
         constructor()
@@ -153,10 +162,12 @@
             //instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
 
             //최상단
-            //소지금 / 영업이익 표시
-            
-            ui_mymoney = this.add.text(0, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', testString:'두한', align:'center', fixedWidth:800 });
+            ui_mymoney = this.add.text(10, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
             ui_mymoney.setText(mySite.money+'원');
+
+            for(let i = 0; i < 12; i++){
+                ui_victim = this.add.text(10, 1000 - 60*i, '',{ fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
+            }
 
             for(let i = 0; i < 4; i++){
                 turtleOnLane[i] = Object.assign({});
@@ -176,7 +187,11 @@
         }
         update ()
         {
-            if(scene == 2){
+            if(scene == 2){ //희생양들
+
+                refreshUiVictim();
+            }
+            if(scene == 2){ //도박게임
 
                 if(gamblePhase == 0){//거북이 배치
                     season++;
@@ -249,6 +264,11 @@
     }
     function TurtleGoal(){
         
+    }
+    function refreshUiVictim(){
+        for(let i = 0; i < victimList.length; i++){
+            ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].name + ' ');
+        }
     }
 
 
