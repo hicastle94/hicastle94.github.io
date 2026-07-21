@@ -181,7 +181,7 @@
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         var dice = Math.floor(Math.random() * 4);
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[dice];
-                        turtleOnLane[i].runX = min(turtleOnLane[i].runX,1000);
+                        turtleOnLane[i].runX = min(turtleOnLane[i].runX,850);
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
                     }
                 }
