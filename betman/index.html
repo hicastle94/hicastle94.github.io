@@ -133,6 +133,8 @@
     var totalBet = 0;
     var goalTurtles = 0;
 
+    var ui_mymoney;
+
     class Scene2 extends Phaser.Scene{
         constructor()
         {
@@ -152,9 +154,10 @@
 
             //최상단
             //소지금 / 영업이익 표시
-            mySite.money;
-            this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#FFFFFF', testString:'두한', align:'center', fixedWidth:800 });
-
+            
+            ui_mymoney = this.add.text(0, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', testString:'두한', align:'center', fixedWidth:800 });
+            ui_mymoney.setText('${mySite.money}');
+            
             for(let i = 0; i < 4; i++){
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
