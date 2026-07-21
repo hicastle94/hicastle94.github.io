@@ -117,6 +117,7 @@
 
     //for scene 2
     var time = 0;
+    var waitTime = 0;
     var instruction;
     var instructionBG;
 
@@ -173,16 +174,23 @@
             if(scene == 2){
 
                 if(gamblePhase == 0){//거북이 배치
+                    season++;
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX = 0;
                         turtleOnLane[i].rank = 0;
                         turtleOnLane[i].bet = 0;
+                        turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
                     }
                     goalTurtles = 0;
-                    gamblePhase = 1;
-                    season++;
+                    
+                    waitTime--;
+                    if(waitTime <= 0){
+                        gamblePhase = 1;
+                        waitTime = 240;
+                    }
                 }
                 else if(gamblePhase == 1){//베팅시간
+
                     gamblePhase = 2;
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
@@ -200,14 +208,20 @@
                         if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
                             goalTurtles++;
                             turtleOnLane[i].rank = goalTurtles;
-                            if(goalTurtles == 4) gamblePhase = 4;
+                            if(goalTurtles == 4){
+                                gamblePhase = 4;
+                                waitTime = 240;
+                            }
                         }
                     }
                 }
                 else if(gamblePhase == 4){//정산
+                    waitTime--;
                     
-                    
-                    gamblePhase = 0;
+                    if(waitTime <= 0){
+                        gamblePhase = 0;
+                        waitTime = 240;
+                    }
                 }
             }
 
