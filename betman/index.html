@@ -156,8 +156,8 @@
             //소지금 / 영업이익 표시
             
             ui_mymoney = this.add.text(0, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', testString:'두한', align:'center', fixedWidth:800 });
-            ui_mymoney.setText('${mySite.money}');
-            
+            ui_mymoney.setText(mySite.money);
+
             for(let i = 0; i < 4; i++){
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
