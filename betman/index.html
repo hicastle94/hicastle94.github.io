@@ -55,8 +55,8 @@
         }
         preload ()
         {
-            bg = this.load.image('bg', 'assets/background.bmp');
-	        button = this.load.image('button', 'assets/button1.bmp');
+            bg = this.load.image('bg', 'assets/scene1/background.bmp');
+	        button = this.load.image('button', 'assets/scene1/button1.bmp');
         }
 
         create ()
@@ -127,7 +127,7 @@
         }
         preload ()
         {
-            this.load.image('bg2', 'assets/background2.bmp');
+            this.load.image('bg2', 'assets/scene2/background.bmp');
         }
         create ()
         {
@@ -148,15 +148,26 @@
         }
     }
 
-    var dialog[];
-    dialog.push();
+    var dialog=[[]];
+    dialog.push([{speaker:"두목",text:""},
+                {speaker:"두목",text:""}],
+                [{speaker:"두목",text:""},
+                {speaker:"두목",text:""}]);
     function ProcDialog(){
+        //스탠딩 일러스트
+        //발화자
+        //내용
 
-
-
+        //다음 버튼
+        //대답선택지
     }
 
-    var thinking[];
+    var chat=[];
+
+    var say=[];
+    say.push({text:"나 돈 땄다"});
+
+    var thinking=[];
     thinking.push({text:"나는 그런거 안할거야", mental:100});
     thinking.push({text:"오 생각보다 돈이 되는데", mental:90});
     thinking.push({text:"아싸 개이득", mental:90});
