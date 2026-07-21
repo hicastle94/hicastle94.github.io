@@ -128,9 +128,11 @@
     turtles.push({name:"거북병",image:"turtle",speed:[0,0,4,6]});
     turtles.push({name:"거북정",image:"turtle",speed:[0,0,0,10]});
 
-    var turtleOnLane = [0,1,2,3];
+    var turtleOnLane = [];
 
-    var turrtleRun = [0,0,0,0];
+    var turtleRun = [0,0,0,0];
+
+    var gamblePhase = 0;//0베팅 1달리기 2정산
 
     class Scene2 extends Phaser.Scene{
         constructor()
@@ -149,10 +151,16 @@
             //instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
             //instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
 
-            this.add.image(200, 1060, turtles[turtleOnLane[0]].image);
-            this.add.image(200, 1160, turtles[turtleOnLane[1]].image);
-            this.add.image(200, 1260, turtles[turtleOnLane[2]].image);
-            this.add.image(200, 1360, turtles[turtleOnLane[3]].image);
+            //최상단
+            //게임속날짜표시
+            //소지금 / 영업이익 표시
+
+            for(let i = 0; i < 4; i++){
+                turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[turtleOnLane[i]].image);
+                turtleOnLane[i].base = turtles[i];
+            }
+            
+            gamblePhase = 1; //TEST
 
             input = this.input;
             keyboard = this.input.keyboard;
@@ -163,6 +171,17 @@
         {
             if(scene == 2){
 
+                if(gamblePhase == 0)
+
+
+                if(gamblePhase == 1){
+                    //도박 배당율
+                    
+                    //게임 진행
+                    for(let i = 0; i < turtleOnLane.length ; i++){
+                        turtleOnLane[i].setVelocityX( turtleOnLane[i].base.speed[Math.floor(Math.random * 4)] );
+                    }
+                }
 
             }
 
