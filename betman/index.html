@@ -130,11 +130,13 @@
         preload ()
         {
             this.load.image('bg2', 'assets/scene2/background.bmp');
+
+
         }
         create ()
         {
             this.add.image(540, 960, 'bg2');
-            instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
+            //instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
             instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
             
             input = this.input;
@@ -164,6 +166,12 @@
         //다음 버튼
         //대답선택지
     }
+
+    //보통상황에 띄워야 하는 것
+    //돈
+    //호구들 (생각,대사,손익)
+    //도박게임
+    //버튼들 (먹튀하기) <<필요없는것 아닌지??
 
     var chat=[];
 
