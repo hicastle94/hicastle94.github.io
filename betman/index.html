@@ -185,7 +185,7 @@
             }
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(300, 1060 + 100*i, { fontSize: '250px', color: '#FFFFFF', align:'left', fixedWidth:400 });
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '250px', color: '#FFFFFF', align:'left', fixedWidth:400 });
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -213,11 +213,11 @@
 
                 if(gamblePhase == 0){//거북이 배치
                     season++;
+                    totalBet = 4;
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX = 0;
                         turtleOnLane[i].rank = 0;
                         turtleOnLane[i].bet = 1;
-                        totalBet += turtleOnLane[i].bet;
                         turtleOnLane[i].multiplier = 1.0;
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
 
@@ -233,6 +233,7 @@
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
+                    
 
                     waitTime--;
                     if(waitTime <= 0){
