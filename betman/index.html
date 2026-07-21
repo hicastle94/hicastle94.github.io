@@ -130,6 +130,7 @@
 
     var turtleOnLane = [];
     var gamblePhase = 0;//0선수소개 1베팅 2배율결정 3달리기 4정산
+    var totalBet = 0;
     var goalTurtles = 0;
 
     class Scene2 extends Phaser.Scene{
@@ -150,8 +151,9 @@
             //instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
 
             //최상단
-            //게임속날짜표시
             //소지금 / 영업이익 표시
+            mySite.money;
+            this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#FFFFFF', testString:'두한', align:'center', fixedWidth:800 });
 
             for(let i = 0; i < 4; i++){
                 turtleOnLane[i] = Object.assign({});
@@ -178,7 +180,8 @@
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX = 0;
                         turtleOnLane[i].rank = 0;
-                        turtleOnLane[i].bet = 0;
+                        turtleOnLane[i].bet = 1;
+                        turtleOnLane[i].multiplier = 1.0;
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
                     }
                     goalTurtles = 0;
@@ -186,16 +189,27 @@
                     waitTime--;
                     if(waitTime <= 0){
                         gamblePhase = 1;
-                        waitTime = 240;
+                        waitTime = 360;
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
 
-                    gamblePhase = 2;
+                    waitTime--;
+                    if(waitTime <= 0){
+                        gamblePhase = 2;
+                        waitTime = 360;
+                    }
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
-
-                    gamblePhase = 3;
+                    for(let i = 0; i < turtleOnLane.length ; i++){
+                        turtleOnLane[i].multiplier = totalBet * 0.8 / turtleOnLane[i].bet;
+                    }
+                    
+                    waitTime--;
+                    if(waitTime <= 0){
+                        gamblePhase = 3;
+                        waitTime = 120;
+                    }
                 }
                 else if(gamblePhase == 3){//게임 진행
 
