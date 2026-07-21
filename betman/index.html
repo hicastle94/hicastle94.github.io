@@ -31,6 +31,16 @@
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
+    victimList.push({
+        name:"최나영",
+        money:30000,
+        income:5000,
+        loan:0,
+        point:0,
+        earn:0,
+        mental:100,
+        state:0, //0중립 1도박 2도박성공 3도박실패
+        friends:3});
     function GenerateVictims(){
 
         victimList.push({
@@ -143,6 +153,7 @@
 
     var ui_mymoney;
     var ui_victim = [];
+    var ui_multiplier = [];
 
     class Scene2 extends Phaser.Scene{
         constructor()
@@ -176,9 +187,12 @@
                 turtleOnLane[i].runX = 0;
                 turtleOnLane[i].bet = 0;
                 turtleOnLane[i].rank = 0;
+
+                ui_multiplier[i] = this.add.text(300, 1060 + 100*i, { fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
             }
             
             gamblePhase = 0; //TEST
+            gameOn = 1; //TEST
 
             input = this.input;
             keyboard = this.input.keyboard;
@@ -191,7 +205,7 @@
 
                 refreshUiVictim();
             }
-            if(scene == 2){ //도박게임
+            if(scene == 2 && gameOn){ //도박게임
 
                 if(gamblePhase == 0){//거북이 배치
                     season++;
@@ -220,7 +234,8 @@
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
                     for(let i = 0; i < turtleOnLane.length ; i++){
-                        turtleOnLane[i].multiplier = totalBet * 0.8 / turtleOnLane[i].bet;
+                        turtleOnLane[i].multiplier = totalBet * 0.9 / turtleOnLane[i].bet;
+                        ui_multiplier.setText('X' + turtleOnLane[i].multiplier);
                     }
                     
                     waitTime--;
@@ -240,10 +255,11 @@
                         if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
                             goalTurtles++;
                             turtleOnLane[i].rank = goalTurtles;
-                            if(goalTurtles == 4){
-                                gamblePhase = 4;
-                                waitTime = 240;
-                            }
+                        }
+
+                        if(goalTurtles == 4){
+                            gamblePhase = 4;
+                            waitTime = 240;
                         }
                     }
                 }
