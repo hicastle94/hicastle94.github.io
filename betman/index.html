@@ -157,7 +157,7 @@
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
                 turtleOnLane[i].base = turtles[i];
-                turtleOnLane[i].runX = 1;
+                turtleOnLane[i].runX = 0;
             }
             
             gamblePhase = 1; //TEST
@@ -179,7 +179,7 @@
                     
                     //게임 진행
                     for(let i = 0; i < turtleOnLane.length ; i++){
-                        var dice = Math.floor(Math.random * 4);
+                        var dice = Math.floor(Math.random() * 4);
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[dice];
                         turtleOnLane[i].runX = min(turtleOnLane[i].runX,1000);
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
