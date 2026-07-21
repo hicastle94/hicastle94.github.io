@@ -122,15 +122,14 @@
 
     var season = 0;
     var turtles=[];
-
     turtles.push({name:"거북갑",image:'turtle',speed:[1,2,3,4]});
     turtles.push({name:"거북을",image:'turtle',speed:[0,3,3,4]});
     turtles.push({name:"거북병",image:'turtle',speed:[0,0,4,6]});
     turtles.push({name:"거북정",image:'turtle',speed:[0,0,0,10]});
 
     var turtleOnLane = [];
-
-    var gamblePhase = 0;//0베팅 1달리기 2정산
+    var gamblePhase = 0;//0선수소개 1베팅 2배율결정 3달리기 4정산
+    var goalTurtles = 0;
 
     class Scene2 extends Phaser.Scene{
         constructor()
@@ -158,9 +157,11 @@
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
                 turtleOnLane[i].base = turtles[i];
                 turtleOnLane[i].runX = 0;
+                turtleOnLane[i].bet = 0;
+                turtleOnLane[i].rank = 0;
             }
             
-            gamblePhase = 1; //TEST
+            gamblePhase = 0; //TEST
 
             input = this.input;
             keyboard = this.input.keyboard;
@@ -171,27 +172,54 @@
         {
             if(scene == 2){
 
-                if(gamblePhase == 0){
-
+                if(gamblePhase == 0){//거북이 배치
+                    for(let i = 0; i < turtleOnLane.length ; i++){
+                        turtleOnLane[i].runX = 0;
+                        turtleOnLane[i].rank = 0;
+                        turtleOnLane[i].bet = 0;
+                    }
+                    goalTurtles = 0;
+                    gamblePhase = 1;
+                    season++;
                 }
-                else if(gamblePhase == 1){
-                    //도박 배당율
-                    
-                    //게임 진행
+                else if(gamblePhase == 1){//베팅시간
+                    gamblePhase = 2;
+                }
+                else if(gamblePhase == 2){//도박 배당율 확정
+
+                    gamblePhase = 3;
+                }
+                else if(gamblePhase == 3){//게임 진행
+
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         var dice = Math.floor(Math.random() * 4);
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[dice];
                         turtleOnLane[i].runX = min(turtleOnLane[i].runX,850);
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
+
+                        if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
+                            goalTurtles++;
+                            turtleOnLane[i].rank = goalTurtles;
+                            if(goalTurtles == 4) gamblePhase = 4;
+                        }
                     }
                 }
-                else if(gamblePhase == 2){
-
+                else if(gamblePhase == 4){//정산
+                    
+                    
+                    gamblePhase = 0;
                 }
             }
 
         }
     }
+    function SetTurtles(){
+
+    }
+    function TurtleGoal(){
+        
+    }
+
 
     var dialog=[[]];
     dialog.push([{speaker:"두목",text:""},
@@ -212,6 +240,8 @@
     //호구들 (생각,대사,손익)
     //도박게임
     //버튼들 (먹튀하기) <<필요없는것 아닌지??
+
+    //
 
     var chat=[];
 
