@@ -180,7 +180,7 @@
                     //게임 진행
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[Math.floor(Math.random * 4)];
-                        min(turtleOnLane[i].runX,1000);
+                        turtleOnLane[i].runX = min(turtleOnLane[i].runX,1000);
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
                     }
                 }
