@@ -44,15 +44,34 @@
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
+
+
+    var lastName = ['김','이','박','최','조','정','윤','장','임','한','오','서','전','신','권','홍','유','송','안','고','문','손','양'];
+    var firstName = ['민수','현우','혜진','영민','수현','민형','성욱','범길','현찬','대일','호찬','태호','유진','광수','하나','유민','기혁','영우','찬길','수빈','승재','형태','승우','정환','재훈','수근'];
+    function GenerateVictimName(){
+        var dice1 = Math.floor(Math.random() * lastName.length);
+        var dice2 = Math.floor(Math.random() * firstName.length);
+        var name = lastName[dice1] + firstName[dice2];
+        return name;
+    }
     function GenerateVictims(){
 
         victimList.push({
-
+            name:GenerateVictimName(),
+            face:'😶',
+            money:10000,
+            income:5000,
+            loan:0,
+            point:0,
+            earn:0,
+            mental:100,
+            state:0,
+            friends:1
         })
     }
 
     var mySite = {
-        money:10000000,
+        money:1000000,
         popular:0
     };
 
@@ -206,7 +225,10 @@
         update ()
         {
             if(scene == 2){ //희생양들
-
+                if(season == 3) {
+                    GenerateVictims();
+                    season = 4;
+                }
                 refreshUiVictim();
             }
             if(scene == 2 && gameOn){ //도박게임
@@ -290,6 +312,9 @@
     function TurtleGoal(){
         
     }
+    function refreshVictimFace(){
+
+    }
     function refreshUiVictim(){
         for(let i = 0; i < victimList.length; i++){
             ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ');
@@ -321,8 +346,6 @@
 
     var chat=[];
 
-    var say=[];
-    say.push({text:"나 돈 땄다"});
 
     var thinking=[];
     thinking.push({text:"나는 그런거 안할거야", mental:100});
