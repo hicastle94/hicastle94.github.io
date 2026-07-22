@@ -17,7 +17,7 @@
         money:20000,
         income:10000,
         loan:0,
-        point:0,
+        point:1000,
         earn:0,
         betwho:-1,
         interest:40, //참여율
@@ -32,7 +32,7 @@
         money:30000,
         income:5000,
         loan:0,
-        point:0,
+        point:1000,
         earn:0,
         betwho:-1,
         interest:40, //참여율
@@ -47,7 +47,7 @@
         money:30000,
         income:5000,
         loan:0,
-        point:0,
+        point:1000,
         earn:0,
         betwho:-1,
         interest:40, //참여율
@@ -74,7 +74,7 @@
             money:10000,
             income:5000,
             loan:0,
-            point:0,
+            point:1000,
             earn:0,
             betwho:-1,
             interest:40, //참여율
@@ -368,7 +368,7 @@
     }
     function BetResult(winner){
         for(let i = 0; i < victimList.length ; i++){
-            if(vicitmList[i].betwho == winner){
+            if(victimList[i].betwho == winner){
                 victimList[i].point += victimList[i].bet * turtleOnLane[winner].multiplier;
                 victimList[i].earn += victimList[i].bet * turtleOnLane[winner].multiplier;
             }
