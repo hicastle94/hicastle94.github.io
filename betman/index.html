@@ -47,7 +47,7 @@
 
 
     var lastName = ['김','이','박','최','조','정','윤','장','임','한','오','서','전','신','권','홍','유','송','안','고','문','손','양'];
-    var firstName = ['민수','현우','혜진','영민','수현','민형','성욱','범길','현찬','대일','호찬','태호','유진','광수','하나','유민','기혁','영우','찬길','수빈','승재','형태','승우','정환','재훈','수근'];
+    var firstName = ['민수','현우','혜진','영민','수현','민형','성욱','범길','현찬','대일','호찬','태호','유진','광수','하나','유민','기혁','영우','찬길','수빈','승재','형태','승우','정환','재훈','수근','진욱'];
     function GenerateVictimName(){
         var dice1 = Math.floor(Math.random() * lastName.length);
         var dice2 = Math.floor(Math.random() * firstName.length);
@@ -234,7 +234,7 @@
             if(scene == 2 && gameOn){ //도박게임
 
                 if(gamblePhase == 0){//거북이 배치
-                    season++;
+                    
                     totalBet = 4;
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX = 0;
@@ -300,6 +300,7 @@
                     if(waitTime <= 0){
                         gamblePhase = 0;
                         waitTime = 240;
+                        season++;
                     }
                 }
             }
