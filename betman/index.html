@@ -20,6 +20,7 @@
         point:1000,
         earn:0,
         betwho:-1,
+        bet:-1,
         interest:40, //참여율
         aggresive:10, //투자공격성
         payattitude:10, //충전가능성
@@ -35,6 +36,7 @@
         point:1000,
         earn:0,
         betwho:-1,
+        bet:-1,
         interest:40, //참여율
         aggresive:10, //투자공격성
         payattitude:10, //충전가능성
@@ -50,6 +52,7 @@
         point:1000,
         earn:0,
         betwho:-1,
+        bet:-1,
         interest:40, //참여율
         aggresive:10, //투자공격성
         payattitude:10, //충전가능성
@@ -77,6 +80,7 @@
             point:1000,
             earn:0,
             betwho:-1,
+            bet:-1,
             interest:40, //참여율
             aggresive:10, //투자공격성
             payattitude:10, //충전가능성
@@ -243,11 +247,18 @@
         {
             if(scene == 2){ //희생양들
 
+                
+
                 refreshUiVictim();
             }
             if(scene == 2 && gameOn){ //도박게임
 
                 if(gamblePhase == 0){//거북이 배치
+
+                    for(let i = 0; i < victimList.length; i++){
+                        victimList[i].bet = 0;
+                        victimList[i].betwho = -1;
+                    }
                     
                     totalBet = 4;
                     for(let i = 0; i < turtleOnLane.length ; i++){
@@ -339,7 +350,7 @@
     function refreshUiVictim(){
         switch(ui_victimMode){
             case 0:
-                for(let i = 0; i < victimList.length ; i++){
+                for(let i = 0; i < min(victimList.length,12) ; i++){
                     ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point + ' ' + victimList[i].betwho + ' ' + victimList[i].bet );
                 }
                 break;
@@ -353,7 +364,7 @@
     function decideBetting(){
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*10000 < victimList[i].interest);
-            if(a == true){
+            if(a == true && victimList[i].betwho == -1){
                 var b = Math.floor(Math.random() * 100 * victimList[i].aggresive / 100 * victimList[i].point);
                 b = min (b, victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
