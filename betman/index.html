@@ -301,11 +301,12 @@
                         if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
                             goalTurtles++;
                             turtleOnLane[i].rank = goalTurtles;
+                            if(goalTurtles == 1){
+                                BetResult(i);
+                            }
                         }
 
                         if(goalTurtles == 4){
-                            BetResult();
-
                             gamblePhase = 4;
                             waitTime = 240;
                         }
