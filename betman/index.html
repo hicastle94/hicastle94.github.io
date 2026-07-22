@@ -268,7 +268,7 @@
                         turtleOnLane[i].multiplier = 1.0;
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
 
-                        turtleOnLane[i].multiplier = totalBet * 0.9 / turtleOnLane[i].bet;
+                        turtleOnLane[i].multiplier = totalBet * 0.97 / turtleOnLane[i].bet;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     goalTurtles = 0;
@@ -291,7 +291,7 @@
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
                     for(let i = 0; i < turtleOnLane.length ; i++){
-                        turtleOnLane[i].multiplier = totalBet * 0.9 / turtleOnLane[i].bet;
+                        turtleOnLane[i].multiplier = totalBet * 0.97 / turtleOnLane[i].bet;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     
