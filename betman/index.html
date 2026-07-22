@@ -92,7 +92,8 @@
 
     var mySite = {
         money:1000000,
-        popular:0
+        popular:0,
+        phase:0
     };
 
     var nowState; //0
@@ -225,7 +226,7 @@
             }
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '400px', color: '#FFFFFF', align:'left', fixedWidth:400 });
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -331,6 +332,7 @@
                         waitTime = 240;
                         season++;
                         GenerateVictims();
+                        
                     }
                 }
             }
@@ -355,6 +357,9 @@
                 }
                 break;
             case 1:
+                for(let i = 0; i < min(victimList.length,12) ; i++){
+                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].think );
+                }
                 break;
             case 2:
                 break;
@@ -388,6 +393,29 @@
         }
     }
 
+
+    function kick(who){
+        
+    }
+    function considerBuy(){
+        for(let i = 0; i < victimList.length ; i++){
+            if(victimList[i].point < 100){
+                victimList[i].payattitude;
+
+            }
+
+        }
+    }
+    function buyPoint(who, amount){
+        victimList[who].money -= amount;
+        victimList[who].point += amount;
+    }
+    function refundPoint(who, amount){
+        victimList[who].money += amount;
+        victimList[who].point -= amount;
+    }
+
+
     var dialog=[[]];
     dialog.push([{speaker:"두목",text:""},
                 {speaker:"두목",text:""}],
@@ -404,7 +432,7 @@
 
     //보통상황에 띄워야 하는 것
     //돈
-    //호구들 (생각,대사,손익)
+    //호구들 (생각,손익)
     //도박게임
     //버튼들 (먹튀하기) <<필요없는것 아닌지??
 
