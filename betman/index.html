@@ -339,7 +339,7 @@
         switch(ui_victimMode){
             case 0:
                 for(let i = 0; i < victimList.length ; i++){
-                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point);
+                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point + ' ' + victimList[i].betwho + ' ' + victimList[i].bet );
                 }
                 break;
             case 1:
@@ -354,6 +354,7 @@
             var a = (Math.random()*10000 < victimList[i].interest);
             if(a == true){
                 var b = Math.floor(Math.random() * 100 * victimList[i].aggresive / 100 * victimList[i].point);
+                b = min (b, victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
             }
         }
