@@ -225,10 +225,7 @@
         update ()
         {
             if(scene == 2){ //희생양들
-                if(season == 3) {
-                    GenerateVictims();
-                    season = 4;
-                }
+                
                 refreshUiVictim();
             }
             if(scene == 2 && gameOn){ //도박게임
@@ -301,6 +298,7 @@
                         gamblePhase = 0;
                         waitTime = 240;
                         season++;
+                        GenerateVictims();
                     }
                 }
             }
