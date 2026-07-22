@@ -365,7 +365,7 @@
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*10000 < victimList[i].interest);
             if(a == true && victimList[i].betwho == -1){
-                var b = Math.floor(Math.random() * victimList[i].aggresive / 100 * victimList[i].point);
+                var b = Math.floor(Math.random() * victimList[i].aggresive / 10 * victimList[i].point);
                 b = min (b, victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
             }
