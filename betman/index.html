@@ -22,7 +22,7 @@
         betwho:-1,
         bet:-1,
         interest:40, //참여율
-        aggresive:10, //투자공격성
+        risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
@@ -38,7 +38,7 @@
         betwho:-1,
         bet:-1,
         interest:40, //참여율
-        aggresive:10, //투자공격성
+        risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
@@ -54,7 +54,7 @@
         betwho:-1,
         bet:-1,
         interest:40, //참여율
-        aggresive:10, //투자공격성
+        risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
@@ -77,12 +77,12 @@
             money:10000,
             income:5000,
             loan:0,
-            point:1000,
+            point:mySite.phase?1000:0,
             earn:0,
             betwho:-1,
             bet:-1,
             interest:40, //참여율
-            aggresive:10, //투자공격성
+            risky:10, //투자공격성
             payattitude:10, //충전가능성
             mental:100,
             state:0,
@@ -368,7 +368,7 @@
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*10000 < victimList[i].interest);
             if(a == true && victimList[i].betwho == -1){
-                var b = Math.floor(Math.random() * victimList[i].aggresive / 10 * victimList[i].point);
+                var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point);
                 b = min (b, victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
             }
