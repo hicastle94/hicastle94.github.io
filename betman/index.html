@@ -382,8 +382,8 @@
     function BetResult(winner){
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].betwho == winner){
-                victimList[i].point += victimList[i].bet * turtleOnLane[winner].multiplier;
-                victimList[i].earn += victimList[i].bet * turtleOnLane[winner].multiplier;
+                victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
+                victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
             }
         }
     }
