@@ -351,7 +351,7 @@
     }
     function decideBetting(){
         for(let i = 0; i < victimList.length ; i++){
-            var a = (Math.random()*1000 > victimList[i].interest);
+            var a = (Math.random()*10000 < victimList[i].interest);
             if(a == true){
                 var b = Math.floor(Math.random() * 100 * victimList[i].aggresive / 100 * victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
