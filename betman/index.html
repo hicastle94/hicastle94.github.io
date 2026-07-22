@@ -305,7 +305,7 @@
 
                         if(goalTurtles == 4){
                             BetResult();
-                            
+
                             gamblePhase = 4;
                             waitTime = 240;
                         }
@@ -336,9 +336,18 @@
 
     }
     function refreshUiVictim(){
-        for(let i = 0; i < victimList.length ; i++){
-            ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ');
+        switch(ui_victimMode){
+            case 0:
+                for(let i = 0; i < victimList.length ; i++){
+                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point);
+                }
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
         }
+        
     }
     function decideBetting(){
         for(let i = 0; i < victimList.length ; i++){
@@ -353,6 +362,7 @@
         victimList[who].betwho = target;
         victimList[who].bet = amount;
         victimList[who].point -= amount;
+        victimList[who].earn -= amount;
         turtleOnLane[target].bet += amount;
         totalBet += amount;
     }
