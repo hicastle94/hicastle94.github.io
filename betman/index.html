@@ -234,6 +234,7 @@
                     ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
                 }
             });
+            zone.on('pointerdown',ui_victimMode=valueRotate(0,2,1,ui_victimMode));
 
             for(let i = 0; i < 4; i++){
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
@@ -341,7 +342,7 @@
                         gamblePhase = 0;
                         waitTime = 240;
                         season++;
-                        GenerateVictims(15);
+                        GenerateVictims(1);
                         
                     }
                 }
