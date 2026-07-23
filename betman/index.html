@@ -231,7 +231,7 @@
             const zone = this.add.zone(0,180,1080,900).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
-                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 50),ui_victimStart);
+                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 250),ui_victimStart);
                 }
             });
 
@@ -365,7 +365,7 @@
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
-                    if(victimList.length >= cur+i)
+                    if(victimList.length > cur+i)
                         ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
                     else
                         ui_victim[i].setText('');
