@@ -12,7 +12,7 @@
     //game data
     var victimList = [];
     victimList.push({
-        name:"김민수",
+        name:GenerateVictimName(),
         face:"😭",
         money:20000,
         income:10000,
@@ -28,7 +28,7 @@
         state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
     victimList.push({
-        name:"강민호",
+        name:GenerateVictimName(),
         face:"😕",
         money:30000,
         income:5000,
@@ -44,7 +44,7 @@
         state:0, //0중립 1도박 2도박성공 3도박실패
         friends:3});
     victimList.push({
-        name:"최나영",
+        name:GenerateVictimName(),
         face:"🤩",
         money:30000,
         income:5000,
@@ -518,14 +518,14 @@
 
     var dialog=[];
     dialog.push([{speaker:"두목",text:"새로운 노예가 왔구나"},
-                {speaker:"두목",text:"너는 지금부터 이 도박사이트를 \n운영해서 돈을 벌어와야한다"},
+                {speaker:"두목",text:"너는 지금부터 이 도박사이트를 운영해서 \n돈을 벌어와야한다"},
                 {speaker:"두목",text:"돈을 벌어오지 못하면..."},
-                {speaker:"두목",text:"너의 처지가 어떻게 될지.. \n알지?"},
+                {speaker:"두목",text:"너의 처지가 어떻게 될지.. 알지?"},
                 {speaker:"두목",text:"그럼 잘해봐라"}]);
                 
     dialog.push([{speaker:"두목",text:"뭐야 아직도 못벌었어?"},
                 {speaker:"두목",text:"얘들이 충전도 안한다고?"},
-                {speaker:"두목",text:"처음부터 돈내는 사람들이 \n어딨다고.."},
+                {speaker:"두목",text:"처음부터 돈내는 사람들이 어딨다고.."},
                 {speaker:"두목",text:"우선은 맛뵈기부터 시켜주는거야.."},
                 {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"}]);
 
