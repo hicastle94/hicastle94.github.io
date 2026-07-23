@@ -218,7 +218,7 @@
             this.load.image('turtle','assets/scene2/turtle.bmp');
 
             this.load.image('boss','assets/standing/boss.bmp');
-            this.load.image('d_frame','assets/scene2/d_frame.bmp');
+            this.load.image('d_frame','assets/scene2/d_frame.png');
         }
         create ()
         {
@@ -230,7 +230,7 @@
             ui_mymoney = this.add.text(10, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
             ui_mymoney.setText(mySite.money+'원');
 
-            ui_headline = this.add.text(10,110, '전광판', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });
+            ui_headline = this.add.text(10, 110, '전광판', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });
 
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
@@ -260,10 +260,10 @@
 
 
             //for dialog
-            ui_d_port = this.add.image(540, 960, 'boss');//.setVisible(false);
-            ui_d_frame = this.add.image(540, 960, 'd_frame');//.setVisible(false);
-            ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 });//.setVisible(false);
-            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '64px', color: '#000000', align:'left', fixedWidth:1060 });//.setVisible(false);
+            ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
+            ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
+            ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
+            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '64px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
 
 
             input = this.input;
