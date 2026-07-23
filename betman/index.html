@@ -202,6 +202,10 @@
     var ui_multiplier = [];
     var ui_headline;
 
+    var is_dialog = false;
+    var d_zone;
+    var d_nowDialog;
+    var d_nowInDialog;
     var ui_d_port;
     var ui_d_frame;
     var ui_d_nametext;
@@ -242,6 +246,7 @@
                 }
             });
             zone.on('pointerdown',switchUiVictim);
+            d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
 
             for(let i = 0; i < 4; i++){
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
@@ -277,6 +282,9 @@
 
                 refreshVictimFace();
                 refreshUiVictim();
+            }
+            if(scene == 2 && is_dialog){ //대화
+
             }
             if(scene == 2 && gameOn){ //도박게임
 
@@ -314,6 +322,7 @@
                     if(waitTime <= 0){
                         gamblePhase = 2;
                         waitTime = 360;
+                        if(season == 1) startDialog(0);
                     }
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
@@ -498,9 +507,9 @@
 
 
     var dialog=[];
+    dialog.push([{speaker:"두목",text:"테스트 1"},
+                {speaker:"두목",text:"테스트 2"}]);
     dialog.push([{speaker:"두목",text:""},
-                {speaker:"두목",text:""}],
-                [{speaker:"두목",text:""},
                 {speaker:"두목",text:""}]);
     function ProcDialog(){
         //스탠딩 일러스트
@@ -510,9 +519,23 @@
         //다음 버튼
         //대답선택지
     }
-    function startDialog(){
+    function nextDialog(){
+        d_nowInDialog++;
+        if(d_nowInDialog > dialog[d_nowDialog].length) endDialog();
+    }
+    function loadDialog(){
+        ui_d_nametext.setText( dialog[d_nowDialog][d_nowInDialog].speaker );
+        ui_d_text.setText( dialog[d_nowDialog][d_nowInDialog].text );
+    }
+    function startDialog(num){
         gameOn = false;
+        is_dialog = true;
 
+        d_nowDialog = num;
+        d_nowInDialog = 0;
+        loadDialog();
+
+        zone.on('pointerdown',nextDialog);
         ui_d_port.setVisible(true);
         ui_d_frame.setVisible(true);
         ui_d_nametext.setVisible(true);
@@ -520,7 +543,9 @@
     }
     function endDialog(){
         gameOn = true;
+        is_dialog = false;
 
+        zone.off('pointerdown');
         ui_d_port.setVisible(false);
         ui_d_frame.setVisible(false);
         ui_d_nametext.setVisible(false);
