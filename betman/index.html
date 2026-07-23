@@ -93,7 +93,7 @@
     }
 
     var mySite = {
-        money:1000000,
+        money:0,
         popular:0,
         phase:0
     };
@@ -202,6 +202,11 @@
     var ui_multiplier = [];
     var ui_headline;
 
+    var ui_d_port;
+    var ui_d_frame;
+    var ui_d_nametext;
+    var ui_d_text;
+
     class Scene2 extends Phaser.Scene{
         constructor()
         {
@@ -212,6 +217,8 @@
             this.load.image('bg2', 'assets/scene2/background.bmp');
             this.load.image('turtle','assets/scene2/turtle.bmp');
 
+            this.load.image('boss','assets/standing/boss.bmp');
+            this.load.image('d_frame','assets/scene2/d_frame.bmp');
         }
         create ()
         {
@@ -251,6 +258,14 @@
             gameOn = 1; //TEST
             mySite.phase = 1; //TEST
 
+
+            //for dialog
+            ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
+            ui_d_frame = this.add.image(540, 960, 'd_frame');//.setVisible(false);
+            ui_d_nametext = this.add.text(130,1400, '이름', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });//.setVisible(false);
+            ui_d_text = this.add.text(540,1700, '대사내용', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });//.setVisible(false);
+
+
             input = this.input;
             mouse = this.input.Mouse;
 
@@ -260,7 +275,6 @@
             if(scene == 2){ //희생양들
                 
 
-                
                 refreshVictimFace();
                 refreshUiVictim();
             }
@@ -360,19 +374,20 @@
     
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
-            if(victimList[i].point + victimList[i].bet == 0){
+            if(victimList[i].point + victimList[i].bet == 0){ //다잃음
                 victimList[i].face = '😭';
             }
-            else if(victimList[i].point == 0 && victimList[i].bet > 0){
+            else if(victimList[i].point == 0 && victimList[i].bet > 0){ //올인
                 victimList[i].face = '😣';
             }
-            else if(victimList[i].point > 0 && victimList[i].bet == 0){
+            else if(victimList[i].point > 0 && victimList[i].bet == 0){ //관망
                 victimList[i].face = '😕';
             }
-            else if(victimList[i].earn < 0){
+
+            else if(victimList[i].earn < 0){ //손해
                 victimList[i].face = '😥';
             }
-            else if(victimList[i].earn > 0){
+            else if(victimList[i].earn > 0){ //이익
                 victimList[i].face = '😋';
             }
         }
@@ -477,6 +492,9 @@
         victimList[who].money += amount;
         victimList[who].point -= amount;
     }
+    function refundRequest(who, amount){
+
+    }
 
 
     var dialog=[[]];
@@ -492,11 +510,24 @@
         //다음 버튼
         //대답선택지
     }
+    function startDialog(){
+        gameOn = false;
+
+        ui_d_port.setVisible(true);
+        ui_d_frame.setVisible(true);
+        ui_d_nametext.setVisible(true);
+        ui_d_text.setVisible(true);
+    }
+    function endDialog(){
+        gameOn = true;
+
+        ui_d_port.setVisible(false);
+        ui_d_frame.setVisible(false);
+        ui_d_nametext.setVisible(false);
+        ui_d_text.setVisible(false);
+    }
 
     //보통상황에 띄워야 하는 것
-    //돈
-    //호구들 (생각,손익)
-    //도박게임
     //버튼들 (먹튀하기) <<필요없는것 아닌지??
 
     //
