@@ -268,7 +268,7 @@
             ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
             ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
             ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
-            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '64px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
+            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '40px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
 
 
             input = this.input;
@@ -510,14 +510,14 @@
 
     var dialog=[];
     dialog.push([{speaker:"두목",text:"새로운 노예가 왔구나"},
-                {speaker:"두목",text:"너는 지금부터 이 도박사이트를 운영해서 돈을 벌어와야한다"},
+                {speaker:"두목",text:"너는 지금부터 이 도박사이트를 \n운영해서 돈을 벌어와야한다"},
                 {speaker:"두목",text:"돈을 벌어오지 못하면..."},
-                {speaker:"두목",text:"너의 처지가 어떻게 될지.. 알지?"},
+                {speaker:"두목",text:"너의 처지가 어떻게 될지.. \n알지?"},
                 {speaker:"두목",text:"그럼 잘해봐라"}]);
                 
     dialog.push([{speaker:"두목",text:"뭐야 아직도 못벌었어?"},
                 {speaker:"두목",text:"얘들이 충전도 안한다고?"},
-                {speaker:"두목",text:"처음부터 돈내는 사람들이 어딨다고.."},
+                {speaker:"두목",text:"처음부터 돈내는 사람들이 \n어딨다고.."},
                 {speaker:"두목",text:"우선은 맛뵈기부터 시켜주는거야.."},
                 {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"}]);
     function ProcDialog(){
