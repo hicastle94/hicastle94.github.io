@@ -314,7 +314,7 @@
                         waitTime = 360;
                         
                         if(season == 0) startDialog(0);
-                        if(season == 1) {startDialog(1); mySite.phase = 1;};
+                        if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 1000;victimList[1].point = 1000;victimList[2].point = 1000;};
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
@@ -385,7 +385,10 @@
     
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
-            if(victimList[i].point + victimList[i].bet == 0){ //다잃음
+            if(victimList.earn == 0){
+                victimList[i].face = '😕';
+            }
+            else if(victimList[i].point + victimList[i].bet == 0){ //다잃음
                 victimList[i].face = '😭';
             }
             else if(victimList[i].point == 0 && victimList[i].bet > 0){ //올인
@@ -401,6 +404,8 @@
             else if(victimList[i].earn > 0){ //이익
                 victimList[i].face = '😋';
             }
+            //승리
+            //패배
         }
     }
     function refreshVictimThink(){
