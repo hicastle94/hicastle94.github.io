@@ -367,6 +367,7 @@
                 break;
             case 1:
                 for(let i = 0; i < min(victimList.length,ui_victimStart+12) ; i++){
+                    var victim = victimList[ui_victimStart+i];
                     ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
                 }
                 break;
