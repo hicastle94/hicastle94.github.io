@@ -69,25 +69,27 @@
         var name = lastName[dice1] + firstName[dice2];
         return name;
     }
-    function GenerateVictims(){
+    function GenerateVictims(count){
 
-        victimList.push({
-            name:GenerateVictimName(),
-            face:'😶',
-            money:10000,
-            income:5000,
-            loan:0,
-            point:mySite.phase?1000:0,
-            earn:0,
-            betwho:-1,
-            bet:-1,
-            interest:40, //참여율
-            risky:10, //투자공격성
-            payattitude:10, //충전가능성
-            mental:100,
-            state:0,
-            friends:1
-        })
+        for(let i = 0; i < count ; i++){
+            victimList.push({
+                name:GenerateVictimName(),
+                face:'😶',
+                money:10000,
+                income:5000,
+                loan:0,
+                point:mySite.phase?1000:0,
+                earn:0,
+                betwho:-1,
+                bet:-1,
+                interest:40, //참여율
+                risky:10, //투자공격성
+                payattitude:10, //충전가능성
+                mental:100,
+                state:0,
+                friends:1
+            });
+        }
     }
 
     var mySite = {
@@ -339,17 +341,7 @@
                         gamblePhase = 0;
                         waitTime = 240;
                         season++;
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
-                        GenerateVictims();
+                        GenerateVictims(15);
                         
                     }
                 }
@@ -370,14 +362,16 @@
     function refreshUiVictim(){
         switch(ui_victimMode){
             case 0:
-                for(let i = 0; i < min(victimList.length,12) ; i++){
-                    var victim = victimList[max(Math.floor(ui_victimStart)+i,0)];
-                    ui_victim[i].setText( victimList[max(Math.floor(ui_victimStart)+i,0)].earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
+                var cur = Math.floor(ui_victimStart);
+                for(let i = 0; i < min(victimList.length-cur,12) ; i++){
+                    var victim = victimList[max(cur+i),0];
+                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
                 }
                 break;
             case 1:
-                for(let i = 0; i < min(victimList.length,12) ; i++){
-                    var victim = victimList[max(Math.floor(ui_victimStart)+i,0)];
+                var cur = Math.floor(ui_victimStart);
+                for(let i = 0; i < min(victimList.length-cur,12) ; i++){
+                    var victim = victimList[max(cur+i,0)];
                     ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
                 }
                 break;
