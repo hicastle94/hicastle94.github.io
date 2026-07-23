@@ -388,7 +388,7 @@
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
             if(victimList.earn == 0){
-                victimList[i].face = '😕';
+                victimList[i].face = '😕'; //처음옴
             }
             else if(victimList[i].point + victimList[i].bet == 0){ //다잃음
                 victimList[i].face = '😭';
@@ -397,7 +397,7 @@
                 victimList[i].face = '😣';
             }
             else if(victimList[i].point > 0 && victimList[i].bet == 0){ //관망
-                victimList[i].face = '😕';
+                victimList[i].face = '🤔';
             }
 
             else if(victimList[i].earn < 0){ //손해
