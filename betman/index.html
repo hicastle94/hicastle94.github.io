@@ -362,7 +362,7 @@
             case 0:
                 for(let i = 0; i < min(victimList.length,12) ; i++){
                     var victim = victimList[max(Math.floor(ui_victimStart)+i,0)];
-                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
+                    ui_victim[i].setText( victimList[max(Math.floor(ui_victimStart)+i,0)].earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
                 }
                 break;
             case 1:
