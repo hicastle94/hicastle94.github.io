@@ -236,6 +236,7 @@
             
             gamblePhase = 0; //TEST
             gameOn = 1; //TEST
+            mySite.phase = 1; //TEST
 
             input = this.input;
             mouse = this.input.Mouse;
@@ -263,7 +264,7 @@
                         turtleOnLane[i].runX = 0;
                         turtleOnLane[i].rank = 0;
                         turtleOnLane[i].bet = 1;
-                        turtleOnLane[i].multiplier = 1.0;
+                        turtleOnLane[i].multiplier = 4.0;
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
 
                         turtleOnLane[i].multiplier = totalBet * 0.97 / turtleOnLane[i].bet;
@@ -289,7 +290,7 @@
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
                     for(let i = 0; i < turtleOnLane.length ; i++){
-                        turtleOnLane[i].multiplier = totalBet * 0.97 / turtleOnLane[i].bet;
+                        turtleOnLane[i].multiplier = 4.0; //totalBet * 0.97 / turtleOnLane[i].bet;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     
@@ -392,7 +393,7 @@
 
 
     function kick(who){
-        
+        victimList[i].splice(who,1);
     }
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
@@ -440,6 +441,8 @@
 
     var thinking=[];
     thinking.push({text:"나는 그런거 안할거야", mental:100});
+    thinking.push({text:"여기에 돈을 건다고?", mental:100});
+
     thinking.push({text:"오 생각보다 돈이 되는데", mental:90});
     thinking.push({text:"아싸 개이득", mental:90});
     thinking.push({text:"와 여기에 올인했었으면..", mental:90});
