@@ -239,6 +239,8 @@
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
             }
+
+            d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
             const zone = this.add.zone(0,400,1080,600).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
@@ -246,7 +248,7 @@
                 }
             });
             zone.on('pointerdown',switchUiVictim);
-            d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
+            
 
             for(let i = 0; i < 4; i++){
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
@@ -503,6 +505,7 @@
     function buyPoint(who, amount){
         victimList[who].money -= amount;
         victimList[who].point += amount;
+        if(mySite.phase >= 2) victimList[who].point += amount*0.2;
     }
     function refundPoint(who, amount){
         victimList[who].money += amount;
@@ -525,6 +528,12 @@
                 {speaker:"두목",text:"처음부터 돈내는 사람들이 \n어딨다고.."},
                 {speaker:"두목",text:"우선은 맛뵈기부터 시켜주는거야.."},
                 {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"}]);
+
+    dialog.push([{speaker:"두목",text:"뭐야 이거밖에 못벌었어?"},
+                {speaker:"두목",text:"아직도 돈을 안낸다고?"},
+                {speaker:"두목",text:"우선 어떻게든 조금이라도 내게 해야지"},
+                {speaker:"두목",text:"초회충전 보너스, 매일충전 보너스 먹여"},
+                {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이다"}]);
     function ProcDialog(){
         //대답선택지
     }
