@@ -521,7 +521,7 @@
     }
     function nextDialog(){
         d_nowInDialog++;
-        if(d_nowInDialog > dialog[d_nowDialog].length) endDialog();
+        if(d_nowInDialog >= dialog[d_nowDialog].length) endDialog();
         else loadDialog();
     }
     function loadDialog(){
