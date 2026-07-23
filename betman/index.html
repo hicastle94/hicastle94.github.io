@@ -229,7 +229,7 @@
             const zone = this.add.zone(0,180,1080,900).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
-                    ui_victimStart = valueInRange(0,ui_victimList.length,(pointer.velocity.y / 50),ui_victimStart);
+                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 50),ui_victimStart);
                 }
             });
 
