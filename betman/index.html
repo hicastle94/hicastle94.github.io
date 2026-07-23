@@ -78,7 +78,7 @@
                 money:10000,
                 income:5000,
                 loan:0,
-                point:mySite.phase?1000:0,
+                point:(mySite.phase>0)?1000:0,
                 earn:0,
                 betwho:-1,
                 bet:-1,
@@ -258,9 +258,10 @@
         update ()
         {
             if(scene == 2){ //희생양들
-
                 
 
+                
+                refreshVictimFace();
                 refreshUiVictim();
             }
             if(scene == 2 && gameOn){ //도박게임
@@ -358,11 +359,26 @@
     }
     
     function refreshVictimFace(){
+        for(let i = 0; i < victimList.length; i++){
+            if(victimList[i].point == 0){
+                victimList[i].face = '😭';
+            }
+            else if(victimList[i].earn < 0){
+                victimList[i].face = '😥';
+            }
+            else if(victimList[i].earn > 0){
+                victimList[i].face = '😋';
+            }
+        }
+    }
+    function refreshVictimThink(){
+        for(let i = 0; i < victimList.length; i++){
 
+        }
     }
     function refreshUiVictim(){
         switch(ui_victimMode){
-            case 0:
+            case 0: //포인트, 베팅정보
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
@@ -372,7 +388,7 @@
                         ui_victim[i].setText('');
                 }
                 break;
-            case 1:
+            case 1: //생각
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
@@ -382,7 +398,15 @@
                         ui_victim[i].setText('');
                 }
                 break;
-            case 2:
+            case 2: 
+                var cur = max(Math.floor(ui_victimStart),0);
+                for(let i = 0; i < 12 ; i++){
+                    var victim = victimList[max(cur+i,0)];
+                    if(victimList.length > cur+i)
+                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' 현금:' + victim.money + ' 빌린돈:' + victim.loan );
+                    else
+                        ui_victim[i].setText('');
+                }
                 break;
         }
         
