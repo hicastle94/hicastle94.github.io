@@ -197,6 +197,7 @@
     var ui_victim = [];
     var ui_victimMode = 0;
     var ui_multiplier = [];
+    var ui_headline;
 
     class Scene2 extends Phaser.Scene{
         constructor()
@@ -218,6 +219,8 @@
             //최상단
             ui_mymoney = this.add.text(10, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
             ui_mymoney.setText(mySite.money+'원');
+
+            ui_headline = this.add.text(10,110, '전광판', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 }));
 
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
@@ -368,7 +371,7 @@
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*10000 < victimList[i].interest);
             if(a == true && victimList[i].betwho == -1){
-                var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point);
+                var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point) + 1;
                 b = min (b, victimList[i].point);
                 Bet(i,b,Math.floor(Math.random()*4));
             }
@@ -400,6 +403,14 @@
             if(victimList[i].point < 100){
                 victimList[i].payattitude;
 
+            }
+
+        }
+    }
+    function considerRefund(){
+        for(let i = 0; i < victimList.length ; i++){
+            if(victimList[i].point > 10000){
+                victimList[i].payattitude;
             }
 
         }
