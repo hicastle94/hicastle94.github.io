@@ -360,13 +360,14 @@
     function refreshUiVictim(){
         switch(ui_victimMode){
             case 0:
-                for(let i = ui_victimStart; i < min(victimList.length,ui_victimStart+12) ; i++){
-                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point + ' ' + (victimList[i].betwho+1) + ' ' + victimList[i].bet );
+                for(let i = 0; i < min(victimList.length,12) ; i++){
+                    var victim = victimList[ui_victimStart+i];
+                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
                 }
                 break;
             case 1:
-                for(let i = ui_victimStart; i < min(victimList.length,ui_victimStart+12) ; i++){
-                    ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].think );
+                for(let i = 0; i < min(victimList.length,ui_victimStart+12) ; i++){
+                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
                 }
                 break;
             case 2:
