@@ -228,7 +228,7 @@
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
             }
-            const zone = this.add.zone(0,180,1080,780).setOrigin(0).setInteractive();
+            const zone = this.add.zone(0,400,1080,600).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
                     ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
