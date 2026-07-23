@@ -535,7 +535,7 @@
         d_nowInDialog = 0;
         loadDialog();
 
-        zone.on('pointerdown',nextDialog);
+        d_zone.on('pointerdown',nextDialog);
         ui_d_port.setVisible(true);
         ui_d_frame.setVisible(true);
         ui_d_nametext.setVisible(true);
@@ -545,7 +545,7 @@
         gameOn = true;
         is_dialog = false;
 
-        zone.off('pointerdown');
+        d_zone.off('pointerdown');
         ui_d_port.setVisible(false);
         ui_d_frame.setVisible(false);
         ui_d_nametext.setVisible(false);
