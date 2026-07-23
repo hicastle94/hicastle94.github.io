@@ -17,7 +17,7 @@
         money:20000,
         income:10000,
         loan:0,
-        point:1000,
+        point:0,
         earn:0,
         betwho:-1,
         bet:-1,
@@ -33,7 +33,7 @@
         money:30000,
         income:5000,
         loan:0,
-        point:1000,
+        point:0,
         earn:0,
         betwho:-1,
         bet:-1,
@@ -49,7 +49,7 @@
         money:30000,
         income:5000,
         loan:0,
-        point:1000,
+        point:0,
         earn:0,
         betwho:-1,
         bet:-1,
@@ -312,6 +312,9 @@
                     if(waitTime <= 0){
                         gamblePhase = 1;
                         waitTime = 360;
+                        
+                        if(season == 0) startDialog(0);
+                        if(season == 1) {startDialog(1); mySite.phase = 1;};
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
@@ -322,7 +325,6 @@
                     if(waitTime <= 0){
                         gamblePhase = 2;
                         waitTime = 360;
-                        if(season == 1) startDialog(0);
                     }
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
@@ -507,16 +509,18 @@
 
 
     var dialog=[];
-    dialog.push([{speaker:"두목",text:"테스트 1"},
-                {speaker:"두목",text:"테스트 2"}]);
-    dialog.push([{speaker:"두목",text:""},
-                {speaker:"두목",text:""}]);
+    dialog.push([{speaker:"두목",text:"새로운 노예가 왔구나"},
+                {speaker:"두목",text:"너는 지금부터 이 도박사이트를 운영해서 돈을 벌어와야한다"},
+                {speaker:"두목",text:"돈을 벌어오지 못하면..."},
+                {speaker:"두목",text:"너의 처지가 어떻게 될지.. 알지?"},
+                {speaker:"두목",text:"그럼 잘해봐라"}]);
+                
+    dialog.push([{speaker:"두목",text:"뭐야 아직도 못벌었어?"},
+                {speaker:"두목",text:"얘들이 충전도 안한다고?"},
+                {speaker:"두목",text:"처음부터 돈내는 사람들이 어딨다고.."},
+                {speaker:"두목",text:"우선은 맛뵈기부터 시켜주는거야.."},
+                {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"}]);
     function ProcDialog(){
-        //스탠딩 일러스트
-        //발화자
-        //내용
-
-        //다음 버튼
         //대답선택지
     }
     function nextDialog(){
