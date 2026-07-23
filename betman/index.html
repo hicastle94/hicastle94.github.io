@@ -363,9 +363,12 @@
         switch(ui_victimMode){
             case 0:
                 var cur = max(Math.floor(ui_victimStart),0);
-                for(let i = 0; i < min(victimList.length-cur,12) ; i++){
+                for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
-                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
+                    if(victimList.length >= cur+i)
+                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
+                    else
+                        ui_victim[i].setText('');
                 }
                 break;
             case 1:
