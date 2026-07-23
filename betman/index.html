@@ -360,8 +360,14 @@
     
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
-            if(victimList[i].point == 0){
+            if(victimList[i].point + victimList[i].bet == 0){
                 victimList[i].face = '😭';
+            }
+            else if(victimList[i].point == 0 && victimList[i].bet > 0){
+                victimList[i].face = '😣';
+            }
+            else if(victimList[i].point > 0 && victimList[i].bet == 0){
+                victimList[i].face = '😕';
             }
             else if(victimList[i].earn < 0){
                 victimList[i].face = '😥';
@@ -398,7 +404,7 @@
                         ui_victim[i].setText('');
                 }
                 break;
-            case 2: 
+            case 2: //현금정보
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
