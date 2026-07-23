@@ -522,6 +522,7 @@
     function nextDialog(){
         d_nowInDialog++;
         if(d_nowInDialog > dialog[d_nowDialog].length) endDialog();
+        else loadDialog();
     }
     function loadDialog(){
         ui_d_nametext.setText( dialog[d_nowDialog][d_nowInDialog].speaker );
