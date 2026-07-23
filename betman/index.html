@@ -196,6 +196,7 @@
     var ui_mymoney;
     var ui_victim = [];
     var ui_victimMode = 0;
+    var ui_victimStart = 0;
     var ui_multiplier = [];
     var ui_headline;
 
@@ -225,6 +226,12 @@
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
             }
+            const zone = this.add.zone(0,180,1080,900).setOrigin(0).setInteractive();
+            zone.on('pointermove', pointer =>{
+                if(pointer.isDown){
+                    ui_victimStart += (pointer.velocity.y / 50);
+                }
+            });
 
             for(let i = 0; i < 4; i++){
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
@@ -353,12 +360,12 @@
     function refreshUiVictim(){
         switch(ui_victimMode){
             case 0:
-                for(let i = 0; i < min(victimList.length,12) ; i++){
+                for(let i = ui_victimStart; i < min(victimList.length,ui_victimStart+12) ; i++){
                     ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].point + ' ' + (victimList[i].betwho+1) + ' ' + victimList[i].bet );
                 }
                 break;
             case 1:
-                for(let i = 0; i < min(victimList.length,12) ; i++){
+                for(let i = ui_victimStart; i < min(victimList.length,ui_victimStart+12) ; i++){
                     ui_victim[i].setText( victimList[i].earn + ' ' + victimList[i].face + victimList[i].name + ' ' + victimList[i].think );
                 }
                 break;
