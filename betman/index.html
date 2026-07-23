@@ -234,7 +234,7 @@
                     ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
                 }
             });
-            zone.on('pointerdown',ui_victimMode=valueRotate(0,2,1,ui_victimMode));
+            zone.on('pointerdown',switchUiVictim);
 
             for(let i = 0; i < 4; i++){
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
@@ -387,6 +387,10 @@
         }
         
     }
+    function switchUiVictim(){
+        ui_victimMode=valueRotate(0,2,1,ui_victimMode);
+    }
+
     function decideBetting(){
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*10000 < victimList[i].interest);
