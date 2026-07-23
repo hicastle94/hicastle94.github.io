@@ -228,10 +228,10 @@
             for(let i = 0; i < 12; i++){
                 ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
             }
-            const zone = this.add.zone(0,180,1080,900).setOrigin(0).setInteractive();
+            const zone = this.add.zone(0,180,1080,780).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
-                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 250),ui_victimStart);
+                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
                 }
             });
 
@@ -372,10 +372,13 @@
                 }
                 break;
             case 1:
-                var cur = Math.floor(ui_victimStart);
-                for(let i = 0; i < min(max(victimList.length-cur,0),12) ; i++){
+                var cur = max(Math.floor(ui_victimStart),0);
+                for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
-                    ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
+                    if(victimList.length > cur+i)
+                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
+                    else
+                        ui_victim[i].setText('');
                 }
                 break;
             case 2:
