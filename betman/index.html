@@ -521,8 +521,8 @@
     }
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
-            if(Math.random() < victimList[i].payattitude * victimList[i].interest / 1000 )
-                buyPoint(i, Math.random() * victimList[i].risky / 100 * victimList[i].money);
+            if(Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
+                buyPoint(i, Math.floor(Math.random() * victimList[i].risky / 100 * victimList[i].money));
         }
     }
     function considerRefund(){
