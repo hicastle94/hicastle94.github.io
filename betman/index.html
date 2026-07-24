@@ -328,12 +328,14 @@
                 else if(gamblePhase == 1){//베팅시간
                     
                     decideBetting();
+                    considerBuy();
+                    considerRefund();
 
                     waitTime--;
                     if(waitTime <= 0){
                         ui_headline.setText("베팅시간 종료!");
                         gamblePhase = 2;
-                        waitTime = 360;
+                        waitTime = 100;
                     }
                 }
                 else if(gamblePhase == 2){//도박 배당율 확정
@@ -505,7 +507,10 @@
                 victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
                 victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
 
-                victimList[i].payattitude += 2;
+                
+                victimList[who].interest += 2;
+                victimList[who].risky += 1;
+                victimList[i].payattitude += 4;
             }
         }
     }
@@ -516,11 +521,8 @@
     }
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].point < 100){
-                victimList[i].payattitude;
-
-            }
-
+            if(Math.random() < victimList[i].payattitude * victimList[i].interest / 1000 )
+            victimList[i].buyPoint(Math.random() * victim[i].risky / 100 * victim[i].money);
         }
     }
     function considerRefund(){
