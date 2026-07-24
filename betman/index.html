@@ -447,7 +447,7 @@
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i)
-                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.point + ' ' + (victim.betwho+1) + ' ' + victim.bet );
+                        ui_victim[i].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' ' + Math.floor(victim.point) + ' ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
                     else
                         ui_victim[i].setText('');
                 }
@@ -457,7 +457,7 @@
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i)
-                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' ' + victim.think );
+                        ui_victim[i].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' ' + victim.think );
                     else
                         ui_victim[i].setText('');
                 }
@@ -467,7 +467,7 @@
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i)
-                        ui_victim[i].setText( victim.earn + ' ' + victim.face + victim.name + ' 현금:' + victim.money + ' 빌린돈:' + victim.loan );
+                        ui_victim[i].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' 현금:' + victim.money + ' 빌린돈:' + victim.loan );
                     else
                         ui_victim[i].setText('');
                 }
