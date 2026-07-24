@@ -393,7 +393,7 @@
             if(v.earn == 0){
                 v.face = '😕'; //처음옴
             }
-            else if(gamblePhase == 4){
+            else if(gamblePhase == 4 && v.betwho > 0){
                 if(v.betwho == winner){//승리
                     v.face = '😋';
                 }
@@ -470,7 +470,9 @@
             if(a == true && victimList[i].betwho == -1){
                 var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point) + 1;
                 b = min (b, victimList[i].point);
-                Bet(i,b,Math.floor(Math.random()*4));
+                if(b>0){
+                    Bet(i,b,Math.floor(Math.random()*4));
+                }
             }
         }
     }
@@ -487,6 +489,8 @@
             if(victimList[i].betwho == winner){
                 victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
                 victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
+
+                victimList[i].payattitude += 2;
             }
         }
     }
