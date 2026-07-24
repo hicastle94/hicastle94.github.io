@@ -193,6 +193,7 @@
     var gamblePhase = 0;//0선수소개 1베팅 2배율결정 3달리기 4정산
     var totalBet = 0;
     var goalTurtles = 0;
+    var winner = -1;
 
     var ui_mymoney;
     var ui_victim = [];
@@ -308,6 +309,7 @@
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     goalTurtles = 0;
+                    winner = -1;
                     
                     waitTime--;
                     if(waitTime <= 0){
@@ -352,6 +354,7 @@
                             goalTurtles++;
                             turtleOnLane[i].rank = goalTurtles;
                             if(goalTurtles == 1){
+                                winner = i;
                                 BetResult(i);
                             }
                         }
@@ -367,7 +370,7 @@
                     
                     if(waitTime <= 0){
                         gamblePhase = 0;
-                        waitTime = 240;
+                        waitTime = 40;
                         season++;
                         GenerateVictims(1);
                         
@@ -390,6 +393,14 @@
             if(v.earn == 0){
                 v.face = '😕'; //처음옴
             }
+            else if(gamblePhase == 4){
+                if(v.betwho == winner){//승리
+                    v.face = '😋';
+                }
+                else{//패배
+                    v.face = '😥';
+                }
+            }
             else if(v.point + v.bet == 0){ //다잃음
                 v.face = '😭';
             }
@@ -401,13 +412,12 @@
             }
 
             else if(v.earn + v.bet < 0){ //손해
-                v.face = '😥';
+                v.face = '☹';
             }
             else if(v.earn + v.bet > 0){ //이익
-                v.face = '😋';
+                v.face = '😊';
             }
-            //승리
-            //패배
+            
         }
     }
     function refreshVictimThink(){
@@ -571,7 +581,6 @@
         ui_d_text.setVisible(false);
     }
 
-    //보통상황에 띄워야 하는 것
     //버튼들 (먹튀하기) <<필요없는것 아닌지??
 
     //
