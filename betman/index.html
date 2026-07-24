@@ -30,7 +30,7 @@
         earn:0,
         betwho:-1,
         bet:-1,
-        interest:40, //참여율
+        interest:10, //참여율
         risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
@@ -47,7 +47,7 @@
         earn:0,
         betwho:-1,
         bet:-1,
-        interest:40, //참여율
+        interest:10, //참여율
         risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
@@ -64,7 +64,7 @@
         earn:0,
         betwho:-1,
         bet:-1,
-        interest:40, //참여율
+        interest:10, //참여율
         risky:10, //투자공격성
         payattitude:10, //충전가능성
         mental:100,
@@ -84,7 +84,7 @@
                 earn:0,
                 betwho:-1,
                 bet:-1,
-                interest:40, //참여율
+                interest:10, //참여율
                 risky:10, //투자공격성
                 payattitude:10, //충전가능성
                 mental:100,
@@ -359,7 +359,7 @@
                             turtleOnLane[i].rank = goalTurtles;
                             if(goalTurtles == 1){
                                 winner = i;
-                                ui_headline.setText(winner+ "번 거북이가 승리했습니다!");
+                                ui_headline.setText((winner+1)+ "번 거북이가 승리했습니다!");
                                 BetResult(i);
                             }
                         }
@@ -489,7 +489,14 @@
         turtleOnLane[target].bet += amount;
         totalBet += amount;
 
-        ui_headline.setText(victimList[who].name + "님이 " +target+ "번 거북이에게 " + amount + "원 베팅!!");
+        ui_headline.setText(victimList[who].name + "님이 " +(target+1)+ "번 거북이에게 " + amount + "원 베팅!!");
+
+        //흥미도 상승
+        for(let i = 0 ; i < victimList.length ; i++){
+            if(victimList[i].interest < 30)
+                victimList[i].interest++;
+        }
+        
     }
     function BetResult(winner){
         for(let i = 0; i < victimList.length ; i++){
@@ -629,8 +636,8 @@
 
     thinking.push({text:"아직도 손해를 못메꿨네", mental:90});
     thinking.push({text:"한판만 더 따면 흑자다", mental:90});
-    thinking.push({text:"이건 정배지", mental:90});
-    thinking.push({text:"이건 역배지", mental:90});
+    // thinking.push({text:"이건 정배지", mental:90});
+    // thinking.push({text:"이건 역배지", mental:90});
 
     //#### 기획 ####
     // 종목 단일(거북이)? 다양화?
