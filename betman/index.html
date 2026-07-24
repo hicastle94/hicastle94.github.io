@@ -422,7 +422,7 @@
     }
     function refreshVictimThink(){
         for(let i = 0; i < victimList.length; i++){
-
+            vicitmList[i].think = thinking[Math.floor(Math.random() * thinking.length)];
         }
     }
     function refreshUiVictim(){
@@ -548,6 +548,8 @@
                 {speaker:"두목",text:"우선 어떻게든 조금이라도 내게 해야지"},
                 {speaker:"두목",text:"초회충전 보너스, 매일충전 보너스 먹여"},
                 {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이다"}]);
+
+    dialog.push([{speaker:"두목",text:"잘 되고 있나"}]);
     function ProcDialog(){
         //대답선택지
     }
