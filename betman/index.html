@@ -77,7 +77,7 @@
             victimList.push({
                 name:GenerateVictimName(),
                 face:'😶',
-                money:10000,
+                money:50000,
                 income:5000,
                 loan:0,
                 point:(mySite.phase>0)?1000:0,
@@ -359,6 +359,7 @@
                             turtleOnLane[i].rank = goalTurtles;
                             if(goalTurtles == 1){
                                 winner = i;
+                                ui_headline.setText(winner+ "번 거북이가 승리했습니다!");
                                 BetResult(i);
                             }
                         }
@@ -416,7 +417,7 @@
             }
 
             else if(v.earn + v.bet < 0){ //손해
-                v.face = '☹';
+                v.face = '🙁';
             }
             else if(v.earn + v.bet > 0){ //이익
                 v.face = '😊';
@@ -487,6 +488,8 @@
         victimList[who].earn -= amount;
         turtleOnLane[target].bet += amount;
         totalBet += amount;
+
+        ui_headline.setText(victimList[who].name + "님이 " +target+ "번 거북이에게 " + amount + "원 베팅!!");
     }
     function BetResult(winner){
         for(let i = 0; i < victimList.length ; i++){
@@ -530,7 +533,7 @@
         victimList[who].point -= amount;
     }
     function refundRequest(who, amount){
-        "그게 왜 니돈이야"
+        "그게 왜 니돈이야";
     }
 
 
