@@ -250,7 +250,7 @@
             
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '40px', color: '#FFFFFF', align:'left', fixedWidth:400 });
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '80px', color: '#FFFFFF', align:'left', fixedWidth:400 });
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -400,10 +400,10 @@
                 v.face = '🤔';
             }
 
-            else if(v.earn < 0){ //손해
+            else if(v.earn + v.bet < 0){ //손해
                 v.face = '😥';
             }
-            else if(v.earn > 0){ //이익
+            else if(v.earn + v.bet > 0){ //이익
                 v.face = '😋';
             }
             //승리
