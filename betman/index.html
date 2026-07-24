@@ -534,11 +534,13 @@
         }
     }
     function buyPoint(who, amount){
+        mySite.money += amount;
         victimList[who].money -= amount;
         victimList[who].point += amount;
         if(mySite.phase >= 2) victimList[who].point += amount*0.2;
     }
     function refundPoint(who, amount){
+        mySite.money -= amount;
         victimList[who].money += amount;
         victimList[who].point -= amount;
     }
