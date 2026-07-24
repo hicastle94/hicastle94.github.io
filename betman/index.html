@@ -552,7 +552,7 @@
         victimList[who].money -= amount;
         victimList[who].point += amount;
         
-        if(mySite.phase >= 2) victimList[who].point += amount*0.2;
+        if(mySite.phase >= 2) victimList[who].point += Math.floor(amount*0.2);
         ui_headline.setText(victimList[who].name + "님이 " + amount + "원 충전!!");
     }
     function refundPoint(who, amount){
