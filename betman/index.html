@@ -335,6 +335,7 @@
                     decideBetting();
                     considerBuy();
                     considerRefund();
+                    considerLoan();
 
                     waitTime--;
                     if(waitTime <= 0){
@@ -532,6 +533,12 @@
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
         }
     }
+    function considerLoan(){
+        for(let i = 0; i < victimList.length ; i++){
+            if(victimList[i].money == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000000 )
+                loan(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
+        }
+    }
     function considerRefund(){
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].point > 100000){
@@ -555,6 +562,11 @@
     function refundRequest(who, amount){
         "그게 왜 니돈이야";
     }
+    function loan(who, amount){
+        victimList[who].money += amount;
+        victimList[who].loan += amount;
+        victimList[who].risky += Math.floor(amount/10000);
+    }
 
 
     var dialog=[];
@@ -574,7 +586,7 @@
                 {speaker:"두목",text:"아직도 돈을 안낸다고?"},
                 {speaker:"두목",text:"우선 어떻게든 조금이라도 내게 해야지"},
                 {speaker:"두목",text:"초회충전 보너스, 매일충전 보너스 먹여"},
-                {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이다"}]);
+                {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이거든"}]);
 
     dialog.push([{speaker:"두목",text:"잘 되고 있나"}]);
     function ProcDialog(){
