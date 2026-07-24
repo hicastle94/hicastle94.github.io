@@ -386,24 +386,25 @@
     
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
-            if(victimList.earn == 0){
-                victimList[i].face = '😕'; //처음옴
+            var v = victimList[i];
+            if(v.earn == 0){
+                v.face = '😕'; //처음옴
             }
-            else if(victimList[i].point + victimList[i].bet == 0){ //다잃음
-                victimList[i].face = '😭';
+            else if(v.point + v.bet == 0){ //다잃음
+                v.face = '😭';
             }
-            else if(victimList[i].point == 0 && victimList[i].bet > 0){ //올인
-                victimList[i].face = '😣';
+            else if(v.point == 0 && v.bet > 0){ //올인
+                v.face = '😣';
             }
-            else if(victimList[i].point > 0 && victimList[i].bet == 0){ //관망
-                victimList[i].face = '🤔';
+            else if(v.point > 0 && v.bet == 0){ //관망
+                v.face = '🤔';
             }
 
-            else if(victimList[i].earn < 0){ //손해
-                victimList[i].face = '😥';
+            else if(v.earn < 0){ //손해
+                v.face = '😥';
             }
-            else if(victimList[i].earn > 0){ //이익
-                victimList[i].face = '😋';
+            else if(v.earn > 0){ //이익
+                v.face = '😋';
             }
             //승리
             //패배
@@ -511,7 +512,7 @@
         victimList[who].point -= amount;
     }
     function refundRequest(who, amount){
-
+        "그게 왜 니돈이야"
     }
 
 
