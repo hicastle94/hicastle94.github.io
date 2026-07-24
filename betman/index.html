@@ -474,7 +474,7 @@
 
     function decideBetting(){
         for(let i = 0; i < victimList.length ; i++){
-            var a = (Math.random()*10000 < victimList[i].interest);
+            var a = (Math.random()*5000 < victimList[i].interest);
             if(a == true && victimList[i].betwho == -1){
                 var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point) + 1;
                 b = min (b, victimList[i].point);
