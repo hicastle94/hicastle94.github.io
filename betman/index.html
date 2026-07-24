@@ -329,6 +329,7 @@
                         if(season == 0) startDialog(0);
                         if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 1000;victimList[1].point = 1000;victimList[2].point = 1000;victimList[3].point = 1000;};
                         if(season == 5) {startDialog(2); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
+                        if(mySite.money > 850000) {startDialog(3);}}
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
@@ -589,7 +590,11 @@
                 {speaker:"두목",text:"초회충전 보너스, 매일충전 보너스 먹여"},
                 {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이거든"}]);
 
-    dialog.push([{speaker:"두목",text:"잘 되고 있나"}]);
+    dialog.push([{speaker:"두목",text:"잘 되고 있나"},
+                {speaker:"두목",text:"좋아 100만원까지만 벌고 도망가자고"},
+                {speaker:"두목",text:""},
+                {speaker:"두목",text:"아니? 벌써?"}]);
+                
     function ProcDialog(){
         //대답선택지
     }
