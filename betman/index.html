@@ -534,17 +534,18 @@
     }
     function considerRefund(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].point > 10000){
+            if(victimList[i].point > 100000){
                 victimList[i].payattitude;
             }
-
         }
     }
     function buyPoint(who, amount){
         mySite.money += amount;
         victimList[who].money -= amount;
         victimList[who].point += amount;
+        
         if(mySite.phase >= 2) victimList[who].point += amount*0.2;
+        ui_headline.setText(victimList[who].name + "님이 " + amount + "원 충전!!");
     }
     function refundPoint(who, amount){
         mySite.money -= amount;
