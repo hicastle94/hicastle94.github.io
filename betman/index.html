@@ -35,6 +35,7 @@
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
+        paycount:0,
         think:'여긴 뭔하는데지',
         friends:3});
     victimList.push({
@@ -52,6 +53,7 @@
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
+        paycount:0,
         think:'여긴 뭔하는데지',
         friends:3});
     victimList.push({
@@ -69,6 +71,7 @@
         payattitude:10, //충전가능성
         mental:100,
         state:0, //0중립 1도박 2도박성공 3도박실패
+        paycount:0,
         think:'여긴 뭔하는데지',
         friends:3});
     function GenerateVictims(count){
@@ -89,6 +92,7 @@
                 payattitude:10, //충전가능성
                 mental:100,
                 state:0,
+                paycount:0,
                 think:'재밌을거같은데',
                 friends:1
             });
@@ -236,7 +240,7 @@
 
             //최상단
             ui_mymoney = this.add.text(10, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
-            ui_mymoney.setText(mySite.money+'원');
+            
 
             ui_headline = this.add.text(10, 110, '전광판', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });
 
@@ -283,6 +287,7 @@
         }
         update ()
         {
+            ui_mymoney.setText(mySite.money+'원');
             if(scene == 2){ //희생양들
                 
 
@@ -521,7 +526,9 @@
     }
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
-            if(Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
+            if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
+                buyPoint(i, Math.floor(Math.random() * victimList[i].risky / 100 * victimList[i].money));
+            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
                 buyPoint(i, Math.floor(Math.random() * victimList[i].risky / 100 * victimList[i].money));
         }
     }
