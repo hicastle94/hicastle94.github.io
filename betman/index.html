@@ -323,7 +323,7 @@
                     waitTime--;
                     if(waitTime <= 0){
                         gamblePhase = 1;
-                        waitTime = 360;
+                        waitTime = 460;
                         
                         ui_headline.setText("베팅시간입니다!");
                         if(season == 0) startDialog(0);
@@ -527,9 +527,9 @@
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
-                buyPoint(i, Math.floor(Math.random() * victimList[i].risky / 100 * victimList[i].money));
+                buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
-                buyPoint(i, Math.floor(Math.random() * victimList[i].risky / 100 * victimList[i].money));
+                buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
         }
     }
     function considerRefund(){
