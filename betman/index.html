@@ -394,6 +394,10 @@
                 }
             }
 
+            //scene 3: next
+            if(scene == 3){
+                this.scene.start('scene3');
+            }
         }
     }
     function SetTurtles(){
@@ -588,7 +592,7 @@
                 {speaker:"두목",text:"아직도 돈을 안낸다고?"},
                 {speaker:"두목",text:"우선 어떻게든 조금이라도 내게 해야지"},
                 {speaker:"두목",text:"초회충전 보너스, 매일충전 보너스 먹여"},
-                {speaker:"두목",text:"왜이렇게 퍼주냐고?\n어차피 먹고 튀면 그만이거든"}]);
+                {speaker:"두목",text:"이렇게 퍼줘도 되냐고?\n어차피 먹고 튀면 그만이거든"}]);
 
     dialog.push([{speaker:"두목",text:"잘 되고 있나"},
                 {speaker:"두목",text:"좋아 100만원까지만 벌고 도망가자고"},
@@ -679,6 +683,32 @@
     // 아트는 어떤 풍으로?
     //
 
+        class Scene3 extends Phaser.Scene{
+        constructor()
+        {
+            super({ key: 'scene3' });
+        }
+        preload ()
+        {
+            bg = this.load.image('bg', 'assets/scene3/background.bmp');
+	        //button = this.load.image('button', 'assets/scene3/button1.bmp');
+        }
+
+        create ()
+        {
+            this.add.image(540,960, 'bg');
+	        // const sprite = this.add.sprite(540,1600,'button')
+            // sprite.setInteractive();
+            // sprite.on('pointerdown',endScene1);
+
+            input = this.input;
+            mouse = this.input.Mouse;
+            touch = this.input.Touch;
+        }
+        update(){
+
+        }
+    }
 
 
     var config = {
@@ -693,7 +723,7 @@
         physics: {
             default: 'arcade'
         },
-        scene: [Scene1,Scene2],
+        scene: [Scene1,Scene2,Scene3],
         parent : "gamewindow"
     };
 
