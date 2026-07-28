@@ -685,20 +685,20 @@
     // 아트는 어떤 풍으로?
     //
 
-        class Scene3 extends Phaser.Scene{
+    class Scene3 extends Phaser.Scene{
         constructor()
         {
             super({ key: 'scene3' });
         }
         preload ()
         {
-            bg = this.load.image('bg', 'assets/scene3/background.bmp');
+            bg = this.load.image('bg3', 'assets/scene3/background.bmp');
 	        //button = this.load.image('button', 'assets/scene3/button1.bmp');
         }
 
         create ()
         {
-            this.add.image(540,960, 'bg');
+            this.add.image(540,960, 'bg3');
 	        // const sprite = this.add.sprite(540,1600,'button')
             // sprite.setInteractive();
             // sprite.on('pointerdown',endScene1);
