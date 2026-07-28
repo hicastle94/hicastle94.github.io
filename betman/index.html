@@ -312,11 +312,11 @@
                     for(let i = 0; i < turtleOnLane.length ; i++){
                         turtleOnLane[i].runX = 0;
                         turtleOnLane[i].rank = 0;
-                        turtleOnLane[i].bet = 1;
-                        turtleOnLane[i].multiplier = 4.0;
+                        turtleOnLane[i].bet = 0;
+                        
                         turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
 
-                        turtleOnLane[i].multiplier = totalBet * 0.97 / turtleOnLane[i].bet;
+                        turtleOnLane[i].multiplier = 4.0;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
                     }
                     goalTurtles = 0;
@@ -584,13 +584,17 @@
                 {speaker:"두목",text:"너는 지금부터 이 도박사이트를 운영해서 \n돈을 벌어와야한다"},
                 {speaker:"두목",text:"돈을 벌어오지 못하면..."},
                 {speaker:"두목",text:"너의 처지가 어떻게 될지.. 알지?"},
-                {speaker:"두목",text:"그럼 잘해봐라"}]);
+                {speaker:"두목",text:"그럼 잘해봐라"},
+                {speaker:"송현우",text:"만화도 다 봤고.. 재미난거 없나?"},
+                {speaker:"송현우",text:"이건 뭐지? 구경이나 해볼까"}]);
                 
     dialog.push([{speaker:"두목",text:"뭐야 아직도 못벌었어?"},
                 {speaker:"두목",text:"얘들이 충전도 안한다고?"},
                 {speaker:"두목",text:"처음부터 돈내는 사람들이 어딨다고.."},
                 {speaker:"두목",text:"우선은 맛뵈기부터 시켜주는거야.."},
-                {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"}]);
+                {speaker:"두목",text:"모두한테 꽁돈 1000원씩 뿌려"},
+                {speaker:"송현우",text:"공짜로도 되는구나.."},
+                {speaker:"송현우",text:"한번 걸어볼까?"}]);
 
     dialog.push([{speaker:"두목",text:"뭐야 이거밖에 못벌었어?"},
                 {speaker:"두목",text:"아직도 돈을 안낸다고?"},
@@ -654,6 +658,10 @@
     var thinking=[];
     thinking.push({text:"나는 이런거 안할거야", state:0});
     thinking.push({text:"여기에 돈을 건다고?", state:0});
+
+    thinking.push({text:"재미는 있는데 돈을 걸기엔 좀..", state:1});
+    thinking.push({text:"여기에 돈을 건다고?", state:1});
+    thinking.push({text:"이게 진짜 돈이였다면..", state:1});
 
     thinking.push({text:"오 생각보다 돈이 되는데", mental:90});
     thinking.push({text:"아싸 개이득", mental:90});
