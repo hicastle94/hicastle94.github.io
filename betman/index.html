@@ -332,7 +332,7 @@
                         if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 1000;victimList[1].point = 1000;victimList[2].point = 1000;victimList[3].point = 1000;};
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
-                        if(mySite.money > 500000) {startDialog(4); mySite.phase = 3;}
+                        if(mySite.money > 200000) {startDialog(4); mySite.phase = 3;}
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
@@ -413,8 +413,9 @@
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
-            if(v.earn == 0){
+            if(v.earn == 0 && v.bet == 0){
                 v.face = '😕'; //처음옴
+                v.state = 0;
             }
             else if(gamblePhase == 4 && v.betwho > 0){
                 if(v.betwho == winner){//승리
@@ -540,13 +541,13 @@
 
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
-            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
+            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000 )
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
         }
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
+            if(victimList[i].money < 10 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 100000 )
                 loan(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
         }
     }
