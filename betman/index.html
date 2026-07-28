@@ -533,6 +533,8 @@
     }
     function considerBuy(){
         for(let i = 0; i < victimList.length ; i++){
+            if(victimList[i].money == 0) continue;
+
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 1000000 )
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
@@ -541,7 +543,7 @@
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000000 )
+            if(victimList[i].money == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 3000000 )
                 loan(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
         }
     }
