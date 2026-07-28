@@ -391,7 +391,7 @@
                         gamblePhase = 0;
                         waitTime = 40;
                         season++;
-                        GenerateVictims(1);
+                        if(season <= 5) GenerateVictims(1);
                         refreshVictimThink();
                     }
                 }
