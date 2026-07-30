@@ -39,7 +39,7 @@
         state:0, //0중립 1도박 2도박성공 3도박실패
         paycount:0,
         think:'여긴 뭔하는데지',
-        friends:3});
+        friends:2});
     victimList.push({
         name:GenerateVictimName(),
         face:"😕",
@@ -57,7 +57,7 @@
         state:0, //0중립 1도박 2도박성공 3도박실패
         paycount:0,
         think:'여긴 뭔하는데지',
-        friends:3});
+        friends:2});
     victimList.push({
         name:GenerateVictimName(),
         face:"🤩",
@@ -75,7 +75,7 @@
         state:0, //0중립 1도박 2도박성공 3도박실패
         paycount:0,
         think:'여긴 뭔하는데지',
-        friends:3});
+        friends:2});
     function GenerateVictims(count){
 
         for(let i = 0; i < count ; i++){
@@ -134,7 +134,7 @@
         create ()
         {
             this.add.image(540,960, 'bg');
-	        const sprite = this.add.sprite(540,1600,'button')
+	        const sprite = this.add.sprite(540,1600,'button');
             sprite.setInteractive();
             sprite.on('pointerdown',endScene1);
 
@@ -238,12 +238,9 @@
         {
             this.add.image(540, 960, 'bg2');
             //instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
-            //instruction=this.add.text(50, 0, '지시문 위치', { fontSize: '32px', color: '#000', testString:'두한', align:'center', fixedWidth:800 });
-
             //최상단
-            ui_mymoney = this.add.text(10, 10, '지시문 위치', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
+            ui_mymoney = this.add.text(10, 10, '금액', { fontSize: '64px', color: '#FFFFFF', align:'left', fixedWidth:800 });
             
-
             ui_headline = this.add.text(10, 110, '전광판', { fontSize: '64px', color: '#FFFFFF', align:'center', fixedWidth:1080 });
 
             for(let i = 0; i < 12; i++){
@@ -332,7 +329,8 @@
                         if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 1000;victimList[1].point = 1000;victimList[2].point = 1000;victimList[3].point = 1000;};
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
-                        if(mySite.money > 200000) {startDialog(4); mySite.phase = 3;}
+                        if(season == 7) {startDialog(6); mySite.phase = 3;}
+                        if(mySite.money > 200000) {startDialog(4); mySite.phase = 4;}
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
@@ -555,6 +553,7 @@
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].point > 100000){
                 victimList[i].payattitude;
+                refundRequest(i,victimList[i].point);
             }
         }
     }
@@ -572,12 +571,27 @@
         victimList[who].point -= amount;
     }
     function refundRequest(who, amount){
+        //Scene2.add.image
         "그게 왜 니돈이야";
+        //
     }
     function loan(who, amount){
         victimList[who].money += amount;
         victimList[who].loan += amount;
         victimList[who].risky += Math.floor(amount/10000);
+    }
+    function invite(who){
+        victimList[who].point += 5000;
+        GenerateVictims(1);
+    }
+    function considerInvite(){
+        if(mySite.phase >= 3)
+            for(let i = 0; i < victimList.length ; i++){
+                if(victimList[i].point < 10000){
+                    if(Math.random() < (victimList[i].interest) / 500000)
+                        invite(i);
+            }
+        }
     }
 
 
@@ -614,6 +628,12 @@
                 {speaker:"두목",text:"좋아 제법 잘하고 있구나.\n100만원까지만 벌고 도망가자고"},
                 {speaker:"두목",text:""},
                 {speaker:"두목",text:"아니? 벌써?"}]);
+
+    dialog.push([{speaker:"",text:"돈 다 꼴았네"},
+                {speaker:"",text:"빌려서 따면 될거같은데.."}]);
+
+    dialog.push([{speaker:"두목",text:"사람이 적어서 돈이 안벌리는구만"},
+                {speaker:"두목",text:"친구 데려오는 애들한테 포인트 줘"}]);
                 
     function ProcDialog(){
         //대답선택지
@@ -651,7 +671,7 @@
         ui_d_nametext.setVisible(false);
         ui_d_text.setVisible(false);
 
-        if(mySite.phase == 3){
+        if(mySite.phase == 4){
             scene = 3;
         }
     }
