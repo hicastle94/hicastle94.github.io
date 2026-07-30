@@ -546,7 +546,7 @@
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money < 10 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 500000 )
+            if(victimList[i].money < 10 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 50000 )
                 loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money));
         }
     }
@@ -583,13 +583,14 @@
     }
     function invite(who){
         victimList[who].point += 5000;
+        victimList[who].friends -= 1;
         GenerateVictims(1);
     }
     function considerInvite(){
         if(mySite.phase >= 3)
             for(let i = 0; i < victimList.length ; i++){
-                if(victimList[i].point < 10000){
-                    if(Math.random() < (victimList[i].interest) / 50000)
+                if(victimList[i].point < 10000 && victimList[i].friends > 0){
+                    if(Math.random() < victimList[i].interest / 5000)
                         invite(i);
             }
         }
