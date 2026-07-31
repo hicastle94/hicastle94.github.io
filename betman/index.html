@@ -88,7 +88,7 @@
                 point:(mySite.phase>=1)?1000:0,
                 earn:0,
                 betwho:-1,
-                bet:-1,
+                bet:0,
                 interest:10, //참여율
                 risky:10, //투자공격성
                 payattitude:(mySite.phase>=2)? 20 : 10,//충전가능성
@@ -590,7 +590,7 @@
         if(mySite.phase >= 3)
             for(let i = 0; i < victimList.length ; i++){
                 if(victimList[i].point < 10000 && victimList[i].friends > 0){
-                    if(Math.random() < victimList[i].interest / 80000)
+                    if(Math.random() < victimList[i].interest / 60000)
                         invite(i);
             }
         }
