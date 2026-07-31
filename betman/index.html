@@ -548,7 +548,7 @@
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].money == 0) continue;
 
-            if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 500000 )
+            if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 )
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000 )
                 buyPoint(i, min(victimList[i].money, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)));
@@ -562,7 +562,7 @@
     }
     function considerRefund(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].earn > 50000){
+            if(victimList[i].earn > 20000){
                 victimList[i].payattitude;
                 refundRequest(i,victimList[i].point);
             }
