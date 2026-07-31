@@ -607,9 +607,9 @@
         popimg.destroy();
     }
     function beginPopup(){
-        pop = Scene2.add.zone(540,960,400,300);
-        pop.setInteractive().on('pointerdown',endPopup);
         popimg = Scene2.add.image(540,960,'p_frame');
+        pop = Scene2.add.zone(540,960,400,300).setInteractive();
+        pop.on('pointerdown',endPopup);
     }
 
     var dialog=[];
