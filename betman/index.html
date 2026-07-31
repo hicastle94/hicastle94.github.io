@@ -554,7 +554,7 @@
     }
     function considerRefund(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].point > 100000){
+            if(victimList[i].earn > 50000){
                 victimList[i].payattitude;
                 refundRequest(i,victimList[i].point);
             }
@@ -607,9 +607,9 @@
         popimg.destroy();
     }
     function beginPopup(){
-        pop = Scene2.zone.add(540,960,400,300);
+        pop = Scene2.add.zone(540,960,400,300);
         pop.setInteractive().on('pointerdown',endPopup);
-        popimg = Scene2.image.add(540,960,'p_frame');
+        popimg = Scene2.add.image(540,960,'p_frame');
     }
 
     var dialog=[];
