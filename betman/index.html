@@ -221,6 +221,9 @@
     var ui_d_nametext;
     var ui_d_text;
 
+    var p_zone;
+    var ui_p_frame;
+
     class Scene2 extends Phaser.Scene{
         constructor()
         {
@@ -274,12 +277,15 @@
             gameOn = 1; //TEST
             mySite.phase = 0; //TEST
 
-5
             //for dialog
             ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
             ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
             ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
             ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '40px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
+
+            ui_p_frame = this.add.image(540,960,'p_frame').setVisible(false);
+            p_zone = this.add.zone(540,960,400,300).setInteractive();
+            p_zone.off('pointerdown');
 
 
             input = this.input;
@@ -600,16 +606,14 @@
         }
     }
 
-    var pop;
-    var popimg;
+    
     function endPopup(){
-        pop.destroy();
-        popimg.destroy();
+        p_zone.off('pointerdown');
+        ui_p_frame.setVisible(false);
     }
     function beginPopup(){
-        popimg = Scene2.add.image(540,960,'p_frame');
-        pop = Scene2.add.zone(540,960,400,300).setInteractive();
-        pop.on('pointerdown',endPopup);
+        p_zone.on('pointerdown',endPopup);
+        ui_p_frame.setVisible(true);
     }
 
     var dialog=[];
