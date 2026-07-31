@@ -233,6 +233,8 @@
 
             this.load.image('boss','assets/standing/boss.png');
             this.load.image('d_frame','assets/scene2/d_frame.png');
+
+            this.load.image('p_frame','assets/scene2/p_frame.bmp');
         }
         create ()
         {
@@ -272,7 +274,7 @@
             gameOn = 1; //TEST
             mySite.phase = 0; //TEST
 
-
+5
             //for dialog
             ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
             ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
@@ -575,6 +577,7 @@
         //Scene2.add.image
         "그게 왜 니돈이야";
         //
+        beginPopup();
     }
     function loan(who, amount){
         victimList[who].money += amount;
@@ -587,15 +590,27 @@
         GenerateVictims(1);
     }
     function considerInvite(){
-        if(mySite.phase >= 3)
+        if(mySite.phase >= 3){
             for(let i = 0; i < victimList.length ; i++){
                 if(victimList[i].point < 10000 && victimList[i].friends > 0){
                     if(Math.random() < victimList[i].interest / 60000)
                         invite(i);
+                }
             }
         }
     }
 
+    var pop;
+    var popimg;
+    function endPopup(){
+        pop.destroy();
+        popimg.destroy();
+    }
+    function beginPopup(){
+        pop = Scene2.zone.add(540,960,400,300);
+        pop.setInteractive().on('pointerdown',endPopup);
+        popimg = Scene2.image.add(540,960,'p_frame');
+    }
 
     var dialog=[];
     dialog.push([{speaker:"두목",text:"새로운 노예가 왔구나"},
