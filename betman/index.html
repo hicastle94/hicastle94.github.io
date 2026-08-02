@@ -616,7 +616,7 @@
         //p_zone.on('pointerdown',endPopup);
         ui_p_frame.setInteractive().on('pointerdown',endPopup);
         ui_p_frame.setVisible(true);
-        ui_p_text.setText(victimList[who].name + '이/가 환전을 요청합니다.');
+        ui_p_text.setText(victimList[who].name + '이/가 ' +  victimList[who].point +'원 환전을 요청합니다.');
         ui_p_text.setVisible(true);
     }
 
@@ -649,9 +649,7 @@
                 {speaker:"신호찬",text:"이거 베팅 안하고 충전한다음 환불받으면 \n공짜로 돈먹는거 아닌가?"},
                 {speaker:"두목",text:"저런애들한테 돈 바꿔주지 마라"}]);
 
-    dialog.push([{speaker:"문승재",text:"46만원이나 되네"},
-                {speaker:"문승재",text:"슬슬 환전해볼까?"},
-                {speaker:"두목",text:"좋아 제법 잘하고 있구나.\n100만원까지만 벌고 도망가자고"},
+    dialog.push([{speaker:"두목",text:"좋아 제법 잘하고 있구나.\n100만원까지만 벌고 도망가자고"},
                 {speaker:"두목",text:""},
                 {speaker:"두목",text:"아니? 벌써?"}]);
 
