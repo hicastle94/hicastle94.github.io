@@ -254,7 +254,7 @@
             }
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
-            const zone = this.add.zone(0,400,1080,600).setOrigin(0).setInteractive();
+            const zone = this.add.zone(0,250,1080,700).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
                     ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
@@ -286,8 +286,8 @@
 
             ui_p_frame = this.add.image(540,960,'p_frame').setVisible(false);
             ui_p_text = this.add.text(100, 960, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
-            p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
-            p_zone.off('pointerdown');
+            // p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
+            // p_zone.off('pointerdown');
 
 
             input = this.input;
