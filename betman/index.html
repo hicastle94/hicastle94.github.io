@@ -340,6 +340,7 @@
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
+                        if(season == 12) {startDialog(5);}
                         if(mySite.money > 400000) {startDialog(4); mySite.phase = 4;}
                     }
                 }
@@ -653,11 +654,14 @@
                 {speaker:"두목",text:""},
                 {speaker:"두목",text:"아니? 벌써?"}]);
 
-    dialog.push([{speaker:"",text:"돈 다 꼴았네"},
-                {speaker:"",text:"빌려서 따면 될거같은데.."}]);
+    dialog.push([{speaker:"신호찬",text:"돈 다 꼴았네"},
+                {speaker:"신호찬",text:"빌려서 딴다음 갚을까?"}]);
 
     dialog.push([{speaker:"두목",text:"사람이 적어서 돈이 안벌리는구만"},
                 {speaker:"두목",text:"친구 데려오는 애들한테 포인트 줘"}]);
+
+    dialog.push([{speaker:"신호찬",text:"왜 돈을 안바꿔주지?"},
+                {speaker:"신호찬",text:"먹튀당한건가 이거?"}]);
                 
     function ProcDialog(){
         //대답선택지
