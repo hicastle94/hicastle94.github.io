@@ -264,7 +264,7 @@
             
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '80px', color: '#FFFFFF', align:'left', fixedWidth:400 });
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, { fontSize: '60px', color: '#FFFFFF', align:'left', });
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -662,7 +662,7 @@
                 {speaker:"두목",text:"친구 데려오는 애들한테 포인트 줘"}]);
 
     dialog.push([{speaker:"문승재",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
-                {speaker:"두목",text:"이게 왜 니돈이야"},
+                {speaker:"두목",text:"이게 왜 니돈이야?"},
                 {speaker:"문승재",text:"설마.. 먹튀당한건가??"},]);
                 
     function ProcDialog(){
