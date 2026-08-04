@@ -285,7 +285,7 @@
             ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '40px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
 
             ui_p_frame = this.add.image(540, 960,'p_frame').setVisible(false);
-            ui_p_text = this.add.text(100, 860, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
+            ui_p_text = this.add.text(0, 860, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
             // p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
             // p_zone.off('pointerdown');
 
@@ -340,7 +340,7 @@
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
-                        if(mySite.money > 300000) {startDialog(4); mySite.phase = 4;}
+                        if(mySite.money > 400000) {startDialog(4); mySite.phase = 4;}
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
