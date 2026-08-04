@@ -284,8 +284,8 @@
             ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
             ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '40px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
 
-            ui_p_frame = this.add.image(540,960,'p_frame').setVisible(false);
-            ui_p_text = this.add.text(100, 960, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
+            ui_p_frame = this.add.image(540, 960,'p_frame').setVisible(false);
+            ui_p_text = this.add.text(100, 860, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
             // p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
             // p_zone.off('pointerdown');
 
@@ -616,7 +616,7 @@
         //p_zone.on('pointerdown',endPopup);
         ui_p_frame.setInteractive().on('pointerdown',endPopup);
         ui_p_frame.setVisible(true);
-        ui_p_text.setText(victimList[who].name + '이/가 ' +  victimList[who].point +'원 환전을 요청합니다.');
+        ui_p_text.setText(victimList[who].name + '이/가 \n' +  victimList[who].point +'원 환전을 요청합니다.');
         ui_p_text.setVisible(true);
     }
 
