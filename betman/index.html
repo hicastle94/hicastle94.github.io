@@ -343,13 +343,14 @@
                         if(season == 8) {startDialog(7);}
                         if(season == 14) {startDialog(5);}
                         if(mySite.money > 400000) {startDialog(4); mySite.phase = 4;}
+
+                        considerRefund();
                     }
                 }
                 else if(gamblePhase == 1){//베팅시간
                     
                     considerBetting();
                     considerBuy();
-                    considerRefund();
                     considerLoan();
                     considerInvite();
 
