@@ -341,7 +341,8 @@
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
                         if(season == 8) {startDialog(7);}
-                        if(season == 14) {startDialog(5);}
+                        if(season == 9) {startDialog(5);}
+                        if(season == 10) {startDialog(8);}
                         if(mySite.money > 400000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
@@ -654,7 +655,8 @@
                 {speaker:"신호찬",text:"이거 베팅 안하고 충전한다음 환불받으면 \n공짜로 돈먹는거 아닌가?"},
                 {speaker:"사장",text:"저런애들한테 돈 바꿔주지 마라"}]);
 
-    dialog.push([{speaker:"사장",text:"좋아 제법 잘하고 있구나.\n100만원까지만 벌고 도망가자고"},
+    dialog.push([{speaker:"문승재",text:"이런 다 잃었잖아 이젠 어떡하지?\n전부 빌린돈이었는데.."},
+                {speaker:"사장",text:"좋아 제법 잘 빨아먹고 있구나.\n100만원까지만 벌고 도망가자고"},
                 {speaker:"사장",text:""},
                 {speaker:"사장",text:"아니? 벌써?"}]);
 
@@ -669,6 +671,10 @@
                 {speaker:"사장",text:"이게 왜 니돈이야?"},
                 {speaker:"신재운",text:"설마.. 먹튀당한건가??"},
                 {speaker:"신재운",text:"안돼!! 내 돈 돌려줘!!"}]);
+
+    dialog.push([{speaker:"문승재",text:"큰일이네 빌린돈도 전부 잃었어"},
+                {speaker:"문승재",text:"한번만 따면 빚도갚고 복구도 하는건데"},
+                {speaker:"문승재",text:"되는데까지 한번 빌려보자"}]);
                 
     function ProcDialog(){
         //대답선택지
