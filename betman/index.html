@@ -431,7 +431,7 @@
                 v.face = '😕'; //처음옴
                 v.state = 0;
             }
-            else if(gamblePhase == 4 && v.betwho > 0){
+            else if(gamblePhase == 4 && v.betwho >= 0){
                 if(v.betwho == winner){//승리
                     v.face = '😋';
                 }
@@ -506,7 +506,7 @@
         for(let i = 0; i < victimList.length ; i++){
             var a = (Math.random()*8000 < victimList[i].interest);
             if(a == true && victimList[i].betwho == -1){
-                var b = Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point) + 1;
+                var b = Math.floor(Math.floor(Math.random() * victimList[i].risky / 10 * victimList[i].point + 1)/100)*100;
                 b = min (b, victimList[i].point);
                 if(b>0){
                     Bet(i,b,Math.floor(Math.random()*4));
