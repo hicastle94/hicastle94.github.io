@@ -27,6 +27,7 @@
         face:"😭",
         money:20000,
         income:10000,
+        buymoneytotal:0,
         loan:0,
         point:0,
         earn:0,
@@ -45,6 +46,7 @@
         face:"😕",
         money:30000,
         income:5000,
+        buymoneytotal:0,
         loan:0,
         point:0,
         earn:0,
@@ -63,6 +65,7 @@
         face:"🤩",
         money:30000,
         income:5000,
+        buymoneytotal:0,
         loan:0,
         point:0,
         earn:0,
@@ -84,6 +87,7 @@
                 face:'😶',
                 money:50000,
                 income:5000,
+                buymoneytotal:0,
                 loan:0,
                 point:(mySite.phase>=1)?10000:0,
                 earn:0,
@@ -577,6 +581,8 @@
         mySite.money += amount;
         victimList[who].money -= amount;
         victimList[who].point += amount;
+
+        victimList[who].buymoneytotal += amont;
         
         if(mySite.phase >= 2) victimList[who].point += Math.floor(amount*0.2);
         ui_headline.setText(victimList[who].name + "님이 " + amount + "원 충전!!");
@@ -769,15 +775,25 @@
         preload ()
         {
             bg = this.load.image('bg3', 'assets/scene3/background.png');
-	        //button = this.load.image('button', 'assets/scene3/button1.bmp');
         }
 
         create ()
         {
             this.add.image(540,960, 'bg3');
-	        // const sprite = this.add.sprite(540,1600,'button')
-            // sprite.setInteractive();
-            // sprite.on('pointerdown',endScene1);
+	        
+            var victimCount = 0;
+            var victimMoney = 0;
+            var victimLoanCount = 0;
+            for(let i = 0 ; i < victimList.length; i++){
+                if(victimList[i].buymoneytotal > 0){
+                    victimCount += 1;
+                    victimMoney += victimList[i].buymoneytotal;
+                }
+                if(victimList[i].loan > 0){
+                    victimLoanCount += 1;
+                }
+            }
+            this.add.text(0, 60, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '20px', color: '#FFFFFF', align:'center', fixedWidth:1080 })
 
             input = this.input;
             mouse = this.input.Mouse;
