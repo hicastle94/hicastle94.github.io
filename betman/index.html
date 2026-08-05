@@ -562,7 +562,7 @@
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
-                loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 2 * victimList[i].money));
+                loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 10000));
         }
     }
     function considerRefund(){
@@ -638,7 +638,7 @@
                 {speaker:"사장",text:"얘들이 충전도 안한다고?"},
                 {speaker:"사장",text:"처음부터 돈내는 사람들이 어딨다고.."},
                 {speaker:"사장",text:"우선은 맛뵈기부터 시켜주는거야.."},
-                {speaker:"사장",text:"모두한테 꽁돈 1000원씩 뿌려"},
+                {speaker:"사장",text:"모두한테 꽁돈 10000원씩 뿌려"},
                 {speaker:"문승재",text:"공짜로도 되는구나.."},
                 {speaker:"문승재",text:"한번 걸어볼까?"}]);
 
@@ -664,10 +664,10 @@
     dialog.push([{speaker:"사장",text:"사람이 적어서 돈이 안벌리는구만"},
                 {speaker:"사장",text:"친구 데려오는 애들한테 포인트 줘"}]);
 
-    dialog.push([{speaker:"문승재",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
+    dialog.push([{speaker:"송현우",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
                 {speaker:"사장",text:"이게 왜 니돈이야?"},
-                {speaker:"문승재",text:"설마.. 먹튀당한건가??"},
-                {speaker:"문승재",text:"안돼!! 내 돈 돌려줘!!"}]);
+                {speaker:"송현우",text:"설마.. 먹튀당한건가??"},
+                {speaker:"송현우",text:"안돼!! 내 돈 돌려줘!!"}]);
                 
     function ProcDialog(){
         //대답선택지
