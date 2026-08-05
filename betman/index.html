@@ -85,7 +85,7 @@
                 money:50000,
                 income:5000,
                 loan:0,
-                point:(mySite.phase>=1)?1000:0,
+                point:(mySite.phase>=1)?10000:0,
                 earn:0,
                 betwho:-1,
                 bet:0,
@@ -336,7 +336,7 @@
                         
                         ui_headline.setText("베팅시간입니다!");
                         if(season == 0) startDialog(0);
-                        if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 1000;victimList[1].point = 1000;victimList[2].point = 1000;victimList[3].point = 1000;};
+                        if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 10000;victimList[1].point = 1000;victimList[2].point = 1000;victimList[3].point = 1000;};
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
@@ -594,7 +594,7 @@
         victimList[who].risky += Math.floor(amount/10000);
     }
     function invite(who){
-        victimList[who].point += 5000;
+        victimList[who].point += 10000;
         victimList[who].friends -= 1;
         GenerateVictims(1);
     }
