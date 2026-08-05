@@ -685,7 +685,7 @@
         else loadDialog();
     }
     function loadDialog(){
-        ui_d_port.setTexture(dialog[d_nowDialog][d_nowInDialog].speaker == '사장'?'boss':'student');
+        ui_d_port.setTexture( dialog[d_nowDialog][d_nowInDialog].speaker == '사장'?'boss':'student');
         ui_d_nametext.setText( dialog[d_nowDialog][d_nowInDialog].speaker );
         ui_d_text.setText( dialog[d_nowDialog][d_nowInDialog].text );
     }
