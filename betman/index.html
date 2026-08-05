@@ -236,6 +236,7 @@
             this.load.image('turtle','assets/scene2/turtle.png');
 
             this.load.image('boss','assets/standing/boss.png');
+            this.load.image('student','assets/standing/student.png');
             this.load.image('d_frame','assets/scene2/d_frame.png');
 
             this.load.image('p_frame','assets/scene2/p_frame.bmp');
@@ -684,6 +685,7 @@
         else loadDialog();
     }
     function loadDialog(){
+        ui_d_port.setImage(dialog[d_nowDialog][d_nowInDialog].speaker == '사장'?'boss':'student');
         ui_d_nametext.setText( dialog[d_nowDialog][d_nowInDialog].speaker );
         ui_d_text.setText( dialog[d_nowDialog][d_nowInDialog].text );
     }
