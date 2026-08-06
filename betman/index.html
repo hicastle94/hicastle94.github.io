@@ -452,15 +452,22 @@
                 }
             }
             else if(gamblePhase == 4 && v.betwho >= 0){
+                if(v.point == 0 && v.bet > 0){ //올인
+                    v.face = '😣';
+                    v.think = '제발 이겨라';
+                }
                 if(v.betwho == winner){//승리
                     v.face = '😋';
+                    v.think = '이거지~ 이맛에 한다';
                 }
                 else{//패배
                     v.face = '😥';
+                    v.think = '잃었어, 이거 사기 아냐?';
                 }
             }
             else if(v.point + v.bet == 0){ //다잃음
                 v.face = '😭';
+                v.think = '전부 잃었어';
             }
             else if(v.earn + v.bet < 0){ //손해
                 v.face = '🙁';
@@ -550,10 +557,13 @@
                 victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
                 victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
 
-                
                 victimList[i].interest += 2;
                 victimList[i].risky += 1;
                 victimList[i].payattitude += 4;
+                victimList[i].mental += 24;
+            }
+            else{
+                victimList[i].mental -= 8;
             }
         }
     }
@@ -746,6 +756,7 @@
     thinking.push({text:"오 생각보다 돈이 되는데", mental:90});
     thinking.push({text:"아싸 개이득", mental:90});
     thinking.push({text:"와 여기에 올인했었으면..", mental:90});
+
     thinking.push({text:"한판만 더..", mental:90});
     thinking.push({text:"이거 사기 아냐?", mental:90});
     thinking.push({text:"돈 충전해야겠다", mental:90});
