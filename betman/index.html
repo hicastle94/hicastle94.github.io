@@ -105,6 +105,14 @@
         }
     }
 
+    const VictimState = {
+        CURIOUS     : 0,   // 호기심
+        WINNER      : 1,   // 첫 승리
+        ADDICT      : 2,   // 중독
+        DESPERATE   : 3,   // 절박
+        COLLAPSED   : 4    // 파탄
+    }
+
     var mySite = {
         money:0,
         popular:0,
@@ -435,6 +443,14 @@
                 v.face = '😕'; //처음옴
                 v.state = 0;
             }
+            else if(gamblePhase == 2){
+                if(v.point == 0 && v.bet > 0){ //올인
+                    v.face = '😣';
+                }
+                else if(v.point > 0 && v.bet == 0){ //관망
+                    v.face = '🤔';
+                }
+            }
             else if(gamblePhase == 4 && v.betwho >= 0){
                 if(v.betwho == winner){//승리
                     v.face = '😋';
@@ -446,13 +462,6 @@
             else if(v.point + v.bet == 0){ //다잃음
                 v.face = '😭';
             }
-            else if(v.point == 0 && v.bet > 0){ //올인
-                v.face = '😣';
-            }
-            else if(v.point > 0 && v.bet == 0){ //관망
-                v.face = '🤔';
-            }
-
             else if(v.earn + v.bet < 0){ //손해
                 v.face = '🙁';
             }
@@ -640,8 +649,7 @@
                 {speaker:"송현우",text:"가득하던 만화도 다 봤고.. 재미난거 없나?"},
                 {speaker:"송현우",text:"이건 뭐지? 구경이나 해볼까"}]);
                 
-    dialog.push([{speaker:"사장",text:"뭐야 아직도 못벌었어?"},
-                {speaker:"사장",text:"얘들이 충전도 안한다고?"},
+    dialog.push([{speaker:"사장",text:"얘들이 충전을 안한다고?"},
                 {speaker:"사장",text:"처음부터 돈내는 사람들이 어딨다고.."},
                 {speaker:"사장",text:"우선은 맛뵈기부터 시켜주는거야.."},
                 {speaker:"사장",text:"모두한테 꽁돈 10000원씩 뿌려"},
@@ -662,7 +670,7 @@
 
     dialog.push([{speaker:"사장",text:"좋아 제법 잘 빨아먹고 있구나.\n100만원까지만 벌고 도망가자고"},
                 {speaker:"사장",text:""},
-                {speaker:"사장",text:"아니? 벌써?"},
+                {speaker:"사장",text:"아니? 벌써 경찰이?"},
                 {speaker:"문승재",text:"어어? 사이트가 접속이 안되는데?"},
                 {speaker:"문승재",text:"안돼!! 내 돈!! 빚갚아야한다고!!"},]);
 
