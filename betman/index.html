@@ -287,7 +287,7 @@
             ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
             ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
             ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
-            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '40px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
+            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '50px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
 
             ui_p_frame = this.add.image(540, 960,'p_frame').setVisible(false);
             ui_p_text = this.add.text(0, 860, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
@@ -745,27 +745,22 @@
     thinking.push({text:"돈을 다 써버렸네..", mental:90});
     thinking.push({text:"돈을 어디서 빌려올까", mental:90});
     thinking.push({text:"빌린돈으로 따서 갚으면 되지 않을까?", mental:30});
+    
     thinking.push({text:"쟤는 따는데 나는 꼴았네..", mental:90});
     thinking.push({text:"쟤는 돈 버는데 나는 못버네..", mental:90});
     thinking.push({text:"꽁머니라도..", mental:90});
     
-    thinking.push({text:"첫충전을 해볼까?", mental:90});
-    thinking.push({text:"친구를 꼬시면 포인트를 준다고?", mental:90});
-    thinking.push({text:"친구를 초대하면 포인트를 준다고?", mental:90});
-    thinking.push({text:"매일 충전하면 더 이득인가?", mental:90});
+    thinking.push({text:"첫충전을 해볼까?", phase:2});
+    thinking.push({text:"매일 충전하면 더 이득인가?", phase:2});
 
+    thinking.push({text:"친구를 꼬시면 포인트를 준다고?", phase:3});
+    thinking.push({text:"친구를 초대하면 포인트를 준다고?", phase:3});
+    
     thinking.push({text:"슬슬 돈으로 바꿔야겠는데", mental:90});
     thinking.push({text:"오늘 대박! 환전하자", mental:90});
 
     thinking.push({text:"아직도 손해를 못메꿨네", mental:90});
     thinking.push({text:"한판만 더 따면 흑자다", mental:90});
-    // thinking.push({text:"이건 정배지", mental:90});
-    // thinking.push({text:"이건 역배지", mental:90});
-
-    //#### 기획 ####
-    // 종목 단일(거북이)? 다양화?
-    // 아트는 어떤 풍으로?
-    //
 
     class Scene3 extends Phaser.Scene{
         constructor()
