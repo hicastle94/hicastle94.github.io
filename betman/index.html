@@ -596,7 +596,7 @@
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 300000 ){
+            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-15) / 300000 ){
                 if(victimList[i].loan == 0)addThought(i, '처음으로 대출했어');
                 loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 100)*100);
             }
@@ -836,8 +836,8 @@
 
             var reportString = '';
             for(let i = 0 ; i < victimList.length; i++){
-                for(let j = 0 ; j < victimList[i].thoughts ; j++){
-                    reportString+='\n'+season+'회차'+victimList[i].thoughts[j];
+                for(let j = 0 ; j < victimList[i].thoughts.length ; j++){
+                    reportString+='\n'+victimList[i].thoughts[j].season+'회차'+victimList[i].thoughts[j].text;
                 }
             }
             let reportText = scene.add.text(
@@ -856,7 +856,9 @@
             touch = this.input.Touch;
         }
         update(){
-            reportText.y -= 0.5;
+            if(reportText.y + reportText.height > 100){
+                reportText.y -= 0.5;
+            }
         }
     }
 
