@@ -569,7 +569,7 @@
                 victimList[i].payattitude += 4;
                 victimList[i].mental += 24;
             }
-            else{
+            else if(victimList[i].betwho != -1){
                 addThought(i, '졌다! '+victimList[i].bet+'원을 잃었어');
                 victimList[i].mental -= 8;
             }
