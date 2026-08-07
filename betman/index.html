@@ -513,7 +513,7 @@
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i){
                         ui_victim[i*2].setText( '포인트: '+Math.floor(victim.point)+' 현금:' + victim.money + ' 빌린돈:' + victim.loan );
-                        ui_victim[i*2+1].setText(victim.face + victim.name + ' (' Math.floor(victim.earn) + ') ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
+                        ui_victim[i*2+1].setText(victim.face + victim.name + ' ('+ Math.floor(victim.earn) + ') ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
                     }
                     else{
                         ui_victim[i*2].setText('');
