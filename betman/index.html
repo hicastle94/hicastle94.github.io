@@ -356,8 +356,9 @@
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
                         if(season == 6) {startDialog(7);}//먹튀
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
-                        if(season == 8) {startDialog(5); kick(2);}//
-                        if(season == 9) {startDialog(8);}//더대출
+                        if(season == 8) {startDialog(5); kick(2);}//문승재 런
+                        if(season == 9) {startDialog(9);}//대출
+                        if(season == 10) {startDialog(8);}//더대출
                         if(mySite.money > 1000000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
@@ -724,7 +725,10 @@
 
     dialog.push([{speaker:"문승재",text:"큰일이네 빌린돈도 전부 잃었어"},
                 {speaker:"문승재",text:"한번만 따면 빚도갚고 복구도 하는건데"},
-                {speaker:"문승재",text:"되는데까지 한번 빌려보자"}]);
+                {speaker:"문승재",text:"될때까지 한번 빌려보자"}]);
+
+    dialog.push([{speaker:"문승재",text:"하아 잃은거 복구하고 싶은데"},
+                {speaker:"문승재",text:"빌려서라도 따볼까?"}]);
                 
     function nextDialog(){
         d_nowInDialog++;
