@@ -354,11 +354,11 @@
                         if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 10000;victimList[1].point = 10000;victimList[2].point = 10000;victimList[3].point = 10000;};
                         if(season == 3) startDialog(2);
                         if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
+                        if(season == 6) {startDialog(7);}//먹튀
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
-                        if(season == 10) {startDialog(7);}//먹튀
-                        if(season == 6) {startDialog(5);}//대출고려
+                        if(season == 8) {startDialog(5); kick(2);}//
                         if(season == 9) {startDialog(8);}//더대출
-                        if(mySite.money > 1000000) {startDialog(4); mySite.phase = 4;} //for test
+                        if(mySite.money > 1000000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
                     }
@@ -499,7 +499,7 @@
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i){
                         ui_victim[i*2].setText( victim.think );
-                        ui_victim[i*2+1].setText( victim.face + victim.name + ' (' + Math.floor(victim.earn) +') '+ (victim.betwho>=0? (victim.betwho+1) + '번에 베팅 ' + victim.bet : ''));
+                        ui_victim[i*2+1].setText( victim.face + victim.name +' '+Math.floor(victim.point)+ ' (' + Math.floor(victim.earn) +') '+ (victim.betwho>=0? (victim.betwho+1) + '번에 베팅 ' + victim.bet : ''));
                     }
                     else{
                         ui_victim[i*2].setText('');
@@ -712,16 +712,15 @@
                 {speaker:"문승재",text:"안돼!! 내 돈!! 빚갚아야한다고!!"},]);
 
     dialog.push([{speaker:"문승재",text:"돈 다 꼴았네"},
-                {speaker:"문승재",text:"다시 복구하고싶은데.."},
-                {speaker:"문승재",text:"빌려서 딴다음 갚을까?"}]);
+                {speaker:"문승재",text:"어차피 먹튀당했는데.. 미련없다 이제"}]);
 
     dialog.push([{speaker:"사장",text:"사람이 적어서 돈이 안벌리는구만"},
                 {speaker:"사장",text:"친구 데려오는 애들한테 포인트 줘"}]);
 
-    dialog.push([{speaker:"신혜진",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
+    dialog.push([{speaker:"문승재",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
                 {speaker:"사장",text:"이게 왜 니돈이야?"},
-                {speaker:"신혜진",text:"설마.. 먹튀당한건가??"},
-                {speaker:"신혜진",text:"안돼!! 내 돈 돌려줘!!"}]);
+                {speaker:"문승재",text:"설마.. 먹튀당한건가??"},
+                {speaker:"문승재",text:"안돼!! 내 돈 돌려줘!!"}]);
 
     dialog.push([{speaker:"문승재",text:"큰일이네 빌린돈도 전부 잃었어"},
                 {speaker:"문승재",text:"한번만 따면 빚도갚고 복구도 하는건데"},
