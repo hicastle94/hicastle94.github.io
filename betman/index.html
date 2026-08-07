@@ -636,6 +636,7 @@
         victimList[who].point += 10000;
         victimList[who].friends -= 1;
         GenerateVictims(1);
+        add.thoughts(victimList.length-1, '친구 추천으로 가입했다');
     }
     function considerInvite(){
         if(mySite.phase >= 3){
