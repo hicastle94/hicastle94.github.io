@@ -439,6 +439,11 @@
     function TurtleGoal(){
         
     }
+
+    function addThought(who, what){
+        victimList[who].thoughts.push(what);
+        victimList[who].think = victimList[who].thoughts[ victimList[who].thoughts.length-1 ];
+    }
     
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
@@ -495,7 +500,7 @@
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i){
                         ui_victim[i*2].setText( victim.think );
-                        ui_victim[i*2+1].setText( victim.face + victim.name + ' ' + Math.floor(victim.earn));
+                        ui_victim[i*2+1].setText( victim.face + victim.name + ' ' + Math.floor(victim.earn) +' '+ victim.betwho + '번에 베팅' + victim.bet);
                     }
                     else{
                         ui_victim[i*2].setText('');
@@ -643,7 +648,7 @@
         }
     }
 
-    
+    //popup
     function endPopup(){
         //p_zone.off('pointerdown');
         ui_p_frame.setInteractive().off('pointerdown');
@@ -657,7 +662,9 @@
         ui_p_text.setText(victimList[who].name + '이/가 \n' +  victimList[who].point +'원 환전을 요청합니다.');
         ui_p_text.setVisible(true);
     }
+    //popup end
 
+    //dialogs
     var dialog=[];
     dialog.push([{speaker:"사장",text:"호구들 돈 빨아먹을 준비는 됐나, 신입?"},
                 {speaker:"사장",text:"너는 지금부터 이 도박사이트를 운영해서 \n돈을 벌어와야한다"},
@@ -709,9 +716,6 @@
                 {speaker:"문승재",text:"한번만 따면 빚도갚고 복구도 하는건데"},
                 {speaker:"문승재",text:"되는데까지 한번 빌려보자"}]);
                 
-    function ProcDialog(){
-        //대답선택지
-    }
     function nextDialog(){
         d_nowInDialog++;
         if(d_nowInDialog >= dialog[d_nowDialog].length) endDialog();
@@ -750,6 +754,7 @@
             scene = 3;
         }
     }
+    //dialogs end
 
     var chat=[];
 
