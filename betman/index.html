@@ -618,6 +618,7 @@
         
         if(mySite.phase >= 2) victimList[who].point += Math.floor(amount*0.2);
         ui_headline.setText(victimList[who].name + "님이 " + amount + "원 충전!!");
+        addThought(who, amount+'원만큼 충전했어');
     }
     function refundPoint(who, amount){
         mySite.money -= amount;
@@ -626,17 +627,19 @@
     }
     function refundRequest(who, amount){
         beginPopup(who);
+        addThought(who, amount+'원만큼 환전하고싶어');
     }
     function loan(who, amount){
         victimList[who].money += amount;
         victimList[who].loan += amount;
         victimList[who].risky += Math.floor(amount/10000);
+        addThought(who, amount+'원만큼 돈을 빌렸어');
     }
     function invite(who){
         victimList[who].point += 10000;
         victimList[who].friends -= 1;
         GenerateVictims(1);
-        add.thoughts(victimList.length-1, '친구 추천으로 가입했다');
+        addThought(victimList.length-1, '친구 추천으로 가입했다');
     }
     function considerInvite(){
         if(mySite.phase >= 3){
