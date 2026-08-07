@@ -311,7 +311,7 @@
         }
         update ()
         {
-            ui_mymoney.setText(mySite.money+'원  ' + season + '회차'); //delete me
+            ui_mymoney.setText(mySite.money+'원  ' + season + '회차');
             if(scene == 2){ //희생양들
                 
                 refreshVictimFace();
@@ -462,8 +462,9 @@
             }
             else if(gamblePhase == 4 && v.betwho >= 0){
                 if(v.point == 0 && v.bet > 0){ //올인
+                    if(v.face != '😣')addThought(i, '포인트를 전부 걸었어');
                     v.face = '😣';
-                    v.think = '제발 이겨라';
+                    
                 }
                 if(v.betwho == winner){//승리
                     v.face = '😋';
@@ -473,8 +474,8 @@
                 }
             }
             else if(v.point + v.bet == 0){ //다잃음
+                if(v.face != '😭')addThought(i, '포인트를 전부 잃었어');
                 v.face = '😭';
-                v.think = '전부 잃었어';
             }
             else if(v.earn + v.bet < 0){ //손해
                 v.face = '🙁';
@@ -511,8 +512,8 @@
                 for(let i = 0; i < 6 ; i++){
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i){
-                        ui_victim[i*2].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' ' + Math.floor(victim.point) + ' ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
-                        ui_victim[i*2+1].setText('현금:' + victim.money + ' 빌린돈:' + victim.loan );
+                        ui_victim[i*2].setText( '현금:' + victim.money + ' 빌린돈:' + victim.loan );
+                        ui_victim[i*2+1].setText(Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' ' + Math.floor(victim.point) + ' ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
                     }
                     else{
                         ui_victim[i*2].setText('');
@@ -585,7 +586,7 @@
 
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)/100)*100));
-                addThought(i, '처음으로 돈을 걸었어');
+                addThought(i, '처음으로 결제했어');
             }
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000 )
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
@@ -593,8 +594,11 @@
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 )
+            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 10000 ){
+                if(victimList[i].loan == 0)addThought(i, '처음으로 결제했어');
                 loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 100)*100);
+            }
+                
         }
     }
     function considerRefund(){
