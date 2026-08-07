@@ -586,7 +586,7 @@
 
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)/100)*100));
-                addThought(i, '처음으로 결제했어');
+                addThought(i, '처음으로 충전했어');
             }
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000 )
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
@@ -800,6 +800,10 @@
     thinking.push({text:"아직도 손해를 못메꿨네", mental:90});
     thinking.push({text:"한판만 더 따면 흑자다", mental:90});
 
+
+    //for scene3
+
+
     class Scene3 extends Phaser.Scene{
         constructor()
         {
@@ -828,12 +832,29 @@
             }
             this.add.text(0, 260, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '60px', color: '#FFFFFF', align:'left', fixedWidth:1080 })
 
+            var reportString = '';
+            for(let i = 0 ; i < victimList.length; i++){
+                for(let j = 0 ; j < victimList[i].thoughts ; j++){
+                    reportString+='\n'+season+'회차'+victimList[i].thoughts[j];
+                }
+            }
+            let reportText = scene.add.text(
+                80,
+                960,
+                reportString,
+                {
+                    fontSize: "28px",
+                    color: "#ffffff",
+                    wordWrap: { width: 900 }
+                }
+            );
+
             input = this.input;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
         }
         update(){
-
+            reportText.y -= 0.5;
         }
     }
 
