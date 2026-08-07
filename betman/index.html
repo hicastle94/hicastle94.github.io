@@ -836,12 +836,13 @@
                     victimLoanCount += 1;
                 }
             }
-            this.add.text(0, 260, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '60px', color: '#FFFFFF', align:'left', fixedWidth:1080 })
+            //this.add.text(0, 260, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '60px', color: '#FFFFFF', align:'left', fixedWidth:1080 })
 
-            var reportString = '';
+            var reportString = '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
             for(let i = 0 ; i < victimList.length; i++){
+                reportString+='\n\n'+victimList[i].name;
                 for(let j = 0 ; j < victimList[i].thoughts.length ; j++){
-                    reportString+='\n'+victimList[i].thoughts[j].season+'회차'+victimList[i].thoughts[j].text;
+                    reportString+='\n\n'+victimList[i].thoughts[j].season+'회차'+victimList[i].thoughts[j].text;
                 }
             }
             reportText = this.add.text(
@@ -849,9 +850,10 @@
                 960,
                 reportString,
                 {
-                    fontSize: "28px",
+                    fontSize: "60px",
                     color: "#ffffff",
-                    wordWrap: { width: 900 }
+                    wordWrap: { width: 900 },
+                    align:'center'
                 }
             );
 
@@ -860,7 +862,7 @@
             touch = this.input.Touch;
         }
         update(){
-            if(reportText.y + reportText.height > 100){
+            if(reportText.y + reportText.height > 0){
                 reportText.y -= 0.5;
             }
         }
