@@ -848,6 +848,7 @@
                     reportString+='\n\n'+victimList[i].thoughts[j].season+'회차 '+victimList[i].thoughts[j].text;
                 }
             }
+            reportString += '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
             reportText = this.add.text(
                 80,
                 960,
@@ -871,8 +872,8 @@
             touch = this.input.Touch;
         }
         update(){
-            if(reportText.y + reportText.height > 0){
-                reportText.y -= 1.5;
+            if(reportText.y + reportText.height > 240){
+                reportText.y -= 2.5;
             }
         }
     }
