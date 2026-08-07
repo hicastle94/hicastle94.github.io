@@ -842,7 +842,7 @@
             for(let i = 0 ; i < victimList.length; i++){
                 reportString+='\n\n'+victimList[i].name;
                 for(let j = 0 ; j < victimList[i].thoughts.length ; j++){
-                    reportString+='\n\n'+victimList[i].thoughts[j].season+'회차'+victimList[i].thoughts[j].text;
+                    reportString+='\n\n'+victimList[i].thoughts[j].season+'회차 '+victimList[i].thoughts[j].text;
                 }
             }
             reportText = this.add.text(
@@ -857,13 +857,19 @@
                 }
             );
 
+            const maskShape = this.make.graphics();
+            maskShape.fillStyle(0xffffff);
+            maskShape.fillRect(0, 0, 1080, 960);
+            const mask = maskShape.createGeometryMask();
+            reportText.setMask(mask);
+
             input = this.input;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
         }
         update(){
             if(reportText.y + reportText.height > 0){
-                reportText.y -= 0.5;
+                reportText.y -= 1.5;
             }
         }
     }
