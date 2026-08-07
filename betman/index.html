@@ -358,7 +358,7 @@
                         if(season == 8) {startDialog(7);}
                         if(season == 9) {startDialog(5);}
                         if(season == 10) {startDialog(8);}
-                        if(mySite.money > 400000) {startDialog(4); mySite.phase = 4;}
+                        if(mySite.money > 500000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
                     }
@@ -489,22 +489,25 @@
     }
     function refreshUiVictim(){
         switch(ui_victimMode){
-            case 0: //포인트, 베팅정보
+            case 0: //생각
+                var cur = max(Math.floor(ui_victimStart),0);
+                for(let i = 0; i < 6 ; i++){
+                    var victim = victimList[max(cur+i,0)];
+                    if(victimList.length > cur+i){
+                        ui_victim[i*2].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name);
+                        ui_victim[i*2+1].setText( victim.think );
+                    }
+                    else
+                        ui_victim[i*2].setText('');
+                        ui_victim[i*2+1].setText('');
+                }
+                break;
+            case 1: //생각 + 포인트, 베팅정보
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 12 ; i++){
                     var victim = victimList[max(cur+i,0)];
                     if(victimList.length > cur+i)
                         ui_victim[i].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ' ' + Math.floor(victim.point) + ' ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
-                    else
-                        ui_victim[i].setText('');
-                }
-                break;
-            case 1: //생각
-                var cur = max(Math.floor(ui_victimStart),0);
-                for(let i = 0; i < 12 ; i++){
-                    var victim = victimList[max(cur+i,0)];
-                    if(victimList.length > cur+i)
-                        ui_victim[i].setText( Math.floor(victim.earn) + ' ' + victim.face + victim.name + ': ' + victim.think );
                     else
                         ui_victim[i].setText('');
                 }
