@@ -358,7 +358,7 @@
                         if(season == 8) {startDialog(7);}
                         if(season == 9) {startDialog(5);}
                         if(season == 10) {startDialog(8);}
-                        if(mySite.money > 500000) {startDialog(4); mySite.phase = 4;}
+                        if(mySite.money > 1000000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
                     }
@@ -589,14 +589,14 @@
                 addThought(i, '처음으로 충전했어');
                 victimList[i].paycount++;//todo
             }
-            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 200000 ){
+            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
             }
         }
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 200000 ){
+            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 300000 ){
                 if(victimList[i].loan == 0)addThought(i, '처음으로 대출했어');
                 loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 100)*100);
             }
@@ -677,7 +677,7 @@
                 {speaker:"사장",text:"너는 지금부터 이 도박사이트를 운영해서 \n돈을 벌어와야한다"},
                 {speaker:"사장",text:"네가 맡을 종목은 이 거북이 경마다."},
                 {speaker:"사장",text:"돈을 벌어오지 못하면...\n너의 처지가 어떻게 될지.. 알지?"},
-                {speaker:"사장",text:"15회차 전에 50만원 만들어놔라\n이정도는 할 수 있지?"},
+                {speaker:"사장",text:"15회차 전에 100만원 만들어놔라\n이정도는 할 수 있지?"},
                 {speaker:"사장",text:"그럼 잘해봐라"},
                 {speaker:"송현우",text:"가득하던 만화도 다 봤고.. 재미난거 없나?"},
                 {speaker:"송현우",text:"이건 뭐지? 구경이나 해볼까"}]);
