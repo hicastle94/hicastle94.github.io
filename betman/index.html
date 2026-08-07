@@ -589,8 +589,9 @@
                 addThought(i, '처음으로 충전했어');
                 victimList[i].paycount++;//todo
             }
-            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 5000 )
+            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 100000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
+            }
         }
     }
     function considerLoan(){
