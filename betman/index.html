@@ -140,7 +140,7 @@
                 income:5000,
                 buymoneytotal:0,
                 loan:0,
-                point:(mySite.phase>=1)?10000:0,
+                point:0,
                 earn:0,
                 betwho:-1,
                 bet:0,
@@ -283,6 +283,8 @@
     var ui_victim = [];
     var ui_victimMode = 0;
     var ui_victimStart = 0;
+    var ui_victimScrollTrack;
+    var ui_victimScrollThumb;
     var ui_multiplier = [];
     var ui_headline;
     var ui_phaseTitle;
@@ -340,17 +342,21 @@
             ui_phaseTitle = this.add.text(25, 75, '사이트 운영 시뮬레이션', { fontSize: '54px', color: '#FFE66D', fontStyle:'bold', fixedWidth:1030 });
             ui_objective = this.add.text(25, 140, '', { fontSize: '32px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
             ui_siteStats = this.add.text(25, 205, '', { fontSize: '35px', color: '#D7F9FF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_education = this.add.text(25, 285, '', { fontSize: '33px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_headline = this.add.text(25, 372, '이용자들의 선택을 지켜보세요.', { fontSize: '35px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_victimStats = this.add.text(25, 425, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_spotlight = this.add.text(25, 468, '', { fontSize: '28px', color: '#FFD6D6', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_education = this.add.text(25, 310, '', { fontSize: '33px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030}, lineSpacing:6 });
+            ui_headline = this.add.text(25, 397, '이용자들의 선택을 지켜보세요.', { fontSize: '35px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_victimStats = this.add.text(25, 447, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_spotlight = this.add.text(25, 488, '', { fontSize: '28px', color: '#FFD6D6', fixedWidth:1030, wordWrap:{width:1030} });
 
             // 피해자 목록: 위험 신호 요약 아래 6명 × 2줄
             for(let i = 0; i < 6; i++){
-                var baseY = 530 + 76*i;
-                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:1030 });
-                ui_victim[i*2]   = this.add.text(45, baseY+38, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
+                var baseY = 550 + 73*i;
+                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:975 });
+                ui_victim[i*2]   = this.add.text(45, baseY+36, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:950 });
             }
+
+            // 피해자 목록 스크롤 표시
+            ui_victimScrollTrack = this.add.rectangle(1055, 766, 12, 430, 0x12394c, 0.9).setStrokeStyle(1,0x5ca6c9,0.9);
+            ui_victimScrollThumb = this.add.rectangle(1055, 575, 10, 92, 0xd6f3ff, 0.95);
 
             // 학생의 운영 선택: 거북이 경마 아래쪽 빈 공간에 배치한다.
             // 경마 레인은 y=1060~1360을 사용하므로, 선택 UI는 그 아래에 독립된 2x2 패널로 둔다.
@@ -372,17 +378,24 @@
             ui_strategyPanelObjects.push(ui_strategyFeedback);
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
-            const zone = this.add.zone(0,250,1080,700).setOrigin(0).setInteractive();
+            const zone = this.add.zone(0,500,1080,500).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
-                    ui_victimStart = valueInRange(0,victimList.length,(pointer.velocity.y / 400),ui_victimStart);
+                    var maxStart = Math.max(0, victimList.length-6);
+                    ui_victimStart = valueInRange(0,maxStart,(-pointer.velocity.y / 220),ui_victimStart);
                 }
             });
             zone.on('pointerdown',switchUiVictim);
+            this.input.on('wheel', function(pointer, gameObjects, deltaX, deltaY){
+                if(pointer.y >= 500 && pointer.y <= 1000){
+                    var maxStart = Math.max(0, victimList.length-6);
+                    ui_victimStart = valueInRange(0,maxStart,(deltaY>0?1:-1),ui_victimStart);
+                }
+            });
             
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '62px', color: '#FFFFFF', align:'left'});
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '62px', color: '#FFFFFF', align:'left'}).setOrigin(0,0.5);
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -988,7 +1001,29 @@
     function getVictimStateText(v){
         return ['호기심','첫 승리','반복 베팅','절박','파탄'][v.state] || '관찰';
     }
+    function refreshVictimScrollbar(){
+        if(!ui_victimScrollTrack || !ui_victimScrollThumb) return;
+        var visibleCount = 6;
+        var total = victimList.length;
+        var maxStart = Math.max(0,total-visibleCount);
+        if(ui_victimStart > maxStart) ui_victimStart = maxStart;
+        if(total <= visibleCount){
+            ui_victimScrollTrack.setAlpha(0.25);
+            ui_victimScrollThumb.setVisible(false);
+            return;
+        }
+        ui_victimScrollTrack.setAlpha(0.95);
+        ui_victimScrollThumb.setVisible(true);
+        var trackTop = 551;
+        var trackHeight = 430;
+        var thumbHeight = Math.max(58, trackHeight * (visibleCount/total));
+        var ratio = maxStart>0 ? Math.floor(ui_victimStart)/maxStart : 0;
+        var cy = trackTop + thumbHeight/2 + ratio*(trackHeight-thumbHeight);
+        ui_victimScrollThumb.setSize(10,thumbHeight).setPosition(1055,cy);
+    }
+
     function refreshUiVictim(){
+        refreshVictimScrollbar();
         switch(ui_victimMode){
             case 0:
                 var cur = max(Math.floor(ui_victimStart),0);
