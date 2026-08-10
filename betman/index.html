@@ -274,6 +274,7 @@
     turtles.push({name:"거북정",image:'turtle',speed:[0,0,0,10]});
 
     var turtleOnLane = [];
+    const TURTLE_START_X = 120; // background.png 출발선 x좌표
     var gamblePhase = 0;//0선수소개 1베팅 2배율결정 3달리기 4정산
     var totalBet = 0;
     var goalTurtles = 0;
@@ -398,7 +399,7 @@
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '62px', color: '#FFFFFF', align:'left'}).setOrigin(0,0.5);
 
                 turtleOnLane[i] = Object.assign({});
-                turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
+                turtleOnLane[i].image = this.add.image(TURTLE_START_X, 1060 + 100*i, turtles[i].image).setOrigin(1,0.5);
                 turtleOnLane[i].base = turtles[i];
                 turtleOnLane[i].runX = 0;
                 turtleOnLane[i].bet = 0;
@@ -466,7 +467,7 @@
                         turtleOnLane[i].rank = 0;
                         turtleOnLane[i].bet = 0;
                         
-                        turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
+                        turtleOnLane[i].image.setX( TURTLE_START_X + turtleOnLane[i].runX );
 
                         turtleOnLane[i].multiplier = 4.0;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
@@ -526,7 +527,7 @@
                         var dice = Math.floor(Math.random() * 4);
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[dice];
                         turtleOnLane[i].runX = min(turtleOnLane[i].runX,850);
-                        turtleOnLane[i].image.setX( 100 + turtleOnLane[i].runX );
+                        turtleOnLane[i].image.setX( TURTLE_START_X + turtleOnLane[i].runX );
 
                         if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
                             goalTurtles++;
