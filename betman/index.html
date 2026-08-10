@@ -421,11 +421,11 @@
             }
 
             //for dialog
-            ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
-            ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
+            ui_d_port = this.add.image(540, 960, 'boss').setDepth(90).setVisible(false);
+            ui_d_frame = this.add.image(540, 960, 'd_frame').setDepth(100).setVisible(false);
             ui_d_nametext = this.add.text(20, 1380, '이름', {
                 fontSize: '70px', color: '#FF0000', align:'center', fixedWidth:270
-            }).setVisible(false);
+            }).setDepth(101).setVisible(false);
             ui_d_text = this.add.text(40, 1490, '대사내용', {
                 fontSize: '58px',
                 color: '#000000',
@@ -433,13 +433,13 @@
                 fixedWidth:1000,
                 wordWrap:{ width:1000, useAdvancedWrap:true },
                 lineSpacing:12
-            }).setVisible(false);
+            }).setDepth(101).setVisible(false);
 
-            ui_p_frame = this.add.image(540, 960,'p_frame').setVisible(false);
+            ui_p_frame = this.add.image(540, 960,'p_frame').setDepth(100).setVisible(false);
             ui_p_text = this.add.text(40, 840, '팝업', {
                 fontSize: '46px', color: '#000000', align:'center',
                 fixedWidth:1000, wordWrap:{width:1000, useAdvancedWrap:true}, lineSpacing:10
-            }).setVisible(false);
+            }).setDepth(101).setVisible(false);
             // p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
             // p_zone.off('pointerdown');
 
