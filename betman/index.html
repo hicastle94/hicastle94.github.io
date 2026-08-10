@@ -41,7 +41,8 @@
         paycount:0,
         think:'이거 재미있을까?',
         thoughts:[],
-        friends:2});
+        friends:2,
+        betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99});
     victimList.push({
         name:GenerateVictimName(),
         face:"😕",
@@ -61,7 +62,8 @@
         paycount:0,
         think:'여긴 뭔하는데지',
         thoughts:[],
-        friends:2});
+        friends:2,
+        betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99});
     victimList.push({
         name:GenerateVictimName(),
         face:"🤩",
@@ -81,7 +83,8 @@
         paycount:0,
         think:'광고를 잘못 눌렀어',
         thoughts:[],
-        friends:2});
+        friends:2,
+        betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99});
     function GenerateVictims(count){
 
         for(let i = 0; i < count ; i++){
@@ -104,7 +107,8 @@
                 paycount:0,
                 think:'재밌을거같은데',
                 thoughts:[],
-                friends:1
+                friends:1,
+                betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99
             });
         }
     }
@@ -499,63 +503,106 @@
     }
 
     function addThought(who, what){
-        victimList[who].thoughts.push({text:what,season:season});
-        victimList[who].think = victimList[who].thoughts[ victimList[who].thoughts.length-1 ].text;
+        var v = victimList[who];
+        v.thoughts.push({text:what,season:season});
+        v.think = what;
+        v.lastThoughtSeason = season;
     }
-    
+
+    // 피해자의 "현재 단계"를 실제 수치로부터 다시 계산한다.
+    // state를 단순한 표정 번호로 쓰지 않고, 생각 선택의 기준으로도 사용한다.
+    function updateVictimState(v){
+        if(v.mental <= 15 || (v.loan >= 5000000 && v.money <= 0)){
+            v.state = VictimState.COLLAPSED;
+        }
+        else if(v.loan > 0 || v.mental <= 40){
+            v.state = VictimState.DESPERATE;
+        }
+        else if(v.betCount >= 2 || v.winCount >= 2 || v.interest >= 25){
+            v.state = VictimState.ADDICT;
+        }
+        else if(v.winCount > 0){
+            v.state = VictimState.WINNER;
+        }
+        else{
+            v.state = VictimState.CURIOUS;
+        }
+    }
+
     function refreshVictimFace(){
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
-            if(v.earn == 0 && v.bet == 0){
-                v.face = '😕'; //처음옴
-                v.state = 0;
-            }
-            else if(gamblePhase == 2){
-                if(v.point == 0 && v.bet > 0){ //올인
-                    v.face = '😣';
-                }
-                else if(v.point > 0 && v.bet == 0){ //관망
-                    v.face = '🤔';
-                }
-            }
-            else if(gamblePhase == 4 && v.betwho >= 0){
-                if(v.point == 0 && v.bet > 0){ //올인
-                    if(v.face != '😣')addThought(i, '포인트를 전부 걸었어');
-                    v.face = '😣';
-                    
-                }
-                if(v.betwho == winner){//승리
-                    v.face = '😋';
-                }
-                else{//패배
-                    v.face = '😥';
-                }
-            }
-            else if(v.point + v.bet == 0){ //다잃음
-                if(v.face != '😭')addThought(i, '포인트를 전부 잃었어');
+            updateVictimState(v);
+
+            if(v.state === VictimState.COLLAPSED){
                 v.face = '😭';
             }
-            else if(v.earn + v.bet < 0){ //손해
-                v.face = '🙁';
+            else if(v.state === VictimState.DESPERATE){
+                v.face = '😢';
             }
-            else if(v.earn + v.bet > 0){ //이익
-                v.face = '😊';
+            else if(gamblePhase == 4 && v.betwho >= 0){
+                v.face = (v.betwho == winner) ? '😋' : '😥';
             }
-            
+            else if(v.state === VictimState.ADDICT){
+                v.face = '😐';
+            }
+            else if(v.state === VictimState.WINNER){
+                v.face = '😄';
+            }
+            else{
+                v.face = '😕';
+            }
         }
     }
+
+    // 현재 수치와 최근 행동을 바탕으로 '가장 그럴듯한 생각' 하나를 고른다.
+    // 예전 코드는 state/mental/phase만 단순 비교해서 서로 관계없는 문장이
+    // 아무 때나 등장할 수 있었다. 이제는 실제 피해자의 행동 순서를 우선한다.
     function refreshVictimThink(){
         for(let i = 0; i < victimList.length; i++){
-            var candidates = thinking.filter(function(t){
-                if(t.phase !== undefined && mySite.phase < t.phase) return false;
-                if(t.state !== undefined && victimList[i].state !== t.state) return false;
-                if(t.mental !== undefined && victimList[i].mental > t.mental) return false;
-                return true;
-            });
-            if(candidates.length > 0){
-                var picked = candidates[Math.floor(Math.random() * candidates.length)];
-                victimList[i].think = picked.text;
+            var v = victimList[i];
+            updateVictimState(v);
+
+            // 방금 실제로 발생한 사건은 다음 회차까지 우선 표시한다.
+            if(season - v.lastThoughtSeason <= 1 && v.think && v.thoughts.length > 0){
+                continue;
             }
+
+            var text = null;
+
+            if(v.state === VictimState.COLLAPSED){
+                if(v.loan > 0) text = '빚을 어떻게 갚아야 하지...';
+                else text = '이제 정말 그만하고 싶어...';
+            }
+            else if(v.state === VictimState.DESPERATE){
+                if(v.loan > 0) text = '빌린 돈으로 따서 갚으면 되지 않을까?';
+                else if(v.money <= 0 && v.point <= 0) text = '돈을 어디서 빌려올까';
+                else text = '잃은 돈을 다시 찾고 싶어';
+            }
+            else if(v.paycount === 0 && mySite.phase >= 2 && v.interest >= 15){
+                text = '첫충전을 해볼까?';
+            }
+            else if(v.friends > 0 && mySite.phase >= 3 && v.interest >= 18){
+                text = '친구를 초대하면 포인트를 준다고?';
+            }
+            else if(v.state === VictimState.ADDICT){
+                if(v.earn < 0) text = '잃은 돈만 찾으면 그만둘 수 있어.';
+                else text = '한판만 더 해볼까?';
+            }
+            else if(v.state === VictimState.WINNER){
+                text = '생각보다 돈이 되는데...';
+            }
+            else if(v.loseCount > 0 && v.earn < 0){
+                text = '아직도 손해를 못 메꿨네...';
+            }
+            else if(mySite.phase >= 1 && v.point > 0){
+                text = '한번 해볼까?';
+            }
+            else if(mySite.phase === 0){
+                text = '이거 재미있을까?';
+            }
+
+            if(text) v.think = text;
         }
     }
     function refreshUiVictim(){
@@ -610,6 +657,7 @@
     function Bet(who, amount, target){
         victimList[who].betwho = target;
         victimList[who].bet = amount;
+        victimList[who].betCount++;
         victimList[who].point -= amount;
         victimList[who].earn -= amount;
         turtleOnLane[target].bet += amount;
@@ -630,6 +678,7 @@
                 victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
                 victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
 
+                victimList[i].winCount++;
                 addThought(i, '이겼다! '+victimList[i].bet*3+'원을 벌었어');
                 victimList[i].interest += 2;
                 victimList[i].risky += 1;
@@ -637,6 +686,7 @@
                 victimList[i].mental += 24;
             }
             else if(victimList[i].betwho != -1){
+                victimList[i].loseCount++;
                 addThought(i, '졌다! '+victimList[i].bet+'원을 잃었어');
                 victimList[i].mental -= 8;
             }
