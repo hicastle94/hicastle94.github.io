@@ -274,7 +274,9 @@
     turtles.push({name:"거북정",image:'turtle',speed:[0,0,0,10]});
 
     var turtleOnLane = [];
-    const TURTLE_START_X = 120; // background.png 출발선 x좌표
+    var ui_startLine = [];
+    const TURTLE_START_X = 160; // start_line와 동일한 실제 출발 x좌표
+    const TURTLE_START_GAP = 0;
     var gamblePhase = 0;//0선수소개 1베팅 2배율결정 3달리기 4정산
     var totalBet = 0;
     var goalTurtles = 0;
@@ -327,6 +329,7 @@
         {
             this.load.image('bg2', 'assets/scene2/background.png');
             this.load.image('turtle','assets/scene2/turtle.png');
+            this.load.image('start_line','assets/scene2/start_line.png');
 
             this.load.image('boss','assets/standing/boss.png');
             this.load.image('student','assets/standing/student.png');
@@ -351,13 +354,13 @@
             // 피해자 목록: 위험 신호 요약 아래 6명 × 2줄
             for(let i = 0; i < 6; i++){
                 var baseY = 550 + 73*i;
-                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:975 });
-                ui_victim[i*2]   = this.add.text(45, baseY+36, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:950 });
+                ui_victim[i*2+1] = this.add.text(35, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:975 });
+                ui_victim[i*2]   = this.add.text(55, baseY+36, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:950 });
             }
 
             // 피해자 목록 스크롤 표시
-            ui_victimScrollTrack = this.add.rectangle(1055, 766, 12, 430, 0x12394c, 0.9).setStrokeStyle(1,0x5ca6c9,0.9);
-            ui_victimScrollThumb = this.add.rectangle(1055, 575, 10, 92, 0xd6f3ff, 0.95);
+            ui_victimScrollTrack = this.add.rectangle(1052, 790, 12, 390, 0x12394c, 0.9).setStrokeStyle(1,0x5ca6c9,0.9);
+            ui_victimScrollThumb = this.add.rectangle(1052, 610, 10, 84, 0xd6f3ff, 0.95);
 
             // 학생의 운영 선택: 거북이 경마 아래쪽 빈 공간에 배치한다.
             // 경마 레인은 y=1060~1360을 사용하므로, 선택 UI는 그 아래에 독립된 2x2 패널로 둔다.
@@ -399,7 +402,8 @@
                 ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '62px', color: '#FFFFFF', align:'left'}).setOrigin(0,0.5);
 
                 turtleOnLane[i] = Object.assign({});
-                turtleOnLane[i].image = this.add.image(TURTLE_START_X, 1060 + 100*i, turtles[i].image).setOrigin(1,0.5);
+                ui_startLine[i] = this.add.image(TURTLE_START_X, 1060 + 100*i, 'start_line').setOrigin(0.5,0.5).setDepth(3);
+                turtleOnLane[i].image = this.add.image(TURTLE_START_X - TURTLE_START_GAP, 1060 + 100*i, turtles[i].image).setOrigin(1,0.5).setDepth(4);
                 turtleOnLane[i].base = turtles[i];
                 turtleOnLane[i].runX = 0;
                 turtleOnLane[i].bet = 0;
@@ -467,7 +471,7 @@
                         turtleOnLane[i].rank = 0;
                         turtleOnLane[i].bet = 0;
                         
-                        turtleOnLane[i].image.setX( TURTLE_START_X + turtleOnLane[i].runX );
+                        turtleOnLane[i].image.setX( TURTLE_START_X - TURTLE_START_GAP + turtleOnLane[i].runX );
 
                         turtleOnLane[i].multiplier = 4.0;
                         ui_multiplier[i].setText('X' + turtleOnLane[i].multiplier);
@@ -527,7 +531,7 @@
                         var dice = Math.floor(Math.random() * 4);
                         turtleOnLane[i].runX += turtleOnLane[i].base.speed[dice];
                         turtleOnLane[i].runX = min(turtleOnLane[i].runX,850);
-                        turtleOnLane[i].image.setX( TURTLE_START_X + turtleOnLane[i].runX );
+                        turtleOnLane[i].image.setX( TURTLE_START_X - TURTLE_START_GAP + turtleOnLane[i].runX );
 
                         if(turtleOnLane[i].runX == 850 && turtleOnLane[i].rank == 0){
                             goalTurtles++;
@@ -1015,12 +1019,12 @@
         }
         ui_victimScrollTrack.setAlpha(0.95);
         ui_victimScrollThumb.setVisible(true);
-        var trackTop = 551;
-        var trackHeight = 430;
+        var trackTop = 595;
+        var trackHeight = 390;
         var thumbHeight = Math.max(58, trackHeight * (visibleCount/total));
         var ratio = maxStart>0 ? Math.floor(ui_victimStart)/maxStart : 0;
         var cy = trackTop + thumbHeight/2 + ratio*(trackHeight-thumbHeight);
-        ui_victimScrollThumb.setSize(10,thumbHeight).setPosition(1055,cy);
+        ui_victimScrollThumb.setSize(10,thumbHeight).setPosition(1052,cy);
     }
 
     function refreshUiVictim(){
