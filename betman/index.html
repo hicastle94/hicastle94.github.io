@@ -294,10 +294,12 @@
     var ui_strategyTitle;
     var ui_strategyFeedback;
     var ui_strategyButtons = [];
+    var ui_strategyPanelObjects = [];
     var strategyState = {
         lastChoiceSeason:-99,
         chargeBoostUntil:-1,
-        inviteBoostUntil:-1
+        inviteBoostUntil:-1,
+        pendingChoice:null
     };
 
     var is_dialog = false;
@@ -352,10 +354,12 @@
 
             // 학생의 운영 선택: 거북이 경마 아래쪽 빈 공간에 배치한다.
             // 경마 레인은 y=1060~1360을 사용하므로, 선택 UI는 그 아래에 독립된 2x2 패널로 둔다.
-            this.add.rectangle(540,1605,1050,355,0x050505,0.90).setDepth(10);
+            var strategyPanelBg = this.add.rectangle(540,1605,1050,355,0x050505,0.90).setDepth(10).setVisible(false);
+            ui_strategyPanelObjects.push(strategyPanelBg);
             ui_strategyTitle = this.add.text(35,1442,'운영 선택 · 경마 결과를 본 뒤 한 회차에 한 번 선택할 수 있습니다.',{
                 fontSize:'23px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010,align:'center'
-            }).setDepth(11);
+            }).setDepth(11).setVisible(false);
+            ui_strategyPanelObjects.push(ui_strategyTitle);
 
             createStrategyButton(this, 285, 1515, '무료 포인트', 'free');
             createStrategyButton(this, 795, 1515, '충전 보너스', 'charge');
@@ -364,7 +368,8 @@
 
             ui_strategyFeedback = this.add.text(65,1640,'선택 결과가 여기에 표시됩니다.',{
                 fontSize:'20px',color:'#FFFFFF',fixedWidth:950,align:'center',wordWrap:{width:950}
-            }).setDepth(11);
+            }).setDepth(11).setVisible(false);
+            ui_strategyPanelObjects.push(ui_strategyFeedback);
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
             const zone = this.add.zone(0,250,1080,700).setOrigin(0).setInteractive();
@@ -622,20 +627,41 @@
     }
 
     function createStrategyButton(sceneRef, x, y, label, key){
-        var bg = sceneRef.add.rectangle(x,y,455,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12);
-        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:430}).setOrigin(0.5).setDepth(13);
+        var bg = sceneRef.add.rectangle(x,y,455,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12).setVisible(false);
+        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:430}).setOrigin(0.5).setDepth(13).setVisible(false);
         bg.on('pointerdown', function(){ applyOperatorChoice(key); });
         bg.on('pointerover', function(){ if(bg.input && bg.input.enabled) bg.setFillStyle(0x444444,1); });
         bg.on('pointerout', function(){ bg.setFillStyle(0x2a2a2a,0.98); });
         ui_strategyButtons.push({key:key,bg:bg,text:tx});
+        ui_strategyPanelObjects.push(bg);
+        ui_strategyPanelObjects.push(tx);
     }
 
     function strategyUnlocked(key){
-        if(key === 'free') return mySite.phase >= 1;
-        if(key === 'charge') return mySite.phase >= 2;
-        if(key === 'invite') return mySite.phase >= 3;
-        if(key === 'stop') return mySite.phase >= 1;
-        return false;
+        // 선택창이 열린 순간에 필요한 선택지만 활성화한다.
+        // 각 단계에서는 해당 유도 전략과 '보상 중단'을 비교할 수 있다.
+        if(!strategyState.pendingChoice) return false;
+        if(key === 'stop') return true;
+        return key === strategyState.pendingChoice;
+    }
+
+    function setStrategyPanelVisible(visible){
+        for(var i=0;i<ui_strategyPanelObjects.length;i++){
+            if(ui_strategyPanelObjects[i]) ui_strategyPanelObjects[i].setVisible(visible);
+        }
+    }
+
+    function openStrategyChoice(key){
+        strategyState.pendingChoice = key;
+        strategyState.lastChoiceSeason = -1;
+        if(ui_strategyFeedback) ui_strategyFeedback.setText('두 선택의 차이를 비교해 보세요. 선택하면 이 창은 닫힙니다.');
+        setStrategyPanelVisible(true);
+        refreshStrategyButtons();
+    }
+
+    function closeStrategyChoice(){
+        strategyState.pendingChoice = null;
+        setStrategyPanelVisible(false);
     }
 
     function recordOperatorDecision(key, title, siteEffect, victimEffect){
@@ -719,16 +745,22 @@
         recordOperatorDecision(key,title,siteEffect,victimEffect);
         if(ui_strategyFeedback) ui_strategyFeedback.setText(title+'  |  사이트 효과: '+siteEffect+'  ↔  피해 효과: '+victimEffect);
         if(ui_headline) ui_headline.setText('선택 결과를 관찰하세요: '+title);
+        closeStrategyChoice();
     }
 
     function refreshStrategyButtons(){
+        var panelOpen = !!strategyState.pendingChoice && gameOn && !is_dialog;
+        if(!panelOpen){
+            setStrategyPanelVisible(false);
+            return;
+        }
+        setStrategyPanelVisible(true);
         for(var i=0;i<ui_strategyButtons.length;i++){
             var b=ui_strategyButtons[i];
             var unlocked=strategyUnlocked(b.key);
-            var used=(strategyState.lastChoiceSeason===season);
-            if(b.bg && b.bg.input) b.bg.input.enabled=unlocked && !used && gameOn && !is_dialog;
-            if(b.text) b.text.setAlpha(unlocked && !used ? 1.0 : 0.35);
-            if(b.bg) b.bg.setAlpha(unlocked && !used ? 1.0 : 0.45);
+            if(b.bg && b.bg.input) b.bg.input.enabled=unlocked;
+            if(b.text) b.text.setAlpha(unlocked ? 1.0 : 0.22);
+            if(b.bg) b.bg.setAlpha(unlocked ? 1.0 : 0.25);
         }
     }
 
@@ -1237,6 +1269,7 @@
         ui_d_text.setText( dialog[d_nowDialog][d_nowInDialog].text );
     }
     function startDialog(num){
+        setStrategyPanelVisible(false);
         gameOn = false;
         is_dialog = true;
 
@@ -1261,8 +1294,16 @@
         ui_d_text.setVisible(false);
 
         if(mySite.phase == 4){
+            closeStrategyChoice();
             scene = 3;
+            return;
         }
+
+        // 운영 선택은 교육적으로 비교가 필요한 세 시점에만 나타난다.
+        if(d_nowDialog === 1) openStrategyChoice('free');
+        else if(d_nowDialog === 3) openStrategyChoice('charge');
+        else if(d_nowDialog === 6) openStrategyChoice('invite');
+        else closeStrategyChoice();
     }
     //dialogs end
 
