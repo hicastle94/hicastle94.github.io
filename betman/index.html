@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8" />
@@ -359,7 +359,7 @@
                         if(season == 8) {startDialog(7);}//먹튀
                         if(season == 9) {startDialog(9);}//친구
                         if(season == 10) {startDialog(8);}//더대출
-                        if(mySite.money > 2000) {startDialog(4); mySite.phase = 4;}
+                        if(mySite.money > 1000000) {startDialog(4); mySite.phase = 4;}
 
                         considerRefund();
                     }
@@ -812,12 +812,14 @@
 
     //for scene3
     var reportText;
+    var reportScrollSpeed = 1.5;
 
     class Scene3 extends Phaser.Scene{
         constructor()
         {
             super({ key: 'scene3' });
         }
+
         preload ()
         {
             bg = this.load.image('bg3', 'assets/scene3/background.png');
@@ -825,59 +827,239 @@
 
         create ()
         {
-            this.add.image(540,960, 'bg3');
-	        
+            this.add.image(540, 960, 'bg3');
+
+            // 피해 통계
             var victimCount = 0;
             var victimMoney = 0;
             var victimLoanCount = 0;
-            for(let i = 0 ; i < victimList.length; i++){
+
+            for(let i = 0; i < victimList.length; i++){
                 if(victimList[i].buymoneytotal > 0){
                     victimCount += 1;
                     victimMoney += victimList[i].buymoneytotal;
                 }
+
                 if(victimList[i].loan > 0){
                     victimLoanCount += 1;
                 }
             }
-            //this.add.text(0, 260, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '60px', color: '#FFFFFF', align:'left', fixedWidth:1080 })
 
-            var reportString = '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
-            for(let i = 0 ; i < victimList.length; i++){
-                reportString+='\n\n'+victimList[i].name;
-                for(let j = 0 ; j < victimList[i].thoughts.length ; j++){
-                    reportString+='\n\n'+victimList[i].thoughts[j].season+'회차 '+victimList[i].thoughts[j].text;
-                }
-            }
-            reportString += '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
-            reportText = this.add.text(
-                80,
-                960,
-                reportString,
+            /*
+             * Scene 3는 배경 이미지의 위쪽 영역에서 피해자 일지를
+             * 영화 엔딩 크레딧처럼 위로 스크롤한다.
+             *
+             * 배경 이미지의 아래쪽 절반은 이미 고정 안내문이 있으므로
+             * 일지는 y=100~900 영역에서만 보이도록 Mask를 적용한다.
+             */
+
+            // 일지 영역을 조금 어둡게 만들어 가독성 확보
+            this.add.rectangle(
+                540, 500, 1010, 790,
+                0x000000, 0.60
+            ).setDepth(10);
+
+            // 상단 제목
+            this.add.text(
+                540, 105,
+                '피해자들의 기록',
                 {
-                    fontSize: "60px",
-                    color: "#ffffff",
-                    wordWrap: { width: 900 },
-                    align:'center'
+                    fontSize: '54px',
+                    color: '#ffffff',
+                    fontStyle: 'bold',
+                    align: 'center'
                 }
-            );
+            )
+            .setOrigin(0.5)
+            .setDepth(12);
 
+            this.add.text(
+                540, 165,
+                '도박에 빠져드는 과정',
+                {
+                    fontSize: '28px',
+                    color: '#dddddd',
+                    align: 'center'
+                }
+            )
+            .setOrigin(0.5)
+            .setDepth(12);
+
+            // 일지 내용 생성
+            var reportLines = [];
+
+            reportLines.push({
+                text: '총 피해자 ' + victimCount + '명',
+                style: 'summary'
+            });
+            reportLines.push({
+                text: '총 피해금액 ' + victimMoney.toLocaleString() + '원',
+                style: 'summary'
+            });
+            reportLines.push({
+                text: '대출 발생 ' + victimLoanCount + '명',
+                style: 'summary'
+            });
+
+            reportLines.push({
+                text: '',
+                style: 'space'
+            });
+
+            for(let i = 0; i < victimList.length; i++){
+
+                // 피해자가 실제 충전을 하지 않았다면 일지에서 제외
+                // 단, 기록이 있는 경우에는 포함한다.
+                if(victimList[i].buymoneytotal <= 0 &&
+                   victimList[i].thoughts.length === 0){
+                    continue;
+                }
+
+                reportLines.push({
+                    text: victimList[i].name,
+                    style: 'name'
+                });
+
+                if(victimList[i].thoughts.length === 0){
+                    reportLines.push({
+                        text: '기록된 생각이 없습니다.',
+                        style: 'thought'
+                    });
+                }
+                else{
+                    for(let j = 0; j < victimList[i].thoughts.length; j++){
+                        var thought = victimList[i].thoughts[j];
+
+                        reportLines.push({
+                            text: thought.season + '회차   ' + thought.text,
+                            style: 'thought'
+                        });
+                    }
+                }
+
+                reportLines.push({
+                    text: '',
+                    style: 'space'
+                });
+            }
+
+            reportLines.push({
+                text: '— 기록 끝 —',
+                style: 'end'
+            });
+
+            // 여러 Text를 하나의 Container로 묶어서 함께 스크롤
+            var reportContainer = this.add.container(0, 0);
+            reportContainer.setDepth(11);
+
+            var y = 920;
+
+            for(let i = 0; i < reportLines.length; i++){
+                var line = reportLines[i];
+
+                if(line.style === 'space'){
+                    y += 32;
+                    continue;
+                }
+
+                var style = {
+                    fontSize: '32px',
+                    color: '#ffffff',
+                    align: 'center',
+                    wordWrap: { width: 900 }
+                };
+
+                if(line.style === 'summary'){
+                    style.fontSize = '38px';
+                    style.fontStyle = 'bold';
+                    style.color = '#ffe082';
+                }
+                else if(line.style === 'name'){
+                    style.fontSize = '42px';
+                    style.fontStyle = 'bold';
+                    style.color = '#ffffff';
+                }
+                else if(line.style === 'end'){
+                    style.fontSize = '36px';
+                    style.fontStyle = 'bold';
+                    style.color = '#ffcc66';
+                }
+
+                var lineText = this.add.text(
+                    540,
+                    y,
+                    line.text,
+                    style
+                ).setOrigin(0.5, 0);
+
+                reportContainer.add(lineText);
+
+                // 줄바꿈이 발생할 수 있으므로 실제 높이를 반영
+                y += lineText.height + 14;
+            }
+
+            // 위쪽 약 800px 영역만 보이도록 마스크
             const maskShape = this.make.graphics();
             maskShape.fillStyle(0xffffff);
-            maskShape.fillRect(0, 0, 1080, 960);
+            maskShape.fillRect(35, 200, 1010, 690);
+
             const mask = maskShape.createGeometryMask();
-            reportText.setMask(mask);
+            reportContainer.setMask(mask);
+
+            reportText = reportContainer;
+
+            // 일지 상단/하단 경계선을 살짝 강조
+            this.add.rectangle(
+                540, 198, 1010, 4,
+                0xffffff, 0.45
+            ).setDepth(13);
+
+            this.add.rectangle(
+                540, 890, 1010, 4,
+                0xffffff, 0.45
+            ).setDepth(13);
+
+            // 안내 문구
+            this.add.text(
+                540, 930,
+                '피해자들의 기록을 확인하세요.',
+                {
+                    fontSize: '24px',
+                    color: '#ffffff',
+                    align: 'center'
+                }
+            )
+            .setOrigin(0.5)
+            .setDepth(13)
+            .setAlpha(0.0);
 
             input = this.input;
             mouse = this.input.Mouse;
             touch = this.input.Touch;
+
+            // 스크롤 시작 위치와 종료 위치 저장
+            this.reportY = 0;
+            this.reportEndY = Math.min(0, 890 - y - 20);
+
+            // 첫 장면에서는 일지가 아래쪽에서 올라오도록 설정
+            reportContainer.y = 0;
         }
+
         update(){
-            if(reportText.y + reportText.height > 240){
-                reportText.y -= 2.5;
+            if(!reportText){
+                return;
+            }
+
+            // Container 자체를 위로 이동
+            if(reportText.y > this.reportEndY){
+                reportText.y -= reportScrollSpeed;
+
+                if(reportText.y < this.reportEndY){
+                    reportText.y = this.reportEndY;
+                }
             }
         }
     }
-
 
     var config = {
         type: Phaser.AUTO,
