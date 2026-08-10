@@ -110,6 +110,11 @@
         v.firstCharge = !!v.firstCharge;
         v.firstLoan = !!v.firstLoan;
         v.firstFriend = !!v.firstFriend;
+        v.milestoneRepeat = !!v.milestoneRepeat;
+        v.milestoneLoss = !!v.milestoneLoss;
+        v.milestoneMental60 = !!v.milestoneMental60;
+        v.milestoneMental35 = !!v.milestoneMental35;
+        v.milestoneDebtRepeat = !!v.milestoneDebtRepeat;
         v.lastEventSeason = (typeof v.lastEventSeason === 'number') ? v.lastEventSeason : -99;
         v.lastThoughtText = v.lastThoughtText || '';
         v.thoughtCooldown = v.thoughtCooldown || 0;
@@ -146,6 +151,7 @@
                 personality:null, caution:0, impulse:0, social:0, recovery:0,
                 lossStreak:0, winStreak:0, totalLost:0, totalWon:0,
                 firstWin:false, firstLoss:false, firstCharge:false, firstLoan:false, firstFriend:false,
+                milestoneRepeat:false, milestoneLoss:false, milestoneMental60:false, milestoneMental35:false, milestoneDebtRepeat:false,
                 lastEventSeason:-99, lastThoughtText:'', thoughtCooldown:0
             });
             initializeVictim(victimList[victimList.length-1], true);
@@ -312,16 +318,19 @@
             this.add.image(540, 960, 'bg2');
             //instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
             // 교육용 HUD
-            ui_mymoney = this.add.text(25, 20, '사이트 수익 0원', { fontSize: '52px', color: '#FFFFFF', align:'left', fixedWidth:700 });
-            ui_phaseTitle = this.add.text(25, 90, '사이트 운영 시뮬레이션', { fontSize: '42px', color: '#FFE66D', fontStyle:'bold', fixedWidth:1030 });
-            ui_objective = this.add.text(25, 150, '', { fontSize: '30px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_siteStats = this.add.text(25, 220, '', { fontSize: '28px', color: '#D7F9FF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_education = this.add.text(25, 300, '', { fontSize: '30px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_headline = this.add.text(25, 410, '이용자들의 선택을 지켜보세요.', { fontSize: '38px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_victimStats = this.add.text(25, 475, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_mymoney = this.add.text(25, 20, '사이트 수익 0원', { fontSize: '36px', color: '#FFFFFF', align:'left', fixedWidth:700 });
+            ui_phaseTitle = this.add.text(25, 75, '사이트 운영 시뮬레이션', { fontSize: '48px', color: '#FFE66D', fontStyle:'bold', fixedWidth:1030 });
+            ui_objective = this.add.text(25, 140, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_siteStats = this.add.text(25, 205, '', { fontSize: '27px', color: '#D7F9FF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_education = this.add.text(25, 285, '', { fontSize: '27px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_headline = this.add.text(25, 385, '이용자들의 선택을 지켜보세요.', { fontSize: '34px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_victimStats = this.add.text(25, 445, '', { fontSize: '26px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
 
-            for(let i = 0; i < 12; i++){
-                ui_victim[i] = this.add.text(10, 900 - 60*i, '',{ fontSize: '50px', color: '#FFFFFF', align:'left', fixedWidth:1080 });
+            // 피해자 목록: HUD와 겹치지 않도록 6명 × 2줄로 고정 배치
+            for(let i = 0; i < 6; i++){
+                var baseY = 520 + 68*i;
+                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '29px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:1030 });
+                ui_victim[i*2]   = this.add.text(45, baseY+32, '',{ fontSize: '23px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
             }
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
@@ -402,7 +411,7 @@
                         gamblePhase = 1;
                         waitTime = 460;
                         
-                        ui_headline.setText("베팅시간입니다!");
+                        ui_headline.setText("이번 회차 베팅이 시작되었습니다. 누가 반복하고, 누가 멈추는지 관찰하세요.");
                         if(season == 0) startDialog(0);
                         if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 10000;victimList[1].point = 10000;victimList[2].point = 10000;victimList[3].point = 10000;};
                         if(season == 3) startDialog(2);
@@ -426,7 +435,7 @@
 
                     waitTime--;
                     if(waitTime <= 0){
-                        ui_headline.setText("베팅시간 종료!");
+                        ui_headline.setText("베팅이 마감되었습니다. 결과 뒤의 이용자 반응을 확인하세요.");
                         gamblePhase = 2;
                         waitTime = 100;
                     }
@@ -487,19 +496,49 @@
             }
         }
     }
+    function updateVictimMilestones(i){
+        var v = victimList[i];
+        initializeVictim(v, false);
+
+        if(!v.milestoneRepeat && v.betCount >= 3){
+            v.milestoneRepeat = true;
+            addThought(i, '어느새 여러 번 반복해서 베팅하고 있어.', true);
+        }
+        if(!v.milestoneLoss && v.totalLost >= Math.max(30000, v.income * 3)){
+            v.milestoneLoss = true;
+            addThought(i, '잃은 돈이 생각보다 많이 커졌어.', true);
+        }
+        if(!v.milestoneMental60 && v.mental <= 60){
+            v.milestoneMental60 = true;
+            addThought(i, '계속 결과가 신경 쓰여. 다른 일에 집중하기가 어렵다.', true);
+        }
+        if(!v.milestoneMental35 && v.mental <= 35){
+            v.milestoneMental35 = true;
+            addThought(i, '잃은 돈 생각 때문에 마음이 너무 조급해.', true);
+        }
+        if(!v.milestoneDebtRepeat && v.loan > 0 && v.paycount >= 2){
+            v.milestoneDebtRepeat = true;
+            addThought(i, '빚이 있는데도 다시 돈을 넣고 있어.', true);
+        }
+    }
+
     function refreshEducationUI(){
         var victimCount = victimList.length;
         var chargedCount = 0, chargedTotal = 0;
         var loanCount = 0, loanTotal = 0;
-        var activeCount = 0, distressedCount = 0, totalLoss = 0;
+        var activeCount = 0, distressedCount = 0, severeCount = 0;
+        var repeatCount = 0, totalLoss = 0;
 
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
+            updateVictimMilestones(i);
             if(v.buymoneytotal > 0){ chargedCount++; chargedTotal += v.buymoneytotal; }
             if(v.loan > 0){ loanCount++; loanTotal += v.loan; }
-            if(v.point > 0 || v.bet > 0) activeCount++;
+            if(v.point > 0 || v.bet > 0 || v.betCount > 0) activeCount++;
             if(v.mental < 50 || v.loan > 0 || v.lossStreak >= 2) distressedCount++;
-            if(v.earn < 0) totalLoss += -v.earn;
+            if(v.state === VictimState.COLLAPSED || v.mental <= 35) severeCount++;
+            if(v.betCount >= 3) repeatCount++;
+            totalLoss += v.totalLost || 0;
         }
 
         var phaseText = [
@@ -511,27 +550,34 @@
         ][Math.min(mySite.phase,4)];
 
         var objectiveText = [
-            '목표: 이용자가 어떻게 도박에 유입되고 변화하는지 관찰하세요.\n돈을 많이 버는 것이 교육의 목적은 아닙니다.',
-            '목표: 첫 승리 이후 참여율과 베팅 성향이 어떻게 변하는지 살펴보세요.',
-            '목표: 충전이 시작되면서 실제 현금이 게임 안으로 들어오는 과정을 관찰하세요.',
-            '목표: 한 사람의 참여가 친구에게 전파되어 피해자가 늘어나는 과정을 살펴보세요.',
-            '목표: 운영자의 수익과 피해자의 손실이 어떻게 연결되는지 확인하세요.'
+            '관찰 목표: 무료 포인트가 실제 베팅의 진입 장벽을 어떻게 낮추는지 확인하세요.',
+            '관찰 목표: 승리와 손실 뒤에 반복 베팅이 어떻게 늘어나는지 확인하세요.',
+            '관찰 목표: 게임 속 포인트가 실제 현금 충전과 대출로 이어지는 과정을 확인하세요.',
+            '관찰 목표: 한 이용자의 행동이 친구 추천을 통해 다른 사람에게 번지는 과정을 확인하세요.',
+            '관찰 목표: 사이트의 수익과 피해자의 누적 손실·대출을 함께 비교하세요.'
         ][Math.min(mySite.phase,4)];
 
         var educationText = [
-            '교육 포인트: 무료 포인트와 호기심은 이용자를 사이트에 머물게 하는 첫 단계가 될 수 있습니다.',
-            '교육 포인트: 첫 승리는 계속 베팅하고 싶다는 생각과 더 큰 베팅으로 이어질 수 있습니다.',
-            '교육 포인트: 보너스와 충전 유도는 이용자의 실제 돈을 도박에 투입하게 만드는 장치가 될 수 있습니다.',
-            '교육 포인트: 친구 추천은 개인의 도박이 주변 사람에게 확산되는 통로가 될 수 있습니다.',
-            '교육 포인트: 화면의 수익은 운영자의 숫자지만, 반대편에는 돈을 잃고 빚을 지는 사람이 있습니다.'
+            '교육 포인트: 처음부터 큰돈을 거는 것이 아니라, 무료·보너스·호기심이 첫 참여를 만들 수 있습니다.',
+            '교육 포인트: 승리는 자신감을 키우고, 손실은 잃은 돈을 되찾으려는 추격 베팅을 만들 수 있습니다.',
+            '교육 포인트: 충전 보너스는 게임머니와 실제 돈의 경계를 흐리게 하고 반복 충전을 유도할 수 있습니다.',
+            '교육 포인트: 추천 보상은 한 사람의 문제를 주변 사람에게 확산시키는 구조가 될 수 있습니다.',
+            '교육 포인트: 운영자의 수익은 이용자가 충전하고 잃은 돈에서 만들어집니다. 숫자 양쪽을 함께 보세요.'
         ][Math.min(mySite.phase,4)];
+
+        var warning = '현재 위험 신호: ';
+        if(loanCount > 0) warning += '대출 '+loanCount+'명  ';
+        if(repeatCount > 0) warning += '반복베팅 '+repeatCount+'명  ';
+        if(distressedCount > 0) warning += '심리·손실 위험 '+distressedCount+'명  ';
+        if(loanCount === 0 && repeatCount === 0 && distressedCount === 0) warning += '아직 뚜렷한 고위험 신호 없음';
+        if(severeCount > 0) warning += ' / 심각 '+severeCount+'명';
 
         ui_mymoney.setText('사이트 수익  ' + Math.floor(mySite.money).toLocaleString() + '원    |    ' + season + '회차');
         ui_phaseTitle.setText(phaseText);
         ui_objective.setText(objectiveText);
-        ui_siteStats.setText('이용자 ' + victimCount + '명   |   충전 ' + chargedCount + '명 / ' + Math.floor(chargedTotal).toLocaleString() + '원\n손실액 ' + Math.floor(totalLoss).toLocaleString() + '원   |   대출 ' + loanCount + '명 / ' + Math.floor(loanTotal).toLocaleString() + '원');
+        ui_siteStats.setText('이용자 ' + victimCount + '명   |   실제 충전 ' + chargedCount + '명 / ' + Math.floor(chargedTotal).toLocaleString() + '원\n누적 손실 ' + Math.floor(totalLoss).toLocaleString() + '원   |   대출 ' + loanCount + '명 / ' + Math.floor(loanTotal).toLocaleString() + '원');
         ui_education.setText(educationText);
-        ui_victimStats.setText('현재 상태  ·  참여 중 ' + activeCount + '명   |   손실·대출 위험 신호 ' + distressedCount + '명');
+        ui_victimStats.setText(warning);
     }
 
     function SetTurtles(){
@@ -688,7 +734,7 @@
                         var victim = victimList[idx];
                         updateVictimState(victim);
                         ui_victim[i*2].setText('  '+victim.think);
-                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getVictimStateText(victim) + ']  정신 ' + Math.floor(victim.mental) + '  손실 ' + Math.floor(Math.max(0,-victim.earn)).toLocaleString() + '원');
+                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getVictimStateText(victim) + ']  정신 ' + Math.floor(victim.mental) + '  누적손실 ' + Math.floor(victim.totalLost || 0).toLocaleString() + '원');
                     } else {
                         ui_victim[i*2].setText('');
                         ui_victim[i*2+1].setText('');
@@ -769,7 +815,7 @@
                 v.lossStreak++;
                 v.winStreak = 0;
                 v.totalLost += v.bet;
-                v.earn -= v.bet;
+                // Bet()에서 이미 베팅액을 earn에서 차감했으므로 패배 시 중복 차감하지 않는다.
                 v.mental = max(v.mental - (v.lossStreak >= 3 ? 12 : 8), 0);
                 v.firstLoss = true;
                 addThought(i, v.lossStreak >= 2 ? '또 졌어... 잃은 돈을 찾아야 해.' : '졌다... 다음에는 딸 수 있겠지?');
@@ -786,8 +832,6 @@
 
             if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)/100)*100));
-                addThought(i, '처음으로 충전했어');
-                victimList[i].paycount++;//todo
             }
             else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
@@ -811,8 +855,7 @@
                 var base = Math.max(10000, Math.floor((v.risky * 0.6 + v.recovery * 0.4) * 1000));
                 var amount = Math.min(base, 5000000);
                 loan(i, amount);
-                if(v.loan === amount) addThought(i, '처음으로 돈을 빌렸어.');
-                else addThought(i, '빌린 돈까지 다시 넣어볼까...');
+                if(v.loan > amount) addThought(i, '빌린 돈까지 다시 넣어볼까...');
             }
         }
     }
@@ -826,15 +869,26 @@
         }
     }
     function buyPoint(who, amount){
-        mySite.money += amount;
-        victimList[who].money -= amount;
-        victimList[who].point += amount;
+        if(amount <= 0) return;
+        var v = victimList[who];
+        var isFirstCharge = (v.paycount === 0);
 
-        victimList[who].buymoneytotal += amount;
-        
-        if(mySite.phase >= 2) victimList[who].point += Math.floor(amount*0.2);
-        ui_headline.setText(victimList[who].name + '님이 ' + amount + '원을 충전했습니다.');
-        if(victimList[who].paycount === 0) { victimList[who].firstCharge = true; addThought(who, '처음으로 내 돈을 넣었어.'); } else { addThought(who, '이번에도 돈을 넣었어.'); }
+        mySite.money += amount;
+        v.money -= amount;
+        v.point += amount;
+        v.buymoneytotal += amount;
+        v.paycount++;
+
+        if(mySite.phase >= 2) v.point += Math.floor(amount*0.2);
+        ui_headline.setText(v.name + '님이 실제 돈 ' + amount.toLocaleString() + '원을 충전했습니다.');
+        if(isFirstCharge){
+            v.firstCharge = true;
+            addThought(who, '처음으로 내 돈을 넣었어.', true);
+        } else if(v.paycount === 2){
+            addThought(who, '한 번으로 끝내려 했는데 다시 충전하고 있어.', true);
+        } else {
+            addThought(who, '이번에도 돈을 넣었어.');
+        }
     }
     function refundPoint(who, amount){
         mySite.money -= amount;
@@ -847,9 +901,14 @@
     }
     function loan(who, amount){
         var v = victimList[who];
+        var wasDebtFree = (v.loan <= 0);
         v.money += amount;
         v.loan += amount;
         v.risky += Math.floor(amount/10000);
+        if(wasDebtFree){
+            v.firstLoan = true;
+            addThought(who, '처음으로 빚을 내서 도박 자금을 마련했어.', true);
+        }
     }
     function invite(who){
         victimList[who].point += 10000;
@@ -1031,6 +1090,9 @@
         }
 
         create(){
+            reportScrollSpeed = 1.2;
+            reportFinished = false;
+            this.dragStartY = undefined;
             this.add.image(540,960,'bg3').setDepth(0);
 
             var victimCount=0, victimMoney=0, victimLoanCount=0;
@@ -1038,10 +1100,11 @@
 
             for(let i=0;i<victimList.length;i++){
                 var v=victimList[i];
-                if(v.buymoneytotal>0){ victimCount++; victimMoney+=v.buymoneytotal; }
+                if(v.betCount>0 || v.buymoneytotal>0 || v.loan>0) victimCount++;
+                if(v.buymoneytotal>0) victimMoney+=v.buymoneytotal;
                 if(v.loan>0) victimLoanCount++;
                 totalBets += v.betCount || 0;
-                totalLoss += v.totalLoss || 0;
+                totalLoss += v.totalLost || 0;
             }
 
             // 고정 제목
@@ -1068,8 +1131,8 @@
 
             reportContainer.add(this.add.rectangle(540,y+75,900,150,0x111111,0.94));
             reportContainer.add(this.add.text(540,y+75,
-                '피해자 '+victimCount+'명     피해금액 '+victimMoney.toLocaleString()+'원\n'+
-                '대출 발생 '+victimLoanCount+'명     총 베팅 '+totalBets+'회',{
+                '피해자 '+victimCount+'명     총 충전 '+victimMoney.toLocaleString()+'원\n'+
+                '누적 베팅손실 '+totalLoss.toLocaleString()+'원     대출 발생 '+victimLoanCount+'명     총 베팅 '+totalBets+'회',{
                     fontSize:'34px',color:'#ffffff',align:'center',
                     fixedWidth:850,lineSpacing:12
                 }).setOrigin(0.5));
@@ -1077,41 +1140,53 @@
 
             for(let i=0;i<victimList.length;i++){
                 var v=victimList[i];
-                if(!v.thoughts || v.thoughts.length===0) continue;
+                if(!(v.betCount>0 || v.buymoneytotal>0 || v.loan>0 || (v.thoughts && v.thoughts.length>0))) continue;
 
-                var cardHeight=Math.max(180,130+v.thoughts.length*72);
+                var diary = (v.thoughts && v.thoughts.length>0)
+                    ? v.thoughts
+                    : [{season:'', text:(v.think || '기록 없음')}];
 
-                reportContainer.add(
-                    this.add.rectangle(540,y+cardHeight/2,900,cardHeight,0x111111,0.94)
-                );
-
-                reportContainer.add(this.add.text(110,y+28,
+                // 텍스트를 먼저 만든 뒤 실제 높이를 합산해서 카드 크기를 정한다.
+                var cardItems=[];
+                var title=this.add.text(110,0,
                     (v.face||'●')+'  '+v.name+(v.personality?' · '+v.personality:''),
                     {fontSize:'38px',color:'#ffffff',fontStyle:'bold',fixedWidth:820}
-                ));
+                );
+                cardItems.push({obj:title, offset:28});
 
-                var lineY=y+90;
-                for(let j=0;j<v.thoughts.length;j++){
-                    var thought=v.thoughts[j];
-                    var season=(typeof thought==='object'&&thought!==null)
-                        ? (thought.season||thought.day||'') : '';
+                var localY=90;
+                for(let j=0;j<diary.length;j++){
+                    var thought=diary[j];
+                    var thoughtSeason=(typeof thought==='object'&&thought!==null)
+                        ? (thought.season ?? thought.day ?? '') : '';
                     var text=(typeof thought==='object'&&thought!==null)
                         ? (thought.text||'') : String(thought);
+                    // 혹시 데이터 안에 문자 그대로 "\\n"이 남아 있어도 표시 전에 실제 개행으로 정규화한다.
+                    text=String(text).replace(/\\n/g,'\n');
 
-                    reportContainer.add(this.add.text(
-                        130,lineY,
-                        season ? season+'회차  '+text : text,
+                    var line=this.add.text(130,0,
+                        thoughtSeason !== '' ? thoughtSeason+'회차  '+text : text,
                         {fontSize:'28px',color:'#eeeeee',wordWrap:{width:790},lineSpacing:4}
-                    ));
-                    lineY+=66;
+                    );
+                    cardItems.push({obj:line, offset:localY});
+                    localY += line.height + 20;
                 }
 
-                reportContainer.add(this.add.text(
-                    130,lineY+8,
-                    '누적 손실 '+(v.totalLoss||0).toLocaleString()+'원   대출 '+(v.loan||0).toLocaleString()+'원',
-                    {fontSize:'24px',color:'#bbbbbb'}
-                ));
+                var summary=this.add.text(130,0,
+                    '누적 베팅손실 '+(v.totalLost||0).toLocaleString()+'원   대출 '+(v.loan||0).toLocaleString()+'원   총 베팅 '+(v.betCount||0)+'회',
+                    {fontSize:'24px',color:'#bbbbbb',wordWrap:{width:790}}
+                );
+                cardItems.push({obj:summary, offset:localY+5});
+                localY += summary.height + 35;
 
+                var cardHeight=Math.max(180,localY+20);
+                var card=this.add.rectangle(540,y+cardHeight/2,900,cardHeight,0x111111,0.94);
+                reportContainer.add(card);
+
+                for(let k=0;k<cardItems.length;k++){
+                    cardItems[k].obj.y=y+cardItems[k].offset;
+                    reportContainer.add(cardItems[k].obj);
+                }
                 y+=cardHeight+35;
             }
 
@@ -1131,21 +1206,22 @@
             }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1140,
-                '운영 수익보다 중요한 것은\\n그 과정에서 피해자가 어떻게 변했는가입니다.',{
+                '운영 수익보다 중요한 것은\n그 과정에서 피해자가 어떻게 변했는가입니다.',{
                     fontSize:'32px',color:'#dddddd',align:'center',
                     fixedWidth:920,lineSpacing:18
                 }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1320,
-                '피해자  '+victimCount+'명\\n'+
-                '피해금액  '+victimMoney.toLocaleString()+'원\\n'+
+                '피해자  '+victimCount+'명\n'+
+                '누적 베팅손실  '+totalLoss.toLocaleString()+'원\n'+
+                '실제 충전  '+victimMoney.toLocaleString()+'원\n'+
                 '대출 발생  '+victimLoanCount+'명',{
                     fontSize:'38px',color:'#ffffff',align:'center',
                     fixedWidth:900,lineSpacing:16
                 }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1545,
-                '사이버도박은 게임이 끝나면 사라지는 선택이 아닙니다.\\n'+
+                '사이버도박은 게임이 끝나면 사라지는 선택이 아닙니다.\n'+
                 '피해자의 돈과 인간관계, 일상에 흔적을 남깁니다.',{
                     fontSize:'30px',color:'#dddddd',align:'center',
                     fixedWidth:920,lineSpacing:14
