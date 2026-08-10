@@ -85,6 +85,40 @@
         thoughts:[],
         friends:2,
         betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99});
+    // 피해자 성향과 사건 기록 초기화
+    function initializeVictim(v, isNew){
+        var personalities = [
+            {type:'신중형', caution:18, impulse:6, social:7, recovery:4},
+            {type:'충동형', caution:5, impulse:18, social:8, recovery:12},
+            {type:'사회형', caution:9, impulse:11, social:18, recovery:8},
+            {type:'추격형', caution:5, impulse:16, social:5, recovery:20}
+        ];
+        var p = personalities[Math.floor(Math.random()*personalities.length)];
+        if(!v.personality){
+            v.personality = p.type;
+            v.caution = p.caution;
+            v.impulse = p.impulse;
+            v.social = p.social;
+            v.recovery = p.recovery;
+        }
+        v.lossStreak = v.lossStreak || 0;
+        v.winStreak = v.winStreak || 0;
+        v.totalLost = v.totalLost || 0;
+        v.totalWon = v.totalWon || 0;
+        v.firstWin = !!v.firstWin;
+        v.firstLoss = !!v.firstLoss;
+        v.firstCharge = !!v.firstCharge;
+        v.firstLoan = !!v.firstLoan;
+        v.firstFriend = !!v.firstFriend;
+        v.lastEventSeason = (typeof v.lastEventSeason === 'number') ? v.lastEventSeason : -99;
+        v.lastThoughtText = v.lastThoughtText || '';
+        v.thoughtCooldown = v.thoughtCooldown || 0;
+        if(isNew && v.thoughts.length === 0){
+            v.thoughts.push({text:v.think, season:season});
+        }
+        updateVictimState(v);
+    }
+
     function GenerateVictims(count){
 
         for(let i = 0; i < count ; i++){
@@ -108,8 +142,13 @@
                 think:'재밌을거같은데',
                 thoughts:[],
                 friends:1,
-                betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99
+                betCount:0, winCount:0, loseCount:0, lastThoughtSeason:-99,
+                personality:null, caution:0, impulse:0, social:0, recovery:0,
+                lossStreak:0, winStreak:0, totalLost:0, totalWon:0,
+                firstWin:false, firstLoss:false, firstCharge:false, firstLoan:false, firstFriend:false,
+                lastEventSeason:-99, lastThoughtText:'', thoughtCooldown:0
             });
+            initializeVictim(victimList[victimList.length-1], true);
         }
     }
 
@@ -126,6 +165,8 @@
         popular:0,
         phase:0
     };
+
+    for(let i=0;i<victimList.length;i++) initializeVictim(victimList[i], false);
 
     var nowState; //0
 
@@ -448,19 +489,17 @@
     }
     function refreshEducationUI(){
         var victimCount = victimList.length;
-        var chargedCount = 0;
-        var chargedTotal = 0;
-        var loanCount = 0;
-        var loanTotal = 0;
-        var activeCount = 0;
-        var distressedCount = 0;
+        var chargedCount = 0, chargedTotal = 0;
+        var loanCount = 0, loanTotal = 0;
+        var activeCount = 0, distressedCount = 0, totalLoss = 0;
 
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
             if(v.buymoneytotal > 0){ chargedCount++; chargedTotal += v.buymoneytotal; }
             if(v.loan > 0){ loanCount++; loanTotal += v.loan; }
             if(v.point > 0 || v.bet > 0) activeCount++;
-            if(v.mental < 50 || v.loan > 0) distressedCount++;
+            if(v.mental < 50 || v.loan > 0 || v.lossStreak >= 2) distressedCount++;
+            if(v.earn < 0) totalLoss += -v.earn;
         }
 
         var phaseText = [
@@ -490,7 +529,7 @@
         ui_mymoney.setText('사이트 수익  ' + Math.floor(mySite.money).toLocaleString() + '원    |    ' + season + '회차');
         ui_phaseTitle.setText(phaseText);
         ui_objective.setText(objectiveText);
-        ui_siteStats.setText('이용자 ' + victimCount + '명   |   충전 경험 ' + chargedCount + '명 / ' + Math.floor(chargedTotal).toLocaleString() + '원   |   대출 발생 ' + loanCount + '명 / ' + Math.floor(loanTotal).toLocaleString() + '원');
+        ui_siteStats.setText('이용자 ' + victimCount + '명   |   충전 ' + chargedCount + '명 / ' + Math.floor(chargedTotal).toLocaleString() + '원\n손실액 ' + Math.floor(totalLoss).toLocaleString() + '원   |   대출 ' + loanCount + '명 / ' + Math.floor(loanTotal).toLocaleString() + '원');
         ui_education.setText(educationText);
         ui_victimStats.setText('현재 상태  ·  참여 중 ' + activeCount + '명   |   손실·대출 위험 신호 ' + distressedCount + '명');
     }
@@ -502,20 +541,31 @@
         
     }
 
-    function addThought(who, what){
+    function addThought(who, what, force){
         var v = victimList[who];
-        v.thoughts.push({text:what,season:season});
+        if(!v) return;
+        initializeVictim(v, false);
+
+        // 같은 문장이 연속해서 쌓이지 않도록 한다.
+        if(!force && v.lastThoughtText === what && season - v.lastThoughtSeason < 3) return;
+
+        v.thoughts.push({text:what, season:season});
         v.think = what;
         v.lastThoughtSeason = season;
+        v.lastEventSeason = season;
+        v.lastThoughtText = what;
+        v.thoughtCooldown = 2;
+        if(typeof ui_headline !== 'undefined' && ui_headline && gameOn){
+            ui_headline.setText(v.name + ' : ' + what);
+        }
     }
 
-    // 피해자의 "현재 단계"를 실제 수치로부터 다시 계산한다.
-    // state를 단순한 표정 번호로 쓰지 않고, 생각 선택의 기준으로도 사용한다.
     function updateVictimState(v){
-        if(v.mental <= 15 || (v.loan >= 5000000 && v.money <= 0)){
+        var debtBurden = v.income > 0 ? v.loan / v.income : v.loan;
+        if(v.mental <= 15 || (v.loan >= 5000000 && v.money <= 0) || (debtBurden >= 20 && v.loseCount >= 3)){
             v.state = VictimState.COLLAPSED;
         }
-        else if(v.loan > 0 || v.mental <= 40){
+        else if(v.loan > 0 || v.mental <= 40 || v.lossStreak >= 3){
             v.state = VictimState.DESPERATE;
         }
         else if(v.betCount >= 2 || v.winCount >= 2 || v.interest >= 25){
@@ -533,110 +583,134 @@
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
             updateVictimState(v);
-
-            if(v.state === VictimState.COLLAPSED){
-                v.face = '😭';
-            }
-            else if(v.state === VictimState.DESPERATE){
-                v.face = '😢';
-            }
-            else if(gamblePhase == 4 && v.betwho >= 0){
-                v.face = (v.betwho == winner) ? '😋' : '😥';
-            }
-            else if(v.state === VictimState.ADDICT){
-                v.face = '😐';
-            }
-            else if(v.state === VictimState.WINNER){
-                v.face = '😄';
-            }
-            else{
-                v.face = '😕';
-            }
+            if(v.state === VictimState.COLLAPSED) v.face = '😭';
+            else if(v.state === VictimState.DESPERATE) v.face = '😢';
+            else if(gamblePhase == 4 && v.betwho >= 0) v.face = (v.betwho == winner) ? '😋' : '😥';
+            else if(v.state === VictimState.ADDICT) v.face = '😐';
+            else if(v.state === VictimState.WINNER) v.face = '😄';
+            else v.face = '😕';
         }
     }
 
-    // 현재 수치와 최근 행동을 바탕으로 '가장 그럴듯한 생각' 하나를 고른다.
-    // 예전 코드는 state/mental/phase만 단순 비교해서 서로 관계없는 문장이
-    // 아무 때나 등장할 수 있었다. 이제는 실제 피해자의 행동 순서를 우선한다.
+    // 실제 행동을 우선하고, 그 다음에 성향을 반영한다.
+    // 즉 '조건에 맞는 문장 랜덤 선택'이 아니라 '방금 무슨 일이 있었는가'를 먼저 생각한다.
     function refreshVictimThink(){
         for(let i = 0; i < victimList.length; i++){
             var v = victimList[i];
+            initializeVictim(v, false);
             updateVictimState(v);
 
-            // 방금 실제로 발생한 사건은 다음 회차까지 우선 표시한다.
-            if(season - v.lastThoughtSeason <= 1 && v.think && v.thoughts.length > 0){
+            if(v.thoughtCooldown > 0){
+                v.thoughtCooldown--;
                 continue;
             }
 
             var text = null;
+            var r = Math.random() * 100;
 
-            if(v.state === VictimState.COLLAPSED){
-                if(v.loan > 0) text = '빚을 어떻게 갚아야 하지...';
-                else text = '이제 정말 그만하고 싶어...';
+            // 1. 손실 직후: 손실 회복 욕구가 강한 사람일수록 추격 생각이 빨리 나온다.
+            if(v.lossStreak >= 2 || (v.loseCount > 0 && v.totalLost > v.totalWon)){
+                if(v.recovery >= 15 || v.state >= VictimState.DESPERATE){
+                    text = r < 60 ? '잃은 돈만 찾으면 그만둘 수 있어.' : '한판만 더 따면 복구할 수 있을 것 같아.';
+                }
+                else if(v.caution >= 15){
+                    text = '오늘은 여기서 그만해야겠다.';
+                }
+                else{
+                    text = '아직 손해를 못 메꿨네...';
+                }
+            }
+            // 2. 대출이 있으면 다른 생각보다 빚과 복구가 우선이다.
+            else if(v.loan > 0){
+                if(v.money <= 0 && v.point <= 0) text = '돈을 어디서 빌려올까...';
+                else if(v.recovery >= 12) text = '빌린 돈으로 따서 갚으면 되지 않을까?';
+                else text = '빌린 돈까지 잃으면 안 되는데...';
+            }
+            // 3. 첫 충전 직전/직후
+            else if(v.paycount === 0 && mySite.phase >= 2 && v.interest >= 15){
+                text = v.caution >= 15 ? '돈까지 넣는 건 좀 망설여지는데...' : '첫충전을 해볼까?';
+            }
+            // 4. 충전을 반복하면 '더 넣어도 되는 이유'를 찾는다.
+            else if(v.paycount >= 2 && v.buymoneytotal > v.income){
+                text = v.impulse >= 14 ? '이번에 조금만 더 넣으면 딸 수 있을 것 같아.' : '내가 너무 많이 넣고 있는 건 아닐까?';
+            }
+            // 5. 첫 승리 직후
+            else if(v.winCount === 1 && v.betCount === 1){
+                text = v.impulse >= 14 ? '생각보다 잘 되는데? 한 번 더 해볼까?' : '운이 좋았던 걸까?';
+            }
+            // 6. 연승: 자신감과 베팅 확대
+            else if(v.winStreak >= 2){
+                text = v.impulse >= 14 ? '오늘은 계속 이길 것 같아.' : '이번에도 운이 좋으면 좋겠다.';
+            }
+            // 7. 친구 추천은 사회형 성향에 맞게
+            else if(mySite.phase >= 3 && v.friends > 0 && v.interest >= 18){
+                text = v.social >= 14 ? '친구한테도 한번 알려볼까?' : '친구까지 끌어들이는 건 좀 그런데...';
+            }
+            // 8. 환전 가능 상태
+            else if(v.earn > 20000 && v.point > 0){
+                text = v.caution >= 14 ? '이쯤에서 돈으로 바꿔야겠다.' : '조금 더 따고 환전할까?';
+            }
+            // 9. 아무 사건도 없을 때 현재 단계에 맞는 생각
+            else if(v.state === VictimState.COLLAPSED){
+                text = '이제 정말 어떻게 해야 하지...';
             }
             else if(v.state === VictimState.DESPERATE){
-                if(v.loan > 0) text = '빌린 돈으로 따서 갚으면 되지 않을까?';
-                else if(v.money <= 0 && v.point <= 0) text = '돈을 어디서 빌려올까';
-                else text = '잃은 돈을 다시 찾고 싶어';
-            }
-            else if(v.paycount === 0 && mySite.phase >= 2 && v.interest >= 15){
-                text = '첫충전을 해볼까?';
-            }
-            else if(v.friends > 0 && mySite.phase >= 3 && v.interest >= 18){
-                text = '친구를 초대하면 포인트를 준다고?';
+                text = '잃은 돈을 다시 찾고 싶어...';
             }
             else if(v.state === VictimState.ADDICT){
-                if(v.earn < 0) text = '잃은 돈만 찾으면 그만둘 수 있어.';
-                else text = '한판만 더 해볼까?';
+                text = v.impulse >= 14 ? '한판만 더 해볼까?' : '계속하고 있는 게 맞나...';
             }
             else if(v.state === VictimState.WINNER){
                 text = '생각보다 돈이 되는데...';
             }
-            else if(v.loseCount > 0 && v.earn < 0){
-                text = '아직도 손해를 못 메꿨네...';
+            else if(mySite.phase === 0){
+                text = v.caution >= 15 ? '이건 좀 조심해야겠다.' : '이거 재미있을까?';
             }
             else if(mySite.phase >= 1 && v.point > 0){
                 text = '한번 해볼까?';
             }
-            else if(mySite.phase === 0){
-                text = '이거 재미있을까?';
-            }
 
             if(text) v.think = text;
         }
+        refreshVictimFace();
+    }
+
+    function getVictimStateText(v){
+        return ['호기심','첫 승리','반복 베팅','절박','파탄'][v.state] || '관찰';
     }
     function refreshUiVictim(){
         switch(ui_victimMode){
-            case 0: //생각 + 포인트, 베팅정보
+            case 0:
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 6 ; i++){
-                    var victim = victimList[max(cur+i,0)];
-                    if(victimList.length > cur+i){
-                        ui_victim[i*2].setText( '  '+victim.think );
-                        ui_victim[i*2+1].setText( victim.face + victim.name +' '+Math.floor(victim.point)+ ' (' + Math.floor(victim.earn) +') '+ (victim.betwho>=0? (victim.betwho+1) + '번에 베팅 ' + victim.bet : ''));
-                    }
-                    else{
+                    var idx = cur+i;
+                    if(victimList.length > idx){
+                        var victim = victimList[idx];
+                        updateVictimState(victim);
+                        ui_victim[i*2].setText('  '+victim.think);
+                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getVictimStateText(victim) + ']  정신 ' + Math.floor(victim.mental) + '  손실 ' + Math.floor(Math.max(0,-victim.earn)).toLocaleString() + '원');
+                    } else {
                         ui_victim[i*2].setText('');
                         ui_victim[i*2+1].setText('');
                     }
                 }
                 break;
-            case 1: //포인트, 베팅정보, 현금정보
+            case 1:
                 var cur = max(Math.floor(ui_victimStart),0);
                 for(let i = 0; i < 6 ; i++){
-                    var victim = victimList[max(cur+i,0)];
-                    if(victimList.length > cur+i){
-                        ui_victim[i*2].setText( '포인트: '+Math.floor(victim.point)+' 현금:' + victim.money + ' 빌린돈:' + victim.loan );
-                        ui_victim[i*2+1].setText(victim.face + victim.name + ' ('+ Math.floor(victim.earn) + ') ' + (victim.betwho+1) + ' ' + Math.floor(victim.bet) );
-                    }
-                    else{
+                    var idx = cur+i;
+                    if(victimList.length > idx){
+                        var victim = victimList[idx];
+                        updateVictimState(victim);
+                        ui_victim[i*2].setText('현금 ' + Math.floor(victim.money).toLocaleString() + '원  포인트 ' + Math.floor(victim.point).toLocaleString() + '원  대출 ' + Math.floor(victim.loan).toLocaleString() + '원');
+                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getVictimStateText(victim) + ']  ' + Math.floor(victim.betCount) + '회 베팅 / ' + Math.floor(victim.loseCount) + '회 손실');
+                    } else {
                         ui_victim[i*2].setText('');
                         ui_victim[i*2+1].setText('');
                     }
                 }
                 break;
         }
-        
     }
     function switchUiVictim(){
         ui_victimMode=valueRotate(0,1,1,ui_victimMode);
@@ -674,25 +748,34 @@
     }
     function BetResult(winner){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].betwho == winner){
-                victimList[i].point += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
-                victimList[i].earn += Math.floor(victimList[i].bet * turtleOnLane[winner].multiplier);
-
-                victimList[i].winCount++;
-                addThought(i, '이겼다! '+victimList[i].bet*3+'원을 벌었어');
-                victimList[i].interest += 2;
-                victimList[i].risky += 1;
-                victimList[i].payattitude += 4;
-                victimList[i].mental += 24;
+            var v = victimList[i];
+            if(v.betwho == winner){
+                var won = Math.floor(v.bet * turtleOnLane[winner].multiplier);
+                v.point += won;
+                v.earn += won;
+                v.totalWon += won;
+                v.winCount++;
+                v.winStreak++;
+                v.lossStreak = 0;
+                v.firstWin = true;
+                addThought(i, v.winCount === 1 ? '처음으로 이겼어. 생각보다 돈이 되는데?' : '또 이겼어. 오늘은 계속 이길 것 같아.');
+                v.interest = min(v.interest + 2, 60);
+                v.risky = min(v.risky + 1, 80);
+                v.payattitude = min(v.payattitude + 4, 80);
+                v.mental = min(v.mental + 24, 100);
             }
-            else if(victimList[i].betwho != -1){
-                victimList[i].loseCount++;
-                addThought(i, '졌다! '+victimList[i].bet+'원을 잃었어');
-                victimList[i].mental -= 8;
+            else if(v.betwho != -1){
+                v.loseCount++;
+                v.lossStreak++;
+                v.winStreak = 0;
+                v.totalLost += v.bet;
+                v.earn -= v.bet;
+                v.mental = max(v.mental - (v.lossStreak >= 3 ? 12 : 8), 0);
+                v.firstLoss = true;
+                addThought(i, v.lossStreak >= 2 ? '또 졌어... 잃은 돈을 찾아야 해.' : '졌다... 다음에는 딸 수 있겠지?');
             }
         }
     }
-
 
     function kick(who){
         victimList[i].splice(who,1);
@@ -713,17 +796,27 @@
     }
     function considerLoan(){
         for(let i = 0; i < victimList.length ; i++){
-            if(victimList[i].money < 1000 && Math.random() < victimList[i].payattitude * (victimList[i].interest-15) / 300000 ){
-                if(victimList[i].loan == 0)addThought(i, '처음으로 대출했어');
-                loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 100)*100);
+            var v = victimList[i];
+            if(v.interest <= 15 || v.payattitude <= 10) continue;
+
+            var needsMoney = v.money < 1000 && v.point <= 0;
+            var chasingLoss = v.lossStreak >= 2 && v.money < Math.max(1000, v.income * 0.3);
+            if(!needsMoney && !chasingLoss) continue;
+
+            var probability = (v.payattitude * (v.interest - 10)) / 50000;
+            probability += v.recovery / 50000;
+            probability += v.impulse / 100000;
+
+            if(Math.random() < probability){
+                var base = Math.max(10000, Math.floor((v.risky * 0.6 + v.recovery * 0.4) * 1000));
+                var amount = Math.min(base, 5000000);
+                loan(i, amount);
+                if(v.loan === amount) addThought(i, '처음으로 돈을 빌렸어.');
+                else addThought(i, '빌린 돈까지 다시 넣어볼까...');
             }
-            else if(victimList[i].money == 0 && victimList[i].point == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-15) / 30000 ){
-                if(victimList[i].loan == 0)addThought(i, '처음으로 대출했어');
-                loan(i, Math.floor((Math.random() + Math.random())/2 * victimList[i].risky * 100)*100);
-            }
-                
         }
     }
+
     function considerRefund(){
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].earn > 20000){
@@ -741,7 +834,7 @@
         
         if(mySite.phase >= 2) victimList[who].point += Math.floor(amount*0.2);
         ui_headline.setText(victimList[who].name + '님이 ' + amount + '원을 충전했습니다.');
-        addThought(who, amount+'원만큼 충전했어');
+        if(victimList[who].paycount === 0) { victimList[who].firstCharge = true; addThought(who, '처음으로 내 돈을 넣었어.'); } else { addThought(who, '이번에도 돈을 넣었어.'); }
     }
     function refundPoint(who, amount){
         mySite.money -= amount;
@@ -753,17 +846,18 @@
         addThought(who, amount+'원만큼 환전하고싶어');
     }
     function loan(who, amount){
-        victimList[who].money += amount;
-        victimList[who].loan += amount;
-        victimList[who].risky += Math.floor(amount/10000);
-        addThought(who, amount+'원만큼 돈을 빌렸어');
+        var v = victimList[who];
+        v.money += amount;
+        v.loan += amount;
+        v.risky += Math.floor(amount/10000);
     }
     function invite(who){
         victimList[who].point += 10000;
         victimList[who].friends -= 1;
         GenerateVictims(1);
-        addThought(who, '친구 '+victimList[victimList.length-1].name+'에게 게임을 추천했다');
-        addThought(victimList.length-1, '친구 '+victimList[who].name+' 추천으로 가입했다');
+        victimList[who].firstFriend = true;
+        addThought(who, '친구에게 게임을 추천했어.');
+        addThought(victimList.length-1, '친구 추천으로 이 사이트에 가입했어.');
     }
     function considerInvite(){
         if(mySite.phase >= 3){
@@ -923,69 +1017,191 @@
 
 
     //for scene3
+    var reportContainer;
     var reportText;
+    var reportMaskShape;
+    var reportScrollSpeed = 1.2;
+    var reportFinished = false;
 
     class Scene3 extends Phaser.Scene{
-        constructor()
-        {
-            super({ key: 'scene3' });
-        }
-        preload ()
-        {
+        constructor(){ super({ key: 'scene3' }); }
+
+        preload(){
             bg = this.load.image('bg3', 'assets/scene3/background.png');
         }
 
-        create ()
-        {
-            this.add.image(540,960, 'bg3');
-	        
-            var victimCount = 0;
-            var victimMoney = 0;
-            var victimLoanCount = 0;
-            for(let i = 0 ; i < victimList.length; i++){
-                if(victimList[i].buymoneytotal > 0){
-                    victimCount += 1;
-                    victimMoney += victimList[i].buymoneytotal;
-                }
-                if(victimList[i].loan > 0){
-                    victimLoanCount += 1;
-                }
+        create(){
+            this.add.image(540,960,'bg3').setDepth(0);
+
+            var victimCount=0, victimMoney=0, victimLoanCount=0;
+            var totalBets=0, totalLoss=0;
+
+            for(let i=0;i<victimList.length;i++){
+                var v=victimList[i];
+                if(v.buymoneytotal>0){ victimCount++; victimMoney+=v.buymoneytotal; }
+                if(v.loan>0) victimLoanCount++;
+                totalBets += v.betCount || 0;
+                totalLoss += v.totalLoss || 0;
             }
-            //this.add.text(0, 260, '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명', { fontSize: '60px', color: '#FFFFFF', align:'left', fixedWidth:1080 })
 
-            var reportString = '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
-            for(let i = 0 ; i < victimList.length; i++){
-                reportString+='\n\n'+victimList[i].name;
-                for(let j = 0 ; j < victimList[i].thoughts.length ; j++){
-                    reportString+='\n\n'+victimList[i].thoughts[j].season+'회차 '+victimList[i].thoughts[j].text;
+            // 고정 제목
+            this.add.rectangle(540,80,1080,160,0x000000,0.90).setDepth(20);
+            this.add.text(540,45,'피해자의 기록',{
+                fontSize:'64px',color:'#ffffff',fontStyle:'bold',
+                align:'center',fixedWidth:1000
+            }).setOrigin(0.5).setDepth(21);
+            this.add.text(540,115,'게임 속 선택이 피해자의 삶에 남긴 기록입니다.',{
+                fontSize:'28px',color:'#dddddd',align:'center',fixedWidth:1000
+            }).setOrigin(0.5).setDepth(21);
+
+            // ★ 핵심: 스크롤되는 것은 reportContainer 하나뿐이다.
+            // 검은 하단 영역은 container 밖에 만들어 절대로 같이 움직이지 않는다.
+            reportMaskShape=this.make.graphics();
+            reportMaskShape.fillStyle(0xffffff,1);
+            reportMaskShape.fillRect(0,190,1080,770);
+            var reportMask=reportMaskShape.createGeometryMask();
+
+            reportContainer=this.add.container(0,0).setDepth(5);
+            reportContainer.setMask(reportMask);
+
+            var y=220;
+
+            reportContainer.add(this.add.rectangle(540,y+75,900,150,0x111111,0.94));
+            reportContainer.add(this.add.text(540,y+75,
+                '피해자 '+victimCount+'명     피해금액 '+victimMoney.toLocaleString()+'원\n'+
+                '대출 발생 '+victimLoanCount+'명     총 베팅 '+totalBets+'회',{
+                    fontSize:'34px',color:'#ffffff',align:'center',
+                    fixedWidth:850,lineSpacing:12
+                }).setOrigin(0.5));
+            y+=190;
+
+            for(let i=0;i<victimList.length;i++){
+                var v=victimList[i];
+                if(!v.thoughts || v.thoughts.length===0) continue;
+
+                var cardHeight=Math.max(180,130+v.thoughts.length*72);
+
+                reportContainer.add(
+                    this.add.rectangle(540,y+cardHeight/2,900,cardHeight,0x111111,0.94)
+                );
+
+                reportContainer.add(this.add.text(110,y+28,
+                    (v.face||'●')+'  '+v.name+(v.personality?' · '+v.personality:''),
+                    {fontSize:'38px',color:'#ffffff',fontStyle:'bold',fixedWidth:820}
+                ));
+
+                var lineY=y+90;
+                for(let j=0;j<v.thoughts.length;j++){
+                    var thought=v.thoughts[j];
+                    var season=(typeof thought==='object'&&thought!==null)
+                        ? (thought.season||thought.day||'') : '';
+                    var text=(typeof thought==='object'&&thought!==null)
+                        ? (thought.text||'') : String(thought);
+
+                    reportContainer.add(this.add.text(
+                        130,lineY,
+                        season ? season+'회차  '+text : text,
+                        {fontSize:'28px',color:'#eeeeee',wordWrap:{width:790},lineSpacing:4}
+                    ));
+                    lineY+=66;
                 }
+
+                reportContainer.add(this.add.text(
+                    130,lineY+8,
+                    '누적 손실 '+(v.totalLoss||0).toLocaleString()+'원   대출 '+(v.loan||0).toLocaleString()+'원',
+                    {fontSize:'24px',color:'#bbbbbb'}
+                ));
+
+                y+=cardHeight+35;
             }
-            reportString += '피해자 '+victimCount+'명\n피해금액 '+victimMoney+'원\n대출 발생 '+victimLoanCount+'명';
-            reportText = this.add.text(
-                80,
-                960,
-                reportString,
-                {
-                    fontSize: "60px",
-                    color: "#ffffff",
-                    wordWrap: { width: 900 },
-                    align:'center'
+
+            reportContainer.add(this.add.text(540,y+70,'— 피해자의 기록 끝 —',{
+                fontSize:'36px',color:'#ffffff',align:'center',fixedWidth:900
+            }).setOrigin(0.5));
+            y+=180;
+            this.reportContentBottom=y;
+
+            // ★ 고정 하단 교육 영역: reportContainer와 완전히 별개
+            this.add.rectangle(540,1440,1080,960,0x050505,0.97).setDepth(30);
+            this.add.rectangle(540,970,1080,20,0x000000,1).setDepth(31);
+
+            this.add.text(540,1045,'이 게임에서 당신이 만든 결과',{
+                fontSize:'46px',color:'#ffffff',fontStyle:'bold',
+                align:'center',fixedWidth:1000
+            }).setOrigin(0.5).setDepth(32);
+
+            this.add.text(540,1140,
+                '운영 수익보다 중요한 것은\\n그 과정에서 피해자가 어떻게 변했는가입니다.',{
+                    fontSize:'32px',color:'#dddddd',align:'center',
+                    fixedWidth:920,lineSpacing:18
+                }).setOrigin(0.5).setDepth(32);
+
+            this.add.text(540,1320,
+                '피해자  '+victimCount+'명\\n'+
+                '피해금액  '+victimMoney.toLocaleString()+'원\\n'+
+                '대출 발생  '+victimLoanCount+'명',{
+                    fontSize:'38px',color:'#ffffff',align:'center',
+                    fixedWidth:900,lineSpacing:16
+                }).setOrigin(0.5).setDepth(32);
+
+            this.add.text(540,1545,
+                '사이버도박은 게임이 끝나면 사라지는 선택이 아닙니다.\\n'+
+                '피해자의 돈과 인간관계, 일상에 흔적을 남깁니다.',{
+                    fontSize:'30px',color:'#dddddd',align:'center',
+                    fixedWidth:920,lineSpacing:14
+                }).setOrigin(0.5).setDepth(32);
+
+            this.add.text(540,1730,'▲ 위쪽의 피해자 기록을 끝까지 확인하세요 ▲',{
+                fontSize:'28px',color:'#aaaaaa',align:'center',fixedWidth:1000
+            }).setOrigin(0.5).setDepth(32);
+
+            this.add.text(540,1835,'SPACE : 빠르게 보기 / 마우스·터치 : 직접 스크롤',{
+                fontSize:'24px',color:'#888888',align:'center',fixedWidth:1000
+            }).setOrigin(0.5).setDepth(32);
+
+            this.input.keyboard.on('keydown-SPACE',()=>{reportScrollSpeed=7;});
+            this.input.keyboard.on('keyup-SPACE',()=>{reportScrollSpeed=1.2;});
+
+            this.input.on('wheel',(pointer,gameObjects,deltaX,deltaY)=>{
+                reportContainer.y-=deltaY*0.35;
+                this.clampReportScroll();
+            },this);
+
+            this.input.on('pointerdown',pointer=>{
+                this.dragStartY=pointer.y;
+                this.dragStartReportY=reportContainer.y;
+            });
+
+            this.input.on('pointermove',pointer=>{
+                if(pointer.isDown && this.dragStartY!==undefined){
+                    reportContainer.y=this.dragStartReportY+(pointer.y-this.dragStartY);
+                    this.clampReportScroll();
                 }
-            );
+            });
 
-            const maskShape = this.make.graphics();
-            maskShape.fillStyle(0xffffff);
-            maskShape.fillRect(0, 0, 1080, 960);
-            const mask = maskShape.createGeometryMask();
-            reportText.setMask(mask);
-
-            input = this.input;
-            mouse = this.input.Mouse;
-            touch = this.input.Touch;
+            this.input.on('pointerup',()=>{
+                this.dragStartY=undefined;
+                this.dragStartReportY=undefined;
+            });
         }
+
+        clampReportScroll(){
+            var minY=940-this.reportContentBottom;
+            if(reportContainer.y>190) reportContainer.y=190;
+            if(reportContainer.y<minY){
+                reportContainer.y=minY;
+                reportFinished=true;
+            }
+        }
+
         update(){
-            if(reportText.y + reportText.height > 240){
-                reportText.y -= 2.5;
+            if(!reportFinished){
+                reportContainer.y-=reportScrollSpeed;
+                var minY=940-this.reportContentBottom;
+                if(reportContainer.y<=minY){
+                    reportContainer.y=minY;
+                    reportFinished=true;
+                }
             }
         }
     }
