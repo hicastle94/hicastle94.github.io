@@ -175,7 +175,8 @@
     var mySite = {
         money:0,
         popular:0,
-        phase:0
+        phase:0,
+        decisions:[]
     };
 
     for(let i=0;i<victimList.length;i++) initializeVictim(victimList[i], false);
@@ -290,6 +291,14 @@
     var ui_victimStats;
     var ui_siteStats;
     var ui_spotlight;
+    var ui_strategyTitle;
+    var ui_strategyFeedback;
+    var ui_strategyButtons = [];
+    var strategyState = {
+        lastChoiceSeason:-99,
+        chargeBoostUntil:-1,
+        inviteBoostUntil:-1
+    };
 
     var is_dialog = false;
     var d_zone;
@@ -340,6 +349,19 @@
                 ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '29px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:1030 });
                 ui_victim[i*2]   = this.add.text(45, baseY+32, '',{ fontSize: '23px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
             }
+
+            // 학생의 운영 선택: 사이트 쪽 효과와 피해자 쪽 효과를 동시에 보여준다.
+            this.add.rectangle(540,982,1050,142,0x050505,0.90).setDepth(10);
+            ui_strategyTitle = this.add.text(35,915,'운영 선택 · 한 회차에 한 번 선택할 수 있습니다.',{
+                fontSize:'23px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010
+            }).setDepth(11);
+            ui_strategyFeedback = this.add.text(35,1018,'선택 결과가 여기에 표시됩니다.',{
+                fontSize:'20px',color:'#FFFFFF',fixedWidth:1010,align:'center',wordWrap:{width:1010}
+            }).setDepth(11);
+            createStrategyButton(this, 145, 965, '무료 포인트', 'free');
+            createStrategyButton(this, 410, 965, '충전 보너스', 'charge');
+            createStrategyButton(this, 675, 965, '친구추천 보상', 'invite');
+            createStrategyButton(this, 940, 965, '보상 중단', 'stop');
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
             const zone = this.add.zone(0,250,1080,700).setOrigin(0).setInteractive();
@@ -427,9 +449,9 @@
                         
                         ui_headline.setText("이번 회차 베팅이 시작되었습니다. 누가 반복하고, 누가 멈추는지 관찰하세요.");
                         if(season == 0) startDialog(0);
-                        if(season == 1) {startDialog(1); mySite.phase = 1; victimList[0].point = 10000;victimList[1].point = 10000;victimList[2].point = 10000;victimList[3].point = 10000;};
+                        if(season == 1) {startDialog(1); mySite.phase = 1;};
                         if(season == 3) startDialog(2);
-                        if(season == 5) {startDialog(3); mySite.phase = 2; for(let i = 0; i < victimList.length; i++){ victimList[i].payattitude += 5; }}
+                        if(season == 5) {startDialog(3); mySite.phase = 2;}
                         //if(season == 8) {startDialog(5);}//문승재 런
                         if(season == 7) {startDialog(6); mySite.phase = 3;}
                         if(season == 8) {startDialog(7);}//먹튀
@@ -596,6 +618,117 @@
         updateVictimRiskEvent(i);
     }
 
+    function createStrategyButton(sceneRef, x, y, label, key){
+        var bg = sceneRef.add.rectangle(x,y,245,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12);
+        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:230}).setOrigin(0.5).setDepth(13);
+        bg.on('pointerdown', function(){ applyOperatorChoice(key); });
+        bg.on('pointerover', function(){ if(bg.input && bg.input.enabled) bg.setFillStyle(0x444444,1); });
+        bg.on('pointerout', function(){ bg.setFillStyle(0x2a2a2a,0.98); });
+        ui_strategyButtons.push({key:key,bg:bg,text:tx});
+    }
+
+    function strategyUnlocked(key){
+        if(key === 'free') return mySite.phase >= 1;
+        if(key === 'charge') return mySite.phase >= 2;
+        if(key === 'invite') return mySite.phase >= 3;
+        if(key === 'stop') return mySite.phase >= 1;
+        return false;
+    }
+
+    function recordOperatorDecision(key, title, siteEffect, victimEffect){
+        if(!Array.isArray(mySite.decisions)) mySite.decisions=[];
+        mySite.decisions.push({season:season,key:key,title:title,siteEffect:siteEffect,victimEffect:victimEffect});
+        if(mySite.decisions.length>20) mySite.decisions.shift();
+    }
+
+    function applyOperatorChoice(key){
+        if(scene !== 2 || !gameOn || is_dialog) return;
+        if(!strategyUnlocked(key)){
+            if(ui_strategyFeedback) ui_strategyFeedback.setText('아직 이 선택이 등장하지 않은 단계입니다.');
+            return;
+        }
+        if(strategyState.lastChoiceSeason === season){
+            if(ui_strategyFeedback) ui_strategyFeedback.setText('이번 회차에는 이미 선택했습니다. 다음 회차의 변화를 관찰하세요.');
+            return;
+        }
+
+        var affected=0;
+        var siteEffect='';
+        var victimEffect='';
+        var title='';
+
+        if(key === 'free'){
+            title='무료 포인트 지급';
+            var candidates=victimList.slice().sort(function(a,b){ return (a.betCount||0)-(b.betCount||0); });
+            for(var i=0;i<Math.min(3,candidates.length);i++){
+                var v=candidates[i];
+                var idx=victimList.indexOf(v);
+                v.point += 5000;
+                v.interest = min(v.interest+3,60);
+                addVictimEvent(idx,'promotion','무료 포인트 프로모션에 노출됐다. 실제 돈을 쓰지 않아도 첫 베팅을 시작하기 쉬워졌다.',1);
+                affected++;
+            }
+            siteEffect='참여 가능한 이용자 '+affected+'명 증가';
+            victimEffect='무료 포인트로 첫 베팅 진입 장벽이 낮아짐';
+        }
+        else if(key === 'charge'){
+            title='충전 보너스 강화';
+            strategyState.chargeBoostUntil=season+2;
+            for(var j=0;j<victimList.length;j++){
+                var cv=victimList[j];
+                if(cv.betCount>0 || cv.interest>=15){
+                    addVictimEvent(j,'promotion','충전 보너스 홍보에 노출됐다. 실제 돈을 넣는 선택이 더 매력적으로 보이기 시작했다.',2);
+                    affected++;
+                }
+            }
+            siteEffect='2회차 동안 충전 시도 가능성 상승';
+            victimEffect='게임 포인트와 실제 돈의 경계가 흐려질 위험 증가';
+        }
+        else if(key === 'invite'){
+            title='친구추천 보상 강화';
+            strategyState.inviteBoostUntil=season+2;
+            for(var k=0;k<victimList.length;k++){
+                var iv=victimList[k];
+                if(iv.friends>0 && (iv.betCount>0 || iv.interest>=15)){
+                    addVictimEvent(k,'promotion','친구추천 보상 안내를 받았다. 자신의 참여가 주변 사람에게 퍼질 가능성이 커졌다.',2);
+                    affected++;
+                }
+            }
+            siteEffect='2회차 동안 친구추천 발생 가능성 상승';
+            victimEffect='한 사람의 도박 참여가 주변 사람에게 확산될 위험 증가';
+        }
+        else if(key === 'stop'){
+            title='보상·유도 중단';
+            strategyState.chargeBoostUntil=-1;
+            strategyState.inviteBoostUntil=-1;
+            for(var m=0;m<victimList.length;m++){
+                var sv=victimList[m];
+                sv.payattitude=max(5,sv.payattitude-3);
+                sv.interest=max(5,sv.interest-2);
+                if(sv.betCount>0) addVictimEvent(m,'protect','추가 보상과 유도 메시지가 중단됐다.',0);
+                affected++;
+            }
+            siteEffect='추가 유입·충전 증가 효과 없음';
+            victimEffect='추가 충전·확산을 자극하는 요인이 감소';
+        }
+
+        strategyState.lastChoiceSeason=season;
+        recordOperatorDecision(key,title,siteEffect,victimEffect);
+        if(ui_strategyFeedback) ui_strategyFeedback.setText(title+'  |  사이트 효과: '+siteEffect+'  ↔  피해 효과: '+victimEffect);
+        if(ui_headline) ui_headline.setText('선택 결과를 관찰하세요: '+title);
+    }
+
+    function refreshStrategyButtons(){
+        for(var i=0;i<ui_strategyButtons.length;i++){
+            var b=ui_strategyButtons[i];
+            var unlocked=strategyUnlocked(b.key);
+            var used=(strategyState.lastChoiceSeason===season);
+            if(b.bg && b.bg.input) b.bg.input.enabled=unlocked && !used && gameOn && !is_dialog;
+            if(b.text) b.text.setAlpha(unlocked && !used ? 1.0 : 0.35);
+            if(b.bg) b.bg.setAlpha(unlocked && !used ? 1.0 : 0.45);
+        }
+    }
+
     function refreshEducationUI(){
         var victimCount = victimList.length;
         var chargedCount = 0, chargedTotal = 0;
@@ -660,6 +793,7 @@
             var sv = spot.victim;
             ui_spotlight.setText('집중 관찰: '+sv.face+' '+sv.name+' · '+getRiskLabel(spot.score)+' '+spot.score+'/100  |  '+sv.think);
         }
+        refreshStrategyButtons();
     }
 
     function SetTurtles(){
@@ -919,10 +1053,11 @@
         for(let i = 0; i < victimList.length ; i++){
             if(victimList[i].money == 0) continue;
 
-            if(victimList[i].paycount == 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
+            var effectivePayAttitude = victimList[i].payattitude + (strategyState.chargeBoostUntil >= season ? 8 : 0);
+            if(victimList[i].paycount == 0 && Math.random() < effectivePayAttitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 10 * victimList[i].money)/100)*100));
             }
-            else if(victimList[i].paycount > 0 && Math.random() < victimList[i].payattitude * (victimList[i].interest-10) / 250000 ){
+            else if(victimList[i].paycount > 0 && Math.random() < effectivePayAttitude * (victimList[i].interest-10) / 250000 ){
                 buyPoint(i, min(victimList[i].money, Math.floor(Math.floor((Math.random() + Math.random())/2 * victimList[i].risky / 5 * victimList[i].money)/100)*100));
             }
         }
@@ -968,7 +1103,7 @@
         v.buymoneytotal += amount;
         v.paycount++;
 
-        if(mySite.phase >= 2) v.point += Math.floor(amount*0.2);
+        if(strategyState.chargeBoostUntil >= season) v.point += Math.floor(amount*0.2);
         ui_headline.setText(v.name + '님이 실제 돈 ' + amount.toLocaleString() + '원을 충전했습니다.');
         if(isFirstCharge){
             v.firstCharge = true;
@@ -1018,7 +1153,9 @@
         if(mySite.phase >= 3){
             for(let i = 0; i < victimList.length ; i++){
                 if(victimList[i].point < 10000 && victimList[i].friends > 0){
-                    if(Math.random() < victimList[i].interest / 60000)
+                    var inviteChance = victimList[i].interest / 60000;
+                    if(strategyState.inviteBoostUntil >= season) inviteChance *= 4;
+                    if(Math.random() < inviteChance)
                         invite(i);
                 }
             }
@@ -1049,24 +1186,19 @@
                 {speaker:"사장",text:"15회차 동안 운영하면서 화면에 나타나는 이용자들의 변화를 지켜봐."},
                 {speaker:"송현우",text:"이건 뭐지? 처음엔 그냥 구경이나 해볼까."}]);
                 
-    dialog.push([{speaker:"사장",text:"얘들이 충전을 안한다고?"},
-                {speaker:"사장",text:"처음부터 돈내는 사람들이 어딨다고.."},
-                {speaker:"사장",text:"우선은 맛뵈기부터 시켜주는거야.."},
-                {speaker:"사장",text:"모두한테 꽁돈 10000원씩 뿌려"},
-                {speaker:"문승재",text:"공짜로도 되는구나.."},
-                {speaker:"문승재",text:"한번 걸어볼까?"}]);
+    dialog.push([{speaker:"사장",text:"이용자들이 아직 실제 돈을 쓰지는 않는군."},
+                {speaker:"사장",text:"화면 아래의 운영 선택을 직접 눌러 봐."},
+                {speaker:"사장",text:"무료 포인트를 주는 선택과 아무 유도도 하지 않는 선택이 이용자에게 어떤 차이를 만드는지 관찰해."},
+                {speaker:"문승재",text:"공짜로 받은 포인트라면 한번 해봐도 될 것 같은데..."}]);
 
     dialog.push([{speaker:"문승재",text:"운이 좋아서 벌었네"},
                 {speaker:"문승재",text:"더 많이 걸었다면 더 벌었었겠지?"},
                 {speaker:"문승재",text:"돈을 한번 내볼까?"}]);
 
-    dialog.push([{speaker:"사장",text:"뭐야 이거밖에 못벌었어?"},
-                {speaker:"사장",text:"아직도 돈을 안낸다고?"},
-                {speaker:"사장",text:"우선 어떻게든 조금이라도 내게 해야지"},
-                {speaker:"사장",text:"초회충전 보너스, 매일충전 보너스 먹여"},
-                {speaker:"사장",text:"이렇게 퍼줘도 되냐고?\n어차피 먹고 튀면 그만이거든"},
-                {speaker:"신호찬",text:"이거 베팅 안하고 충전한다음 환불받으면 \n공짜로 돈먹는거 아닌가?"},
-                {speaker:"사장",text:"저런애들한테 돈 바꿔주지 마라"}]);
+    dialog.push([{speaker:"사장",text:"이제 일부 이용자는 실제 돈을 충전할 수도 있다."},
+                {speaker:"사장",text:"운영 선택의 '충전 보너스'를 사용하면 잠시 충전 가능성이 높아진다."},
+                {speaker:"사장",text:"하지만 사이트 숫자만 보지 말고 같은 순간 피해자의 충전·손실·대출 기록도 같이 봐."},
+                {speaker:"신호찬",text:"처음에는 게임 포인트였는데, 어느 순간 내 돈을 넣고 있네..."}]);
 
     dialog.push([{speaker:"사장",text:"15회차가 끝났다."},
                 {speaker:"사장",text:"사이트 수익만 보면 성공처럼 보일 수도 있겠지."},
@@ -1076,8 +1208,8 @@
     dialog.push([{speaker:"문승재",text:"돈 다 꼴았네"},
                 {speaker:"문승재",text:"어차피 먹튀당했는데.. 미련없다 이제"}]);
 
-    dialog.push([{speaker:"사장",text:"사람이 적어서 돈이 안벌리는구만"},
-                {speaker:"사장",text:"친구 데려오는 애들한테 포인트 줘"}]);
+    dialog.push([{speaker:"사장",text:"이번 단계에서는 친구추천 보상이 열린다."},
+                {speaker:"사장",text:"선택하면 한 사람의 참여가 주변 사람에게 어떻게 퍼지는지 기록을 확인해 봐."}]);
 
     dialog.push([{speaker:"신재훈",text:"이야 돈을 잔뜩 벌었어\n이제 돈으로 바꿔볼까?"},
                 {speaker:"사장",text:"이게 왜 니돈이야?"},
@@ -1226,6 +1358,21 @@
 
             var y=220;
 
+            if(mySite.decisions && mySite.decisions.length>0){
+                var decisionLines=['게임 중 선택한 운영 전략'];
+                for(var di=0; di<mySite.decisions.length; di++){
+                    var d=mySite.decisions[di];
+                    decisionLines.push(d.season+'회차 · '+d.title+'\n  사이트: '+d.siteEffect+'\n  피해: '+d.victimEffect);
+                }
+                var decisionText=this.add.text(130,y+28,decisionLines.join('\n\n'),{
+                    fontSize:'25px',color:'#ffe6a7',wordWrap:{width:790},lineSpacing:4
+                });
+                var decisionHeight=decisionText.height+70;
+                reportContainer.add(this.add.rectangle(540,y+decisionHeight/2,900,decisionHeight,0x19150c,0.96));
+                reportContainer.add(decisionText);
+                y+=decisionHeight+35;
+            }
+
             reportContainer.add(this.add.rectangle(540,y+75,900,150,0x111111,0.94));
             reportContainer.add(this.add.text(540,y+75,
                 '피해자 '+victimCount+'명     총 충전 '+victimMoney.toLocaleString()+'원\n'+
@@ -1263,7 +1410,7 @@
                     text=String(text).replace(/\\n/g,'\n');
 
                     var eventType=(typeof thought==='object'&&thought!==null) ? (thought.type||'') : '';
-                    var prefix={join:'[유입] ',bet:'[베팅] ',win:'[승리] ',loss:'[손실] ',chase:'[추격] ',charge:'[충전] ',loan:'[대출] ',invite:'[확산] ',risk:'[위험] ',mental:'[심리] ',repeat:'[반복] ',debt:'[대출] ',refund:'[환전] '}[eventType] || '';
+                    var prefix={join:'[유입] ',bet:'[베팅] ',win:'[승리] ',loss:'[손실] ',chase:'[추격] ',charge:'[충전] ',loan:'[대출] ',invite:'[확산] ',risk:'[위험] ',mental:'[심리] ',repeat:'[반복] ',debt:'[대출] ',refund:'[환전] ',promotion:'[유도] ',protect:'[중단] '}[eventType] || '';
                     var sev=(typeof thought==='object'&&thought!==null) ? (thought.severity||0) : 0;
                     var lineColor = sev>=3 ? '#ffb3b3' : (sev===2 ? '#ffe0a3' : '#eeeeee');
                     var line=this.add.text(130,0,
