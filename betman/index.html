@@ -336,20 +336,20 @@
             this.add.image(540, 960, 'bg2');
             //instructionBG=this.add.rectangle(0,1280,1080,1920,0xc8c8c8).setOrigin(0,0);
             // 교육용 HUD
-            ui_mymoney = this.add.text(25, 20, '사이트 수익 0원', { fontSize: '36px', color: '#FFFFFF', align:'left', fixedWidth:700 });
-            ui_phaseTitle = this.add.text(25, 75, '사이트 운영 시뮬레이션', { fontSize: '48px', color: '#FFE66D', fontStyle:'bold', fixedWidth:1030 });
-            ui_objective = this.add.text(25, 140, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_siteStats = this.add.text(25, 205, '', { fontSize: '27px', color: '#D7F9FF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_education = this.add.text(25, 285, '', { fontSize: '25px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_headline = this.add.text(25, 372, '이용자들의 선택을 지켜보세요.', { fontSize: '31px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_victimStats = this.add.text(25, 425, '', { fontSize: '24px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
-            ui_spotlight = this.add.text(25, 468, '', { fontSize: '23px', color: '#FFD6D6', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_mymoney = this.add.text(25, 20, '사이트 수익 0원', { fontSize: '42px', color: '#FFFFFF', align:'left', fixedWidth:700 });
+            ui_phaseTitle = this.add.text(25, 75, '사이트 운영 시뮬레이션', { fontSize: '54px', color: '#FFE66D', fontStyle:'bold', fixedWidth:1030 });
+            ui_objective = this.add.text(25, 140, '', { fontSize: '32px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_siteStats = this.add.text(25, 205, '', { fontSize: '35px', color: '#D7F9FF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_education = this.add.text(25, 285, '', { fontSize: '33px', color: '#FFF3C4', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_headline = this.add.text(25, 372, '이용자들의 선택을 지켜보세요.', { fontSize: '35px', color: '#FFFFFF', align:'left', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_victimStats = this.add.text(25, 425, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
+            ui_spotlight = this.add.text(25, 468, '', { fontSize: '28px', color: '#FFD6D6', fixedWidth:1030, wordWrap:{width:1030} });
 
             // 피해자 목록: 위험 신호 요약 아래 6명 × 2줄
             for(let i = 0; i < 6; i++){
-                var baseY = 520 + 67*i;
-                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '29px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:1030 });
-                ui_victim[i*2]   = this.add.text(45, baseY+32, '',{ fontSize: '23px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
+                var baseY = 530 + 76*i;
+                ui_victim[i*2+1] = this.add.text(25, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:1030 });
+                ui_victim[i*2]   = this.add.text(45, baseY+38, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
             }
 
             // 학생의 운영 선택: 거북이 경마 아래쪽 빈 공간에 배치한다.
@@ -357,7 +357,7 @@
             var strategyPanelBg = this.add.rectangle(540,1605,1050,355,0x050505,0.90).setDepth(10).setVisible(false);
             ui_strategyPanelObjects.push(strategyPanelBg);
             ui_strategyTitle = this.add.text(35,1442,'운영 선택 · 경마 결과를 본 뒤 한 회차에 한 번 선택할 수 있습니다.',{
-                fontSize:'23px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010,align:'center'
+                fontSize:'29px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010,align:'center',wordWrap:{width:1010}
             }).setDepth(11).setVisible(false);
             ui_strategyPanelObjects.push(ui_strategyTitle);
 
@@ -367,7 +367,7 @@
             createStrategyButton(this, 795, 1585, '보상 중단', 'stop');
 
             ui_strategyFeedback = this.add.text(65,1640,'선택 결과가 여기에 표시됩니다.',{
-                fontSize:'20px',color:'#FFFFFF',fixedWidth:950,align:'center',wordWrap:{width:950}
+                fontSize:'26px',color:'#FFFFFF',fixedWidth:950,align:'center',wordWrap:{width:950},lineSpacing:8
             }).setDepth(11).setVisible(false);
             ui_strategyPanelObjects.push(ui_strategyFeedback);
 
@@ -382,7 +382,7 @@
             
 
             for(let i = 0; i < 4; i++){
-                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '54px', color: '#FFFFFF', align:'left'});
+                ui_multiplier[i] = this.add.text(600, 1060 + 100*i, '',{ fontSize: '62px', color: '#FFFFFF', align:'left'});
 
                 turtleOnLane[i] = Object.assign({});
                 turtleOnLane[i].image = this.add.image(100, 1060 + 100*i, turtles[i].image);
@@ -405,11 +405,23 @@
             //for dialog
             ui_d_port = this.add.image(540, 960, 'boss').setVisible(false);
             ui_d_frame = this.add.image(540, 960, 'd_frame').setVisible(false);
-            ui_d_nametext = this.add.text(10, 1390, '이름', { fontSize: '64px', color: '#FF0000', align:'center', fixedWidth:265 }).setVisible(false);
-            ui_d_text = this.add.text(10, 1500, '대사내용', { fontSize: '50px', color: '#000000', align:'left', fixedWidth:1060 }).setVisible(false);
+            ui_d_nametext = this.add.text(20, 1380, '이름', {
+                fontSize: '70px', color: '#FF0000', align:'center', fixedWidth:270
+            }).setVisible(false);
+            ui_d_text = this.add.text(40, 1490, '대사내용', {
+                fontSize: '58px',
+                color: '#000000',
+                align:'left',
+                fixedWidth:1000,
+                wordWrap:{ width:1000, useAdvancedWrap:true },
+                lineSpacing:12
+            }).setVisible(false);
 
             ui_p_frame = this.add.image(540, 960,'p_frame').setVisible(false);
-            ui_p_text = this.add.text(0, 860, '팝업', { fontSize: '40px', color: '#000000', align:'center', fixedWidth:1080 }).setVisible(false);
+            ui_p_text = this.add.text(40, 840, '팝업', {
+                fontSize: '46px', color: '#000000', align:'center',
+                fixedWidth:1000, wordWrap:{width:1000, useAdvancedWrap:true}, lineSpacing:10
+            }).setVisible(false);
             // p_zone = this.add.zone(240,480,760,400).setOrigin(0).setInteractive();
             // p_zone.off('pointerdown');
 
@@ -627,8 +639,8 @@
     }
 
     function createStrategyButton(sceneRef, x, y, label, key){
-        var bg = sceneRef.add.rectangle(x,y,455,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12).setVisible(false);
-        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:430}).setOrigin(0.5).setDepth(13).setVisible(false);
+        var bg = sceneRef.add.rectangle(x,y,455,64,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12).setVisible(false);
+        var tx = sceneRef.add.text(x,y,label,{fontSize:'30px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:430}).setOrigin(0.5).setDepth(13).setVisible(false);
         bg.on('pointerdown', function(){ applyOperatorChoice(key); });
         bg.on('pointerover', function(){ if(bg.input && bg.input.enabled) bg.setFillStyle(0x444444,1); });
         bg.on('pointerout', function(){ bg.setFillStyle(0x2a2a2a,0.98); });
@@ -1266,7 +1278,7 @@
     function loadDialog(){
         ui_d_port.setTexture( dialog[d_nowDialog][d_nowInDialog].speaker == '사장'?'boss':'student');
         ui_d_nametext.setText( dialog[d_nowDialog][d_nowInDialog].speaker );
-        ui_d_text.setText( dialog[d_nowDialog][d_nowInDialog].text );
+        ui_d_text.setText(String(dialog[d_nowDialog][d_nowInDialog].text).replace(/\\n/g,'\n'));
     }
     function startDialog(num){
         setStrategyPanelVisible(false);
@@ -1387,7 +1399,7 @@
                 align:'center',fixedWidth:1000
             }).setOrigin(0.5).setDepth(21);
             this.add.text(540,115,'게임 속 선택이 피해자의 삶에 남긴 기록입니다.',{
-                fontSize:'28px',color:'#dddddd',align:'center',fixedWidth:1000
+                fontSize:'32px',color:'#dddddd',align:'center',fixedWidth:1000
             }).setOrigin(0.5).setDepth(21);
 
             // ★ 핵심: 스크롤되는 것은 reportContainer 하나뿐이다.
@@ -1409,7 +1421,7 @@
                     decisionLines.push(d.season+'회차 · '+d.title+'\n  사이트: '+d.siteEffect+'\n  피해: '+d.victimEffect);
                 }
                 var decisionText=this.add.text(130,y+28,decisionLines.join('\n\n'),{
-                    fontSize:'25px',color:'#ffe6a7',wordWrap:{width:790},lineSpacing:4
+                    fontSize:'29px',color:'#ffe6a7',wordWrap:{width:790},lineSpacing:7
                 });
                 var decisionHeight=decisionText.height+70;
                 reportContainer.add(this.add.rectangle(540,y+decisionHeight/2,900,decisionHeight,0x19150c,0.96));
@@ -1422,7 +1434,7 @@
                 '피해자 '+victimCount+'명     총 충전 '+victimMoney.toLocaleString()+'원\n'+
                 '패배한 베팅액 합계 '+totalLoss.toLocaleString()+'원     순베팅손실 '+totalNetLoss.toLocaleString()+'원\n'+
                 '대출 발생 '+victimLoanCount+'명     총 베팅 '+totalBets+'회',{
-                    fontSize:'34px',color:'#ffffff',align:'center',
+                    fontSize:'38px',color:'#ffffff',align:'center',
                     fixedWidth:850,lineSpacing:12
                 }).setOrigin(0.5));
             y+=190;
@@ -1439,7 +1451,7 @@
                 var cardItems=[];
                 var title=this.add.text(110,0,
                     (v.face||'●')+'  '+v.name+(v.personality?' · '+v.personality:''),
-                    {fontSize:'38px',color:'#ffffff',fontStyle:'bold',fixedWidth:820}
+                    {fontSize:'42px',color:'#ffffff',fontStyle:'bold',fixedWidth:820}
                 );
                 cardItems.push({obj:title, offset:28});
 
@@ -1459,7 +1471,7 @@
                     var lineColor = sev>=3 ? '#ffb3b3' : (sev===2 ? '#ffe0a3' : '#eeeeee');
                     var line=this.add.text(130,0,
                         thoughtSeason !== '' ? thoughtSeason+'회차  '+prefix+text : prefix+text,
-                        {fontSize:'28px',color:lineColor,wordWrap:{width:790},lineSpacing:4}
+                        {fontSize:'32px',color:lineColor,wordWrap:{width:790},lineSpacing:7}
                     );
                     cardItems.push({obj:line, offset:localY});
                     localY += line.height + 20;
@@ -1467,7 +1479,7 @@
 
                 var summary=this.add.text(130,0,
                     '위험 '+getRiskLabel(getVictimRiskScore(v))+' '+getVictimRiskScore(v)+'/100   패배베팅 '+(v.totalLost||0).toLocaleString()+'원   순베팅손실 '+getNetBetLoss(v).toLocaleString()+'원\n대출 '+(v.loan||0).toLocaleString()+'원   충전 '+(v.buymoneytotal||0).toLocaleString()+'원   총 베팅 '+(v.betCount||0)+'회',
-                    {fontSize:'24px',color:'#bbbbbb',wordWrap:{width:790}}
+                    {fontSize:'28px',color:'#bbbbbb',wordWrap:{width:790},lineSpacing:6}
                 );
                 cardItems.push({obj:summary, offset:localY+5});
                 localY += summary.height + 35;
@@ -1510,7 +1522,7 @@
                 '순베팅손실  '+totalNetLoss.toLocaleString()+'원\n'+
                 '실제 충전  '+victimMoney.toLocaleString()+'원\n'+
                 '대출 발생  '+victimLoanCount+'명',{
-                    fontSize:'34px',color:'#ffffff',align:'center',
+                    fontSize:'38px',color:'#ffffff',align:'center',
                     fixedWidth:900,lineSpacing:12
                 }).setOrigin(0.5).setDepth(32);
 
@@ -1522,15 +1534,15 @@
                 }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1680,'생각해 보기: 처음에는 무엇이 참여를 쉽게 만들었고, 어느 순간부터 멈추기 어려워졌을까요?',{
-                fontSize:'25px',color:'#ffe6a7',align:'center',fixedWidth:960,wordWrap:{width:960}
+                fontSize:'29px',color:'#ffe6a7',align:'center',fixedWidth:960,wordWrap:{width:960},lineSpacing:7
             }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1760,'▲ 위쪽의 피해자 기록을 끝까지 확인하세요 ▲',{
-                fontSize:'27px',color:'#aaaaaa',align:'center',fixedWidth:1000
+                fontSize:'30px',color:'#aaaaaa',align:'center',fixedWidth:1000
             }).setOrigin(0.5).setDepth(32);
 
             this.add.text(540,1840,'SPACE : 빠르게 보기 / 마우스·터치 : 직접 스크롤',{
-                fontSize:'24px',color:'#888888',align:'center',fixedWidth:1000
+                fontSize:'28px',color:'#888888',align:'center',fixedWidth:1000
             }).setOrigin(0.5).setDepth(32);
 
             this.input.keyboard.on('keydown-SPACE',()=>{reportScrollSpeed=7;});
