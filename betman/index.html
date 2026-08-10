@@ -289,7 +289,7 @@
 
     var ui_mymoney;
     var ui_victim = [];
-    var ui_victimMode = 0;
+    var ui_victimMode = 0; // 호환용: 학생용 단일 목록만 사용
     var ui_victimStart = 0;
     var ui_victimScrollTrack;
     var ui_victimScrollThumb;
@@ -358,11 +358,19 @@
             ui_victimStats = this.add.text(25, 447, '', { fontSize: '28px', color: '#FFFFFF', fixedWidth:1030, wordWrap:{width:1030} });
             ui_spotlight = this.add.text(25, 488, '', { fontSize: '28px', color: '#FFD6D6', fixedWidth:1030, wordWrap:{width:1030} });
 
-            // 피해자 목록: 위험 신호 요약 아래 6명 × 2줄
-            for(let i = 0; i < 6; i++){
-                var baseY = 550 + 73*i;
-                ui_victim[i*2+1] = this.add.text(35, baseY, '',{ fontSize: '33px', color: '#FFFFFF', fontStyle:'bold', align:'left', fixedWidth:975 });
-                ui_victim[i*2]   = this.add.text(55, baseY+36, '',{ fontSize: '28px', color: '#D8D8D8', align:'left', fixedWidth:950 });
+            // 피해자 목록: 학생용 핵심 정보만 5명 × 2줄로 크게 표시
+            // 1줄: 이름 · 위험도 · 손실 · 대출 / 2줄: 현재 생각
+            for(let i = 0; i < 5; i++){
+                var baseY = 550 + 86*i;
+                ui_victim[i*2+1] = this.add.text(35, baseY, '',{
+                    fontSize:'34px', color:'#FFFFFF', fontStyle:'bold',
+                    align:'left', fixedWidth:975
+                });
+                ui_victim[i*2] = this.add.text(55, baseY+42, '',{
+                    fontSize:'29px', color:'#D8D8D8',
+                    align:'left', fixedWidth:940,
+                    wordWrap:{width:940}
+                });
             }
 
             // 피해자 목록 스크롤 표시
@@ -392,14 +400,14 @@
             const zone = this.add.zone(0,500,1080,500).setOrigin(0).setInteractive();
             zone.on('pointermove', pointer =>{
                 if(pointer.isDown){
-                    var maxStart = Math.max(0, victimList.length-6);
+                    var maxStart = Math.max(0, victimList.length-5);
                     ui_victimStart = valueInRange(0,maxStart,(-pointer.velocity.y / 220),ui_victimStart);
                 }
             });
-            zone.on('pointerdown',switchUiVictim);
+            // 목록은 학생용 단일 표시 방식으로 고정
             this.input.on('wheel', function(pointer, gameObjects, deltaX, deltaY){
                 if(pointer.y >= 500 && pointer.y <= 1000){
-                    var maxStart = Math.max(0, victimList.length-6);
+                    var maxStart = Math.max(0, victimList.length-5);
                     ui_victimStart = valueInRange(0,maxStart,(deltaY>0?1:-1),ui_victimStart);
                 }
             });
@@ -1015,7 +1023,7 @@
     }
     function refreshVictimScrollbar(){
         if(!ui_victimScrollTrack || !ui_victimScrollThumb) return;
-        var visibleCount = 6;
+        var visibleCount = 5;
         var total = victimList.length;
         var maxStart = Math.max(0,total-visibleCount);
         if(ui_victimStart > maxStart) ui_victimStart = maxStart;
@@ -1026,51 +1034,56 @@
         }
         ui_victimScrollTrack.setAlpha(0.95);
         ui_victimScrollThumb.setVisible(true);
-        var trackTop = 595;
-        var trackHeight = 390;
+        var trackTop = 590;
+        var trackHeight = 400;
         var thumbHeight = Math.max(58, trackHeight * (visibleCount/total));
         var ratio = maxStart>0 ? Math.floor(ui_victimStart)/maxStart : 0;
         var cy = trackTop + thumbHeight/2 + ratio*(trackHeight-thumbHeight);
         ui_victimScrollThumb.setSize(10,thumbHeight).setPosition(1052,cy);
     }
 
+    function getVictimRiskColor(score){
+        if(score >= 75) return '#FF7676';   // 심각
+        if(score >= 50) return '#FFAD66';   // 위험
+        if(score >= 25) return '#FFE58A';   // 주의
+        return '#E8F7FF';                   // 관찰
+    }
+
     function refreshUiVictim(){
         refreshVictimScrollbar();
-        switch(ui_victimMode){
-            case 0:
-                var cur = max(Math.floor(ui_victimStart),0);
-                for(let i = 0; i < 6 ; i++){
-                    var idx = cur+i;
-                    if(victimList.length > idx){
-                        var victim = victimList[idx];
-                        updateVictimState(victim);
-                        ui_victim[i*2].setText('  '+victim.think);
-                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getVictimStateText(victim) + ']  위험 ' + getVictimRiskScore(victim) + '/100  정신 ' + Math.floor(victim.mental) + '  손실 ' + Math.floor(victim.totalLost || 0).toLocaleString() + '원');
-                    } else {
-                        ui_victim[i*2].setText('');
-                        ui_victim[i*2+1].setText('');
-                    }
-                }
-                break;
-            case 1:
-                var cur = max(Math.floor(ui_victimStart),0);
-                for(let i = 0; i < 6 ; i++){
-                    var idx = cur+i;
-                    if(victimList.length > idx){
-                        var victim = victimList[idx];
-                        updateVictimState(victim);
-                        ui_victim[i*2].setText('현금 ' + Math.floor(victim.money).toLocaleString() + '원  포인트 ' + Math.floor(victim.point).toLocaleString() + '원  대출 ' + Math.floor(victim.loan).toLocaleString() + '원');
-                        ui_victim[i*2+1].setText(victim.face + victim.name + '  [' + getRiskLabel(getVictimRiskScore(victim)) + ']  ' + Math.floor(victim.betCount) + '회 베팅 / ' + Math.floor(victim.loseCount) + '회 패배');
-                    } else {
-                        ui_victim[i*2].setText('');
-                        ui_victim[i*2+1].setText('');
-                    }
-                }
-                break;
+        var cur = Math.max(Math.floor(ui_victimStart),0);
+
+        for(let i = 0; i < 5; i++){
+            var idx = cur+i;
+            if(victimList.length > idx){
+                var v = victimList[idx];
+                updateVictimState(v);
+
+                var risk = getVictimRiskScore(v);
+                var riskLabel = getRiskLabel(risk);
+                var loss = Math.floor(getNetBetLoss(v));
+                var loan = Math.floor(v.loan || 0);
+                var thought = v.think || '아직 특별한 생각은 없다.';
+
+                // 숫자를 늘어놓기보다 학생이 바로 읽어야 할 네 가지 정보만 남긴다.
+                ui_victim[i*2+1]
+                    .setColor(getVictimRiskColor(risk))
+                    .setText(
+                        v.face+' '+v.name+
+                        '   ['+riskLabel+' '+risk+'/100]'+
+                        '   손실 '+loss.toLocaleString()+'원'+
+                        (loan > 0 ? '   대출 '+loan.toLocaleString()+'원' : '')
+                    );
+
+                ui_victim[i*2]
+                    .setColor('#D8E5EA')
+                    .setText('“'+String(thought).replace(/\\n/g,' ')+'”');
+            }
+            else{
+                ui_victim[i*2].setText('');
+                ui_victim[i*2+1].setText('');
+            }
         }
-    }
-    function switchUiVictim(){
-        ui_victimMode=valueRotate(0,1,1,ui_victimMode);
     }
 
     function considerBetting(){
