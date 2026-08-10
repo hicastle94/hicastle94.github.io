@@ -350,18 +350,21 @@
                 ui_victim[i*2]   = this.add.text(45, baseY+32, '',{ fontSize: '23px', color: '#D8D8D8', align:'left', fixedWidth:1010 });
             }
 
-            // 학생의 운영 선택: 사이트 쪽 효과와 피해자 쪽 효과를 동시에 보여준다.
-            this.add.rectangle(540,982,1050,142,0x050505,0.90).setDepth(10);
-            ui_strategyTitle = this.add.text(35,915,'운영 선택 · 한 회차에 한 번 선택할 수 있습니다.',{
-                fontSize:'23px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010
+            // 학생의 운영 선택: 거북이 경마 아래쪽 빈 공간에 배치한다.
+            // 경마 레인은 y=1060~1360을 사용하므로, 선택 UI는 그 아래에 독립된 2x2 패널로 둔다.
+            this.add.rectangle(540,1605,1050,355,0x050505,0.90).setDepth(10);
+            ui_strategyTitle = this.add.text(35,1442,'운영 선택 · 경마 결과를 본 뒤 한 회차에 한 번 선택할 수 있습니다.',{
+                fontSize:'23px',color:'#FFE66D',fontStyle:'bold',fixedWidth:1010,align:'center'
             }).setDepth(11);
-            ui_strategyFeedback = this.add.text(35,1018,'선택 결과가 여기에 표시됩니다.',{
-                fontSize:'20px',color:'#FFFFFF',fixedWidth:1010,align:'center',wordWrap:{width:1010}
+
+            createStrategyButton(this, 285, 1515, '무료 포인트', 'free');
+            createStrategyButton(this, 795, 1515, '충전 보너스', 'charge');
+            createStrategyButton(this, 285, 1585, '친구추천 보상', 'invite');
+            createStrategyButton(this, 795, 1585, '보상 중단', 'stop');
+
+            ui_strategyFeedback = this.add.text(65,1640,'선택 결과가 여기에 표시됩니다.',{
+                fontSize:'20px',color:'#FFFFFF',fixedWidth:950,align:'center',wordWrap:{width:950}
             }).setDepth(11);
-            createStrategyButton(this, 145, 965, '무료 포인트', 'free');
-            createStrategyButton(this, 410, 965, '충전 보너스', 'charge');
-            createStrategyButton(this, 675, 965, '친구추천 보상', 'invite');
-            createStrategyButton(this, 940, 965, '보상 중단', 'stop');
 
             d_zone = this.add.zone(0,0,1080,1920).setOrigin(0).setInteractive();
             const zone = this.add.zone(0,250,1080,700).setOrigin(0).setInteractive();
@@ -619,8 +622,8 @@
     }
 
     function createStrategyButton(sceneRef, x, y, label, key){
-        var bg = sceneRef.add.rectangle(x,y,245,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12);
-        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:230}).setOrigin(0.5).setDepth(13);
+        var bg = sceneRef.add.rectangle(x,y,455,54,0x2a2a2a,0.98).setStrokeStyle(2,0xffffff,0.35).setInteractive({useHandCursor:true}).setDepth(12);
+        var tx = sceneRef.add.text(x,y,label,{fontSize:'22px',color:'#ffffff',fontStyle:'bold',align:'center',fixedWidth:430}).setOrigin(0.5).setDepth(13);
         bg.on('pointerdown', function(){ applyOperatorChoice(key); });
         bg.on('pointerover', function(){ if(bg.input && bg.input.enabled) bg.setFillStyle(0x444444,1); });
         bg.on('pointerout', function(){ bg.setFillStyle(0x2a2a2a,0.98); });
@@ -1187,7 +1190,7 @@
                 {speaker:"송현우",text:"이건 뭐지? 처음엔 그냥 구경이나 해볼까."}]);
                 
     dialog.push([{speaker:"사장",text:"이용자들이 아직 실제 돈을 쓰지는 않는군."},
-                {speaker:"사장",text:"화면 아래의 운영 선택을 직접 눌러 봐."},
+                {speaker:"사장",text:"거북이 경마 아래의 운영 선택을 직접 눌러 봐."},
                 {speaker:"사장",text:"무료 포인트를 주는 선택과 아무 유도도 하지 않는 선택이 이용자에게 어떤 차이를 만드는지 관찰해."},
                 {speaker:"문승재",text:"공짜로 받은 포인트라면 한번 해봐도 될 것 같은데..."}]);
 
